@@ -1,0 +1,1338 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Shiny Hunt Counter</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Shiny Hunt">
+<meta name="theme-color" content="#E0342B">
+<link rel="apple-touch-icon" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAALQAAAC0CAIAAACyr5FlAAAEC0lEQVR4nO3dP3LTQBiHYYXhALSM2xS5QCrOT8UFKOhpOQIFM56Mpd969Sc4+vZ5ysSynejVai1L9tPlcplgyadHPwE+LnEQiYNIHETiIPo8/9H3r1/++9Pg8b79/nPzEyMHkTiIxEEkDiJxEImDSBxE4iASB5E4iMRBJA4icRCJg0gcROIgEgeROIjEQSQOInEQiYNIHETiIBIHkTiIxEEkDiJxEImDSBxE4iASB5E4iMRBJA4icRCJg0gcROIgEgeROIjEQSQOInEQiYNIHETiIBIHkTiIxEEkDiJxEImDSBxE4iASB9HCN1IPZf41zDdG/n7uQeO428T8lgNWMlYc/U00lh2nklHi2JPF4l2NkMgQE9IDy3jX+/xo6sfxfmuxfB+VdyudK+/Xzx/pV88vrz0PUXUXUzaOu2U0mpjfpl3Jt99/SvZRM452GT1ZLC7SSKRkHwXjaJSxIYv54imRen3Un5Be7Szj8Pv5+KqNHIvDxuGrMw0hxQaPUnFsLmNxT3F3wV8/f9Tuo04cG446tF+DXH+7duAp00fxOceeYxg9t6w9/ygSx6odyvPLa38ZdxdZfJQaB0+LxNFvbRZHLXtGdeYcNxY36FVb/+KNn19e5zdenJkWUCGOPWN4Y9Jw96hoW4Fpac3dSudIsOrtlcb9dN7V6dSMY25bGemWJXcicwu7lRoz7ba1G/q2WcXZ/5MFR45HjfD19iwF45i72ei3rcWbpUbYswwRB9uIg0gcROIgEgeROIiGiOOQV6GHvB4+l4JxPOoIRL0jHwuHz0+3TWxYK4vvvB/7ENPZ/pPzv7HgyLFoz5tne960O7WacXS+q97TR2cZ9fYpU4049mzHjZNDN5xq+laB0aXCmWCLVp3P1x/BOMPGVGPkWGXPBl1gMFilSBxrTyfecLJP40KHzudzOkXiSA65HumQK6POqM6cY8OZfO3PZtm89dcYNqZperpcLjc/OvXf9j8H+WI7lPoHwdLk49jxP93hectYVC2OhqP6qD3PeKtgHO35485rZYe64r5gHNO99XTsVfY9j3hSdV6t3Lj74qXns1k6GypZxlQ4jqn7SujB30BpqLlbeev91l/tMqYR4pjeZy2WL2OqvVt5a+eHbczvagSjxPFP52eZt5cdx1hxXPVXMmATV4PGcTXyur9riAkp24iDSBxE4iASB5E4iMRBJA4icRCJg0gcROIgEgeROIjEQSQOInEQiYNIHETiIBIHkTiIxEEkDiJxEImDSBxE4iASB5E4iMRBJA4icRCJg0gcROIgEgeROIjEQSQOInEQiYNIHETiIBIHkTiIxEEkDiJxEImDSBxE4iASB5E4iMRBJA6ip8vl8ujnwAdl5CASB5E4iMRBJA6iv3+xWuYahgsYAAAAAElFTkSuQmCC">
+<link rel="icon" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAALQAAAC0CAIAAACyr5FlAAAEC0lEQVR4nO3dP3LTQBiHYYXhALSM2xS5QCrOT8UFKOhpOQIFM56Mpd969Sc4+vZ5ysSynejVai1L9tPlcplgyadHPwE+LnEQiYNIHETiIPo8/9H3r1/++9Pg8b79/nPzEyMHkTiIxEEkDiJxEImDSBxE4iASB5E4iMRBJA4icRCJg0gcROIgEgeROIjEQSQOInEQiYNIHETiIBIHkTiIxEEkDiJxEImDSBxE4iASB5E4iMRBJA4icRCJg0gcROIgEgeROIjEQSQOInEQiYNIHETiIBIHkTiIxEEkDiJxEImDSBxE4iASB9HCN1IPZf41zDdG/n7uQeO428T8lgNWMlYc/U00lh2nklHi2JPF4l2NkMgQE9IDy3jX+/xo6sfxfmuxfB+VdyudK+/Xzx/pV88vrz0PUXUXUzaOu2U0mpjfpl3Jt99/SvZRM452GT1ZLC7SSKRkHwXjaJSxIYv54imRen3Un5Be7Szj8Pv5+KqNHIvDxuGrMw0hxQaPUnFsLmNxT3F3wV8/f9Tuo04cG446tF+DXH+7duAp00fxOceeYxg9t6w9/ygSx6odyvPLa38ZdxdZfJQaB0+LxNFvbRZHLXtGdeYcNxY36FVb/+KNn19e5zdenJkWUCGOPWN4Y9Jw96hoW4Fpac3dSudIsOrtlcb9dN7V6dSMY25bGemWJXcicwu7lRoz7ba1G/q2WcXZ/5MFR45HjfD19iwF45i72ei3rcWbpUbYswwRB9uIg0gcROIgEgeROIiGiOOQV6GHvB4+l4JxPOoIRL0jHwuHz0+3TWxYK4vvvB/7ENPZ/pPzv7HgyLFoz5tne960O7WacXS+q97TR2cZ9fYpU4049mzHjZNDN5xq+laB0aXCmWCLVp3P1x/BOMPGVGPkWGXPBl1gMFilSBxrTyfecLJP40KHzudzOkXiSA65HumQK6POqM6cY8OZfO3PZtm89dcYNqZperpcLjc/OvXf9j8H+WI7lPoHwdLk49jxP93hectYVC2OhqP6qD3PeKtgHO35485rZYe64r5gHNO99XTsVfY9j3hSdV6t3Lj74qXns1k6GypZxlQ4jqn7SujB30BpqLlbeev91l/tMqYR4pjeZy2WL2OqvVt5a+eHbczvagSjxPFP52eZt5cdx1hxXPVXMmATV4PGcTXyur9riAkp24iDSBxE4iASB5E4iMRBJA4icRCJg0gcROIgEgeROIjEQSQOInEQiYNIHETiIBIHkTiIxEEkDiJxEImDSBxE4iASB5E4iMRBJA4icRCJg0gcROIgEgeROIjEQSQOInEQiYNIHETiIBIHkTiIxEEkDiJxEImDSBxE4iASB5E4iMRBJA6ip8vl8ujnwAdl5CASB5E4iMRBJA6iv3+xWuYahgsYAAAAAElFTkSuQmCC">
+<link rel="manifest" href="data:application/manifest+json;base64,eyJuYW1lIjogIlNoaW55IEh1bnQgQ291bnRlciIsICJzaG9ydF9uYW1lIjogIlNoaW55IEh1bnQiLCAic3RhcnRfdXJsIjogIi4iLCAiZGlzcGxheSI6ICJzdGFuZGFsb25lIiwgImJhY2tncm91bmRfY29sb3IiOiAiI0U0RTBENCIsICJ0aGVtZV9jb2xvciI6ICIjRTAzNDJCIiwgImljb25zIjogW3sic3JjIjogImRhdGE6aW1hZ2UvcG5nO2Jhc2U2NCxpVkJPUncwS0dnb0FBQUFOU1VoRVVnQUFBTFFBQUFDMENBSUFBQUN5cjVGbEFBQUVDMGxFUVZSNG5PM2RQM0xUUUJpSFlZWGhBTFNNMnhTNVFDck9UOFVGS09ocE9RSUZNNTZNcGQ5NjlTYzQrdlo1eXNTeW5lalZhaTFMOXRQbGNwbGd5YWRIUHdFK0xuRVFpWU5JSEVUaUlQbzgvOUgzcjEvKys5UGc4Yjc5L25QekV5TUhrVGlJeEVFa0RpSnhFSW1EU0J4RTRpQVNCNUU0aU1SQkpBNGljUkNKZzBnY1JPSWdFZ2VST0lqRVFTUU9JbkVRaVlOSUhFVGlJQklIa1RpSXhFRWtEaUp4RUltRFNCeEU0aUFTQjVFNGlNUkJKQTRpY1JDSmcwZ2NST0lnRWdlUk9JakVRU1FPSW5FUWlZTklIRVRpSUJJSGtUaUl4RUVrRGlKeEVJbURTQnhFNGlBU0I5SENOMUlQWmY0MXpEZEcvbjd1UWVPNDI4VDhsZ05XTWxZYy9VMDBsaDJua2xIaTJKUEY0bDJOa01nUUU5SUR5M2pYKy94bzZzZnhmbXV4ZkIrVmR5dWRLKy9YengvcFY4OHZyejBQVVhVWFV6YU91MlUwbXBqZnBsM0p0OTkvU3ZaUk00NTJHVDFaTEM3U1NLUmtId1hqYUpTeElZdjU0aW1SZW4zVW41QmU3U3pqOFB2NStLcU5ISXZEeHVHck13MGh4UWFQVW5Gc0xtTnhUM0Yzd1Y4L2Y5VHVvMDRjRzQ0NnRGK0RYSCs3ZHVBcDAwZnhPY2VlWXhnOXQ2dzkveWdTeDZvZHl2UExhMzhaZHhkWmZKUWFCMCtMeE5GdmJSWkhMWHRHZGVZY054WTM2RlZiLytLTm4xOWU1emRlbkprV1VDR09QV040WTlKdzk2aG9XNEZwYWMzZFN1ZElzT3J0bGNiOWRON1Y2ZFNNWTI1YkdlbVdKWGNpY3d1N2xSb3o3YmExRy9xMldjWFovNU1GUjQ1SGpmRDE5aXdGNDVpNzJlaTNyY1dicFViWXN3d1JCOXVJZzBnY1JPSWdFZ2VST0lpR2lPT1FWNkdIdkI0K2w0SnhQT29JUkwwakh3dUh6MCszVFd4WUs0dnZ2Qi83RU5QWi9wUHp2N0hneUxGb3o1dG5lOTYwTzdXYWNYUytxOTdUUjJjWjlmWXBVNDA0OW16SGpaTkRONXhxK2xhQjBhWENtV0NMVnAzUDF4L0JPTVBHVkdQa1dHWFBCbDFnTUZpbFNCeHJUeWZlY0xKUDQwS0h6dWR6T2tYaVNBNjVIdW1RSzZQT3FNNmNZOE9aZk8zUFp0bTg5ZGNZTnFacGVycGNMamMvT3ZYZjlqOEgrV0k3bFBvSHdkTGs0OWp4UDkzaGVjdFlWQzJPaHFQNnFEM1BlS3RnSE8zNTQ4NXJaWWU2NHI1Z0hOTzk5WFRzVmZZOWozaFNkVjZ0M0xqNzRxWG5zMWs2R3lwWnhsUTRqcW43U3VqQjMwQnBxTGxiZWV2OTFsL3RNcVlSNHBqZVp5MldMMk9xdlZ0NWErZUhiY3p2YWdTanhQRlA1MmVadDVjZHgxaHhYUFZYTW1BVFY0UEdjVFh5dXI5cmlBa3AyNGlEU0J4RTRpQVNCNUU0aU1SQkpBNGljUkNKZzBnY1JPSWdFZ2VST0lqRVFTUU9JbkVRaVlOSUhFVGlJQklIa1RpSXhFRWtEaUp4RUltRFNCeEU0aUFTQjVFNGlNUkJKQTRpY1JDSmcwZ2NST0lnRWdlUk9JakVRU1FPSW5FUWlZTklIRVRpSUJJSGtUaUl4RUVrRGlKeEVJbURTQnhFNGlBU0I1RTRpTVJCSkE2aXA4dmw4dWpud0FkbDVDQVNCNUU0aU1SQkpBNml2Myt4V3VZYWhnc1lBQUFBQUVsRlRrU3VRbUNDIiwgInNpemVzIjogIjE4MHgxODAiLCAidHlwZSI6ICJpbWFnZS9wbmcifV19">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;600;700;800&family=JetBrains+Mono:wght@500;700;800&display=swap" rel="stylesheet">
+<style>
+  /* ============================================================
+     THEME VARIABLES
+     All colors are defined here as CSS custom properties so the
+     dark-mode override block below can simply redefine them.
+     ============================================================ */
+  :root{
+    --desk: #E4E0D4;           /* page background (the "desk" the device sits on) */
+    --shell: #E0342B;          /* Pokedex shell red */
+    --shell-dark: #A8241D;
+    --shell-darker: #7C1915;
+    --shell-text: #F7F3E6;     /* fixed light text/fill sitting ON the red shell — never inverts in dark mode */
+    --trim-black: #1B1B1B;     /* borders + chunky button drop-shadows */
+    --chrome: #DCE3E6;         /* button faces / toggle track */
+    --screen-bg: #C7DCC4;      /* sprite screen glass */
+    --screen-edge: #4A5A46;    /* sprite screen bezel */
+    --lcd-bg: #9BBC0F;         /* Game Boy-style counter LCD background */
+    --lcd-dark: #0F380F;
+    --lcd-mid: #306230;
+    --cream: #F7F3E6;          /* main panel/card surface color */
+    --card-bg: #FFFFFF;        /* roster cards, text inputs, upload box */
+    --card-bg-active: #FFF6D6; /* highlighted (active) roster card */
+    --found-text: #2E7D32;     /* "shiny found" banner text */
+    --count-chip-bg: rgba(178,58,58,0.10); /* subtle pill behind each roster card's count */
+    --desk-highlight: rgba(255,255,255,0.5); /* soft glow behind the page */
+    --text-dark: #241C1A;      /* primary text color */
+    --muted: #6E645D;
+    --yellow: #F4C430;
+    --yellow-dark: #C99A16;
+    --blue: #3B5CC4;
+    --danger: #B23A2E;
+  }
+
+  /* Dark mode: re-declares the theme variables above. Everything
+     else in this stylesheet references the variables, so no other
+     rule needs to change when this class is toggled on <body>. */
+  body.dark-mode{
+    --desk: #14181B;
+    --shell: #B8291F;
+    --shell-dark: #7C1D17;
+    --shell-darker: #551310;
+    --chrome: #454B52;
+    --cream: #23262B;
+    --card-bg: #2E3338;
+    --card-bg-active: #3D371C;
+    --found-text: #6FCB6A;
+    --count-chip-bg: rgba(226,114,107,0.16);
+    --desk-highlight: rgba(255,255,255,0.05);
+    --text-dark: #ECE9E3;
+    --muted: #9AA0A6;
+    --danger: #E2726B;
+  }
+  *{box-sizing:border-box; -webkit-tap-highlight-color: transparent;}
+  html{ overscroll-behavior: none; }
+  body{
+    margin:0;
+    background:
+      radial-gradient(circle at 20% 15%, var(--desk-highlight), transparent 45%),
+      var(--desk);
+    color:var(--text-dark);
+    font-family:'Baloo 2', sans-serif;
+    min-height:100vh;
+    min-height:100dvh;
+    overscroll-behavior: none;
+    padding:calc(32px + env(safe-area-inset-top)) calc(16px + env(safe-area-inset-right)) calc(60px + env(safe-area-inset-bottom)) calc(16px + env(safe-area-inset-left));
+  }
+  .wrap{max-width:900px;margin:0 auto;}
+
+  /* Header: Poke Ball mark, title/subtitle, and the dark-mode switch */
+  header{
+    display:flex;align-items:center;gap:14px;margin-bottom:22px;
+  }
+  .header-text{flex:1;}
+
+  /* Dark mode toggle switch — a checkbox visually hidden and replaced
+     with a styled pill/thumb so it matches the device's chunky look. */
+  .theme-toggle{display:flex;align-items:center;gap:8px;cursor:pointer;flex:0 0 auto;}
+  .theme-toggle input{ position:absolute; opacity:0; width:0; height:0; }
+  .toggle-track{
+    width:44px;height:24px;border-radius:999px;
+    background:var(--chrome);
+    border:2px solid var(--trim-black);
+    position:relative;
+    transition: background 0.2s ease;
+    flex:0 0 auto;
+  }
+  .toggle-thumb{
+    position:absolute;top:1px;left:1px;
+    width:16px;height:16px;border-radius:50%;
+    background:var(--cream);
+    border:2px solid var(--trim-black);
+    transition: transform 0.2s ease, background 0.2s ease;
+  }
+  .theme-toggle input:checked + .toggle-track{ background:var(--blue); }
+  .theme-toggle input:checked + .toggle-track .toggle-thumb{ transform:translateX(20px); background:var(--yellow); }
+  .toggle-label{font-size:0.78rem;font-weight:700;color:var(--muted);}
+  .ball-mark{
+    width:34px;height:34px;border-radius:50%;flex:0 0 34px;
+    background:
+      linear-gradient(var(--shell) 0 48%, var(--trim-black) 48% 52%, var(--shell-text) 52% 100%);
+    border:2px solid var(--trim-black);
+    position:relative;
+    box-shadow: inset 0 -2px 3px rgba(0,0,0,0.25);
+  }
+  .ball-mark::after{
+    content:'';
+    position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);
+    width:12px;height:12px;border-radius:50%;
+    background:var(--shell-text);border:2px solid var(--trim-black);
+  }
+  header h1{
+    font-size:1.6rem;
+    margin:0;
+    font-weight:800;
+    letter-spacing:-0.01em;
+  }
+  header p{margin:2px 0 0;color:var(--muted);font-size:0.9rem;font-weight:500;}
+
+  .device{
+    background: linear-gradient(180deg, var(--shell), var(--shell-dark));
+    border-radius:26px;
+    border:3px solid var(--trim-black);
+    padding:18px;
+    box-shadow: 0 14px 0 -4px var(--shell-darker), 0 18px 24px rgba(0,0,0,0.25);
+    margin-bottom:22px;
+  }
+  .device-top{
+    display:flex;align-items:center;gap:10px;padding:2px 6px 14px;
+  }
+  .lens{
+    width:22px;height:22px;border-radius:50%;
+    background: radial-gradient(circle at 35% 30%, #cdeeff, var(--blue) 55%, #1f3a86 100%);
+    border:3px solid var(--trim-black);
+  }
+  .dot{width:9px;height:9px;border-radius:50%;border:2px solid var(--trim-black);}
+  .dot.y{background:var(--yellow);}
+  .dot.g{background:#4CAF50;}
+  .dot.b{background:var(--blue);}
+
+  .grid{
+    display:grid;
+    grid-template-columns: 1fr 1.15fr;
+    gap:16px;
+  }
+  @media (max-width:640px){ .grid{grid-template-columns:1fr;} }
+
+  .bezel{
+    background:var(--trim-black);
+    border-radius:16px;
+    padding:10px;
+  }
+  .panel-inner{
+    background:var(--cream);
+    border-radius:10px;
+    padding:16px;
+    height:100%;
+  }
+
+  /* Display panel */
+  .display-panel{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;}
+  .screen{
+    width:100%;
+    aspect-ratio:1/1;
+    max-width:210px;
+    background:
+      repeating-linear-gradient(0deg, rgba(0,0,0,0.03) 0 2px, transparent 2px 4px),
+      var(--screen-bg);
+    border:4px solid var(--screen-edge);
+    border-radius:8px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    overflow:hidden;
+    position:relative;
+  }
+  .screen img{width:94%;height:94%;object-fit:contain;image-rendering:pixelated;}
+  .screen .empty{color:var(--screen-edge);font-size:0.8rem;text-align:center;padding:0 18px;font-weight:600;}
+  .active-name{font-weight:800;font-size:1.15rem;text-transform:capitalize;}
+  .active-sub{color:var(--muted);font-size:0.8rem;margin-top:-6px;font-weight:600;}
+
+  /* Counter panel */
+  .counter-panel{display:flex;flex-direction:column;gap:12px;}
+  .lcd{
+    background: var(--lcd-bg);
+    border:4px solid var(--screen-edge);
+    border-radius:8px;
+    padding:14px 10px;
+    text-align:center;
+  }
+  .count-value{
+    font-family:'JetBrains Mono', monospace;
+    font-weight:800;
+    font-size:3.6rem;
+    letter-spacing:0.05em;
+    color:var(--lcd-dark);
+    line-height:1;
+    text-shadow:0.5px 0.5px 0 rgba(15,56,15,0.3);
+  }
+  .count-label{color:var(--lcd-mid);font-size:0.78rem;font-weight:700;letter-spacing:0.04em;}
+
+  .btn-row{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;}
+  button{
+    font-family:'Baloo 2', sans-serif;
+    font-weight:700;
+    border-radius:10px;
+    border:2px solid var(--trim-black);
+    background:var(--chrome);
+    color:var(--text-dark);
+    padding:9px 16px;
+    cursor:pointer;
+    font-size:0.92rem;
+    box-shadow: 0 3px 0 var(--trim-black);
+  }
+  button:hover{filter:brightness(1.04);}
+  button:active{transform:translateY(2px);box-shadow:0 1px 0 var(--trim-black);}
+  button.primary{background:var(--yellow);}
+  button.ghost{background:var(--cream);}
+  button.danger-outline{background:#F1D9D6;color:var(--danger);}
+  button.success{background:#5CB85C;color:#0F380F;border-color:var(--trim-black);}
+  button:disabled{opacity:0.45;cursor:not-allowed;box-shadow:none;transform:none;}
+
+  .keybind-row{
+    display:flex;align-items:center;justify-content:space-between;
+    background:var(--cream);
+    border:2px solid var(--trim-black);
+    border-radius:10px;
+    padding:9px 12px;
+    font-size:0.85rem;
+    font-weight:600;
+  }
+  .keycap{
+    font-family:'JetBrains Mono', monospace;
+    background:var(--chrome);
+    color:var(--text-dark);
+    border:2px solid var(--trim-black);
+    border-radius:6px;
+    padding:2px 10px;
+    font-weight:700;
+    box-shadow:0 2px 0 var(--trim-black);
+    display:inline-block;
+  }
+
+  /* Shared look for every <select> in the app (sort, odds method, generation) */
+  .odds-row{font-size:0.78rem;color:var(--muted);display:flex;flex-direction:column;gap:6px;font-weight:600;}
+  .themed-select{
+    background:var(--cream);
+    color:var(--text-dark);
+    border:2px solid var(--trim-black);
+    border-radius:8px;
+    padding:6px 8px;
+    font-family:'Baloo 2', sans-serif;
+    font-size:0.82rem;
+    font-weight:700;
+  }
+  .odds-result{
+    color:var(--danger);
+    font-weight:800;
+    background:var(--count-chip-bg);
+    padding:1px 8px;
+    border-radius:999px;
+    display:inline-block;
+    width:fit-content;
+  }
+
+  /* Roster */
+  .roster-card{
+    background:var(--cream);
+    border:3px solid var(--trim-black);
+    border-radius:16px;
+    padding:18px;
+    margin-top:18px;
+  }
+  .roster-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;flex-wrap:wrap;gap:8px;}
+  .roster-header h2{font-size:1.05rem;margin:0;font-weight:800;}
+  .roster-controls{display:flex;align-items:center;gap:10px;flex-wrap:wrap;}
+  .roster{
+    display:grid;
+    grid-template-columns:repeat(auto-fill, minmax(108px, 1fr));
+    gap:10px;
+    margin-bottom:16px;
+  }
+  .mon-card{
+    background:var(--card-bg);
+    border:2px solid var(--trim-black);
+    border-radius:12px;
+    padding:10px 8px;
+    display:flex;flex-direction:column;align-items:center;gap:6px;
+    cursor:pointer;
+    text-align:center;
+    position:relative;
+    box-shadow:0 3px 0 rgba(0,0,0,0.15);
+  }
+  .mon-card.active{background:var(--card-bg-active);border-color:var(--yellow-dark);box-shadow:0 3px 0 var(--yellow-dark);}
+  .mon-card .thumb{
+    width:52px;height:52px;border-radius:50%;
+    background:radial-gradient(circle at 40% 35%, #fff, var(--chrome) 70%);
+    border:2px solid var(--trim-black);
+    display:flex;align-items:center;justify-content:center;overflow:hidden;
+  }
+  .mon-card img{width:48px;height:48px;object-fit:contain;image-rendering:pixelated;}
+  .mon-card .mon-name{font-size:0.8rem;font-weight:700;text-transform:capitalize;}
+  .mon-card .mon-count{
+    font-family:'JetBrains Mono', monospace;
+    font-size:0.74rem;
+    font-weight:700;
+    color:var(--danger);
+    background:var(--count-chip-bg);
+    padding:1px 8px;
+    border-radius:999px;
+    display:inline-block;
+  }
+  .mon-card .mon-gen{font-size:0.65rem;color:var(--muted);font-weight:700;letter-spacing:0.02em;}
+  .mon-card .remove{
+    position:absolute;top:2px;right:4px;
+    background:none;border:none;color:var(--muted);
+    font-size:0.8rem;padding:2px 5px;border-radius:5px;box-shadow:none;
+  }
+  .mon-card .remove:hover{color:var(--danger);background:rgba(0,0,0,0.08);}
+  .mon-card .found-badge{
+    position:absolute;top:3px;left:5px;
+    width:18px;height:18px;border-radius:50%;
+    background:#5CB85C;color:#fff;
+    display:flex;align-items:center;justify-content:center;
+    font-size:0.7rem;font-weight:800;
+    border:2px solid var(--trim-black);
+    box-shadow:none;
+  }
+  .found-banner{
+    color:var(--found-text);font-weight:800;font-size:0.85rem;margin-top:-6px;
+  }
+  .empty-roster{color:var(--muted);font-size:0.85rem;grid-column:1/-1;padding:14px 0;font-weight:600;}
+
+  /* "Add to Pokedex" form: name, sprite upload/URL, generation, submit */
+  .add-form{
+    border-top:2px dashed var(--trim-black);
+    padding-top:16px;
+    display:grid;
+    gap:10px;
+  }
+  .add-form .row{display:flex;gap:8px;flex-wrap:wrap;align-items:center;}
+  .add-form input[type="text"]{
+    flex:1;
+    min-width:140px;
+    background:var(--card-bg);
+    border:2px solid var(--trim-black);
+    border-radius:9px;
+    padding:9px 11px;
+    color:var(--text-dark);
+    font-family:'Baloo 2', sans-serif;
+    font-size:0.9rem;
+    font-weight:600;
+  }
+  .add-form input::placeholder{color:var(--muted);font-weight:500;}
+  .form-status{font-size:0.78rem;color:var(--muted);min-height:16px;font-weight:600;}
+  .form-status.err{color:var(--danger);}
+  .upload-label{
+    display:flex;align-items:center;gap:10px;
+    background:var(--card-bg);
+    border:2px dashed var(--trim-black);
+    border-radius:9px;
+    padding:8px 12px;
+    cursor:pointer;
+    font-size:0.85rem;
+    font-weight:700;
+    color:var(--text-dark);
+  }
+  .upload-label:hover{border-color:var(--shell-dark);}
+  #uploadPreviewWrap{width:28px;height:28px;flex:0 0 28px;display:flex;align-items:center;justify-content:center;}
+  #uploadPreview{max-width:28px;max-height:28px;image-rendering:pixelated;}
+
+  /* Export/Import backup controls, shown above the add-form */
+  .backup-row{
+    display:flex;align-items:center;gap:10px;flex-wrap:wrap;
+    margin-bottom:16px;
+    padding-bottom:16px;
+    border-bottom:2px dashed var(--trim-black);
+  }
+  .import-label{
+    font-family:'Baloo 2', sans-serif;
+    font-weight:700;
+    border-radius:10px;
+    border:2px solid var(--trim-black);
+    background:var(--cream);
+    color:var(--text-dark);
+    padding:9px 16px;
+    cursor:pointer;
+    font-size:0.92rem;
+    box-shadow: 0 3px 0 var(--trim-black);
+    display:inline-block;
+  }
+  .import-label:hover{filter:brightness(1.04);}
+  .import-label:active{transform:translateY(2px);box-shadow:0 1px 0 var(--trim-black);}
+  #backupStatus{min-height:0;}
+
+  footer{text-align:center;color:var(--muted);font-size:0.75rem;margin-top:24px;font-weight:600;}
+
+  /* Confetti burst played when a shiny is marked found (see launchConfetti in JS) */
+  .confetti-layer{
+    position:fixed;inset:0;pointer-events:none;overflow:hidden;z-index:9999;
+  }
+  .confetti-piece{
+    position:absolute;top:-20px;
+    width:9px;height:14px;
+    opacity:0.95;
+    animation-name:confetti-fall;
+    animation-timing-function:cubic-bezier(0.35,0,0.65,1);
+    animation-fill-mode:forwards;
+  }
+  @keyframes confetti-fall{
+    0%{transform:translateY(0) translateX(0) rotate(0deg);opacity:1;}
+    100%{transform:translateY(105vh) translateX(var(--drift,0px)) rotate(var(--spin,360deg));opacity:0.9;}
+  }
+
+  /* Custom confirm/choice popup — replaces the browser's native confirm(),
+     which some sandboxed environments silently block (see openModal in JS) */
+  .modal-overlay{
+    position:fixed;inset:0;z-index:10000;
+    background:rgba(27,27,27,0.55);
+    display:flex;align-items:center;justify-content:center;
+    padding:20px;
+  }
+  .modal-box{
+    background:var(--cream);
+    border:3px solid var(--trim-black);
+    border-radius:16px;
+    padding:20px;
+    max-width:340px;
+    width:100%;
+    box-shadow:0 10px 0 rgba(0,0,0,0.15);
+  }
+  .modal-box p{margin:0 0 16px;font-weight:700;font-size:0.95rem;}
+  .modal-actions{display:flex;gap:8px;flex-wrap:wrap;justify-content:flex-end;}
+
+  /* "Closed device" splash screen and its flip-open animation into .app-body */
+  .stage{perspective:1200px;}
+
+  .closed-pokedex{
+    cursor:pointer;
+    background: linear-gradient(180deg, var(--shell), var(--shell-dark));
+    border:3px solid var(--trim-black);
+    border-radius:26px;
+    padding:54px 20px;
+    text-align:center;
+    box-shadow: 0 14px 0 -4px var(--shell-darker), 0 18px 24px rgba(0,0,0,0.25);
+    transition: transform 0.45s cubic-bezier(.5,0,.75,0), opacity 0.4s ease-in;
+    transform-origin: top center;
+    transform-style: preserve-3d;
+  }
+  .closed-pokedex:hover{ filter:brightness(1.03); }
+  .closed-pokedex:hover .closed-lens{ transform:scale(1.05); }
+  .closed-lens{
+    width:56px;height:56px;border-radius:50%;
+    background: radial-gradient(circle at 35% 30%, #cdeeff, var(--blue) 55%, #1f3a86 100%);
+    border:4px solid var(--trim-black);
+    margin:0 auto 18px;
+    transition:transform 0.2s ease;
+    animation: pulse-glow 2.2s ease-in-out infinite;
+  }
+  .closed-label{
+    color:var(--cream); font-weight:800; letter-spacing:0.08em; font-size:0.95rem;
+  }
+  .closed-sub{
+    color:var(--cream); opacity:0.75; font-weight:600; font-size:0.78rem; margin-top:6px;
+  }
+  @keyframes pulse-glow{
+    0%,100%{box-shadow:0 0 0 rgba(59,92,196,0.4);}
+    50%{box-shadow:0 0 14px rgba(59,92,196,0.85);}
+  }
+  .closed-pokedex.opening{
+    transform: rotateX(-100deg) translateY(-6px);
+    opacity:0;
+  }
+
+  .app-body{
+    transform-origin: top center;
+    transform: translateY(16px) scale(0.97);
+    opacity:0;
+    transition: transform 0.5s cubic-bezier(.22,1,.36,1), opacity 0.45s ease-out;
+  }
+  .app-body.opened{
+    transform:none;
+    opacity:1;
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="ball-mark"></div>
+    <div class="header-text">
+      <h1>Shiny Hunt Counter</h1>
+      <p>Track encounters per species until the shiny shows up.</p>
+    </div>
+    <label class="theme-toggle" title="Toggle dark mode">
+      <input type="checkbox" id="darkModeToggle">
+      <span class="toggle-track"><span class="toggle-thumb"></span></span>
+      <span class="toggle-label">Dark</span>
+    </label>
+  </header>
+
+  <div class="stage">
+    <div class="closed-pokedex" id="closedPokedex">
+      <div class="closed-lens"></div>
+      <div class="closed-label">TAP TO OPEN</div>
+      <div class="closed-sub">Shiny Hunt Counter</div>
+    </div>
+
+    <div class="app-body" id="appBody" style="display:none;">
+
+  <div class="device">
+    <div class="device-top">
+      <div class="lens"></div>
+      <div class="dot y"></div>
+      <div class="dot g"></div>
+      <div class="dot b"></div>
+    </div>
+    <div class="grid">
+      <div class="bezel">
+        <div class="panel-inner display-panel">
+          <div class="screen" id="screen">
+            <div class="empty">Add a pokemon below, then pick it to start tracking.</div>
+          </div>
+          <div class="active-name" id="activeName">No pokemon selected</div>
+          <div class="active-sub" id="activeOdds"></div>
+          <div class="found-banner" id="foundBanner" style="display:none;">✓ Shiny found!</div>
+        </div>
+      </div>
+
+      <div class="bezel">
+        <div class="panel-inner counter-panel">
+          <div class="lcd">
+            <div class="count-value" id="countValue">0</div>
+            <div class="count-label">ENCOUNTERS</div>
+          </div>
+          <div class="btn-row">
+            <button class="ghost" id="decBtn">−1</button>
+            <button class="primary" id="incBtn">+1</button>
+            <button class="danger-outline" id="resetBtn">Reset</button>
+          </div>
+          <button class="success" id="foundBtn" style="width:100%;">✓ Mark shiny found!</button>
+          <div class="keybind-row">
+            <span>Increment key</span>
+            <span>
+              <span class="keycap" id="keycapLabel">Space</span>
+              <button class="ghost" id="rebindBtn" style="margin-left:8px;padding:5px 10px;font-size:0.75rem;box-shadow:0 2px 0 var(--trim-black);">Rebind</button>
+            </span>
+          </div>
+          <div class="odds-row">
+            <span>Method (affects odds estimate only):</span>
+            <select id="oddsMethod" class="themed-select">
+              <option value="4096">Full odds — 1/4096</option>
+              <option value="2731">Shiny Charm — 1/2731</option>
+              <option value="1365">Charm + chain/SOS — 1/1365</option>
+              <option value="512">Masuda method — 1/512</option>
+              <option value="8192">Older games (Gen 1–5) — 1/8192</option>
+            </select>
+            <span class="odds-result" id="oddsResult"></span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="roster-card">
+    <div class="roster-header">
+      <h2>Pokedex</h2>
+      <div class="roster-controls">
+        <span style="color:var(--muted);font-size:0.8rem;font-weight:700;" id="rosterCount"></span>
+        <select id="sortSelect" class="themed-select" title="Sort Pokedex">
+          <option value="added">Order added</option>
+          <option value="name-asc">Name (A–Z)</option>
+          <option value="name-desc">Name (Z–A)</option>
+          <option value="count-desc">Count (high–low)</option>
+          <option value="count-asc">Count (low–high)</option>
+          <option value="found-first">Found first</option>
+          <option value="not-found-first">Not found first</option>
+          <option value="gen-asc">Generation (I–IX)</option>
+        </select>
+      </div>
+    </div>
+    <div class="roster" id="roster"></div>
+
+    <div class="backup-row">
+      <button class="ghost" id="exportBtn" type="button">⬇ Export backup</button>
+      <label class="ghost import-label" for="importInput">⬆ Import backup</label>
+      <input type="file" id="importInput" accept="application/json" style="display:none;">
+      <span class="form-status" id="backupStatus"></span>
+    </div>
+
+    <div class="add-form">
+      <div class="row">
+        <input type="text" id="nameInput" placeholder="Pokemon name (e.g. Zubat)">
+      </div>
+      <div class="row">
+        <label class="upload-label" for="fileInput">
+          <span id="uploadPreviewWrap"><img id="uploadPreview" style="display:none;"></span>
+          <span id="uploadText">Choose sprite/GIF file…</span>
+        </label>
+        <input type="file" id="fileInput" accept="image/gif,image/png,image/jpeg,image/webp" style="display:none;">
+      </div>
+      <div class="row">
+        <input type="text" id="gifInput" placeholder="…or paste an image URL instead">
+        <button class="ghost" id="fetchBtn" type="button">Try fetch shiny from PokeAPI</button>
+      </div>
+      <div class="row">
+        <select id="genInput" class="themed-select" title="Generation">
+          <option value="">Generation (unknown)</option>
+          <option value="1">Gen I — Red / Blue / Yellow</option>
+          <option value="2">Gen II — Gold / Silver / Crystal</option>
+          <option value="3">Gen III — Ruby / Sapphire / Emerald / FR / LG</option>
+          <option value="4">Gen IV — Diamond / Pearl / Platinum / HG / SS</option>
+          <option value="5">Gen V — Black / White / B2 / W2</option>
+          <option value="6">Gen VI — X / Y / OR / AS</option>
+          <option value="7">Gen VII — Sun / Moon / US / UM / LGPE</option>
+          <option value="8">Gen VIII — Sword / Shield / BDSP / Legends Arceus</option>
+          <option value="9">Gen IX — Scarlet / Violet</option>
+        </select>
+      </div>
+      <div class="row">
+        <button class="primary" id="addBtn" type="button">Add to Pokedex</button>
+      </div>
+      <div class="form-status" id="formStatus">Uploading a file is the most reliable option — pasted URLs may not display in every browser.</div>
+    </div>
+  </div>
+
+  <footer>Runs entirely in your browser — your Pokedex and counts are saved on this computer.</footer>
+
+    </div>
+  </div>
+</div>
+
+<script>
+(function(){
+  // ---- Storage keys & in-memory state ----
+  // pokedex/settings are kept in memory and mirrored to localStorage
+  // (see loadState/savePokedex/saveSettings) so the app works fully offline.
+  const POKEDEX_KEY = 'shinyTally.pokedex';
+  const SETTINGS_KEY = 'shinyTally.settings';
+
+  let pokedex = [];
+  let settings = { activeId: null, keybind: { code: 'Space', label: 'Space' } };
+  let awaitingKey = false;
+
+  const screenEl = document.getElementById('screen');
+  const activeNameEl = document.getElementById('activeName');
+  const activeOddsEl = document.getElementById('activeOdds');
+  const countValueEl = document.getElementById('countValue');
+  const keycapLabelEl = document.getElementById('keycapLabel');
+  const rebindBtn = document.getElementById('rebindBtn');
+  const incBtn = document.getElementById('incBtn');
+  const decBtn = document.getElementById('decBtn');
+  const resetBtn = document.getElementById('resetBtn');
+  const foundBtn = document.getElementById('foundBtn');
+  const foundBanner = document.getElementById('foundBanner');
+  const rosterEl = document.getElementById('roster');
+  const rosterCountEl = document.getElementById('rosterCount');
+  const sortSelect = document.getElementById('sortSelect');
+  const nameInput = document.getElementById('nameInput');
+  const gifInput = document.getElementById('gifInput');
+  const genInput = document.getElementById('genInput');
+  const fetchBtn = document.getElementById('fetchBtn');
+  const addBtn = document.getElementById('addBtn');
+  const formStatus = document.getElementById('formStatus');
+  const oddsMethod = document.getElementById('oddsMethod');
+  const oddsResult = document.getElementById('oddsResult');
+  const fileInput = document.getElementById('fileInput');
+  const uploadPreview = document.getElementById('uploadPreview');
+  const uploadText = document.getElementById('uploadText');
+  const exportBtn = document.getElementById('exportBtn');
+  const importInput = document.getElementById('importInput');
+  const backupStatus = document.getElementById('backupStatus');
+  const darkModeToggle = document.getElementById('darkModeToggle');
+  let uploadedDataUrl = ''; // set by the file-upload handler; cleared after each Add
+
+  // ---- Small status-message helpers for the two forms ----
+
+  function setBackupStatus(msg, isErr){
+    backupStatus.textContent = msg || '';
+    backupStatus.className = 'form-status' + (isErr ? ' err' : '');
+  }
+
+  function setStatus(msg, isErr){
+    formStatus.textContent = msg || '';
+    formStatus.className = 'form-status' + (isErr ? ' err' : '');
+  }
+
+  // Builds a themed popup with one or more buttons (each with its own
+  // callback). Used instead of confirm()/alert(), which some sandboxed
+  // browser environments block silently rather than showing a dialog.
+  function openModal(message, buttons){
+    const overlay = document.createElement('div');
+    overlay.className = 'modal-overlay';
+    const box = document.createElement('div');
+    box.className = 'modal-box';
+    const p = document.createElement('p');
+    p.textContent = message;
+    box.appendChild(p);
+    const actions = document.createElement('div');
+    actions.className = 'modal-actions';
+    buttons.forEach(b => {
+      const btn = document.createElement('button');
+      btn.textContent = b.label;
+      btn.className = b.className || 'ghost';
+      btn.addEventListener('click', () => {
+        overlay.remove();
+        if(b.onClick) b.onClick();
+      });
+      actions.appendChild(btn);
+    });
+    box.appendChild(actions);
+    overlay.appendChild(box);
+    overlay.addEventListener('click', (e) => {
+      if(e.target === overlay) overlay.remove();
+    });
+    document.body.appendChild(overlay);
+  }
+
+  // ---- Generation helpers ----
+  // GEN_ROMAN: number -> roman numeral, for the little "Gen III" roster tag.
+  // GEN_NAME_TO_NUMBER: maps PokeAPI's species.generation.name (e.g.
+  // "generation-iii") to a plain number so it can be sorted/stored simply.
+  const GEN_ROMAN = { 1:'I', 2:'II', 3:'III', 4:'IV', 5:'V', 6:'VI', 7:'VII', 8:'VIII', 9:'IX' };
+  const GEN_NAME_TO_NUMBER = {
+    'generation-i':1, 'generation-ii':2, 'generation-iii':3, 'generation-iv':4,
+    'generation-v':5, 'generation-vi':6, 'generation-vii':7, 'generation-viii':8, 'generation-ix':9
+  };
+  function toRoman(gen){ return GEN_ROMAN[gen] || gen; }
+
+  // Turns a KeyboardEvent.code (e.g. "KeyA", "Digit5", "Space") into a
+  // short human-readable label for the keybind display.
+  function keyLabel(code){
+    if(!code) return '—';
+    if(code === 'Space') return 'Space';
+    if(code.startsWith('Key')) return code.slice(3);
+    if(code.startsWith('Digit')) return code.slice(5);
+    if(code.startsWith('Arrow')) return code;
+    return code;
+  }
+
+  // ---- Dark mode ----
+  // Applies (or removes) the dark-mode class based on settings.darkMode,
+  // and keeps the toggle switch's visual state in sync with it.
+  function applyTheme(){
+    document.body.classList.toggle('dark-mode', !!settings.darkMode);
+    darkModeToggle.checked = !!settings.darkMode;
+  }
+
+  darkModeToggle.addEventListener('change', () => {
+    settings.darkMode = darkModeToggle.checked;
+    applyTheme();
+    saveSettings();
+  });
+
+  // ---- Load / save ----
+  // Reads both localStorage entries (if present), falls back to sane
+  // defaults, applies the saved theme, and does the first render.
+  function loadState(){
+    try{
+      const raw = localStorage.getItem(POKEDEX_KEY);
+      pokedex = raw ? JSON.parse(raw) : [];
+    }catch(e){ pokedex = []; }
+
+    try{
+      const raw = localStorage.getItem(SETTINGS_KEY);
+      if(raw) settings = JSON.parse(raw);
+    }catch(e){ /* keep defaults */ }
+
+    if(!settings.keybind) settings.keybind = { code: 'Space', label: 'Space' };
+    applyTheme();
+    render();
+  }
+
+  // Persists the whole pokedex array as one JSON blob. Called after any
+  // change to an entry (count, found status, add/remove, sort doesn't call this).
+  function savePokedex(){
+    try{ localStorage.setItem(POKEDEX_KEY, JSON.stringify(pokedex)); }
+    catch(e){ setStatus('Could not save — your browser storage may be full.', true); }
+  }
+  function saveSettings(){
+    try{ localStorage.setItem(SETTINGS_KEY, JSON.stringify(settings)); }
+    catch(e){ /* non-fatal */ }
+  }
+
+  // The pokemon currently shown in the display/counter panel (or null).
+  function getActive(){
+    return pokedex.find(p => p.id === settings.activeId) || null;
+  }
+
+  // ---- Sorting ----
+  // Returns a *copy* of pokedex in the order chosen by the sort dropdown —
+  // the underlying array/order used for storage is never mutated by this.
+  function getSortedPokedex(){
+    const arr = pokedex.slice();
+    switch(settings.sortBy){
+      case 'name-asc': arr.sort((a,b) => a.name.localeCompare(b.name)); break;
+      case 'name-desc': arr.sort((a,b) => b.name.localeCompare(a.name)); break;
+      case 'count-desc': arr.sort((a,b) => (b.count||0) - (a.count||0)); break;
+      case 'count-asc': arr.sort((a,b) => (a.count||0) - (b.count||0)); break;
+      case 'found-first': arr.sort((a,b) => (b.found?1:0) - (a.found?1:0)); break;
+      case 'not-found-first': arr.sort((a,b) => (a.found?1:0) - (b.found?1:0)); break;
+      case 'gen-asc': arr.sort((a,b) => {
+        const ga = a.generation || 99;
+        const gb = b.generation || 99;
+        if(ga !== gb) return ga - gb;
+        return a.name.localeCompare(b.name);
+      }); break;
+      default: break; // 'added' — keep original order
+    }
+    return arr;
+  }
+
+  sortSelect.addEventListener('change', () => {
+    settings.sortBy = sortSelect.value;
+    saveSettings();
+    render();
+  });
+
+  // ---- Main render ----
+  // Rebuilds the roster grid and refreshes the display/counter panel from
+  // current state. Called after almost every state change in the app.
+  function render(){
+    rosterEl.innerHTML = '';
+    sortSelect.value = settings.sortBy || 'added';
+    rosterCountEl.textContent = pokedex.length + (pokedex.length === 1 ? ' entry' : ' entries');
+    if(pokedex.length === 0){
+      const empty = document.createElement('div');
+      empty.className = 'empty-roster';
+      empty.textContent = 'No pokemon added yet.';
+      rosterEl.appendChild(empty);
+    }
+    getSortedPokedex().forEach(p => {
+      const card = document.createElement('div');
+      card.className = 'mon-card' + (p.id === settings.activeId ? ' active' : '');
+      card.innerHTML = `
+        <button class="remove" data-id="${p.id}" title="Remove">✕</button>
+        ${p.found ? '<span class="found-badge">✓</span>' : ''}
+        <div class="thumb"><img src="${p.gifUrl}" alt="${p.name}" onerror="this.style.opacity=0.1"></div>
+        <div class="mon-name">${p.name}</div>
+        <div class="mon-count">${p.count || 0}</div>
+        ${p.generation ? `<div class="mon-gen">Gen ${toRoman(p.generation)}</div>` : ''}
+      `;
+      card.addEventListener('click', (e) => {
+        if(e.target.closest('.remove')) return;
+        settings.activeId = p.id;
+        saveSettings();
+        render();
+      });
+      rosterEl.appendChild(card);
+    });
+    rosterEl.querySelectorAll('.remove').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const id = btn.getAttribute('data-id');
+        pokedex = pokedex.filter(p => p.id !== id);
+        if(settings.activeId === id) settings.activeId = null;
+        savePokedex();
+        saveSettings();
+        render();
+      });
+    });
+
+    const active = getActive();
+    if(active){
+      screenEl.innerHTML = `<img src="${active.gifUrl}" alt="${active.name}" onerror="this.replaceWith(Object.assign(document.createElement('div'),{className:'empty',textContent:'Image failed to load.'}))">`;
+      activeNameEl.textContent = active.name;
+      countValueEl.textContent = active.count || 0;
+      incBtn.disabled = false; decBtn.disabled = false; resetBtn.disabled = false;
+      foundBtn.disabled = false;
+      foundBtn.textContent = active.found ? 'Unmark shiny found' : '✓ Mark shiny found!';
+      foundBanner.style.display = active.found ? 'block' : 'none';
+    } else {
+      screenEl.innerHTML = `<div class="empty">Add a pokemon below, then pick it to start tracking.</div>`;
+      activeNameEl.textContent = 'No pokemon selected';
+      countValueEl.textContent = 0;
+      incBtn.disabled = true; decBtn.disabled = true; resetBtn.disabled = true;
+      foundBtn.disabled = true;
+      foundBtn.textContent = '✓ Mark shiny found!';
+      foundBanner.style.display = 'none';
+    }
+
+    keycapLabelEl.textContent = settings.keybind.label;
+    updateOdds();
+  }
+
+  // Recomputes the "cumulative chance so far" line under the sprite,
+  // based on the active pokemon's count and the chosen odds method.
+  function updateOdds(){
+    const active = getActive();
+    const p = 1 / Number(oddsMethod.value);
+    if(!active){
+      activeOddsEl.textContent = '';
+      oddsResult.textContent = '';
+      return;
+    }
+    const n = active.count || 0;
+    const cumulative = 1 - Math.pow(1 - p, n);
+    const pct = (cumulative * 100).toFixed(1);
+    activeOddsEl.textContent = `${n} encounter${n===1?'':'s'} logged`;
+    oddsResult.textContent = `~${pct}% cumulative`;
+  }
+
+  // ---- Counter actions ----
+  // Adjusts the active pokemon's count (never below 0), saves, re-renders,
+  // and plays the matching chime.
+  function changeCount(delta){
+    const active = getActive();
+    if(!active) return;
+    active.count = Math.max(0, (active.count || 0) + delta);
+    savePokedex();
+    render();
+    if(delta > 0) playIncrementChime();
+    else if(delta < 0) playDecrementChime();
+  }
+
+  incBtn.addEventListener('click', () => changeCount(1));
+  decBtn.addEventListener('click', () => changeCount(-1));
+  // Reset asks for confirmation via the custom modal (see openModal above).
+  resetBtn.addEventListener('click', () => {
+    const active = getActive();
+    if(!active) return;
+    openModal(`Reset the counter for ${active.name} to 0?`, [
+      { label: 'Cancel', className: 'ghost' },
+      { label: 'Reset', className: 'danger-outline', onClick: () => {
+        active.count = 0;
+        savePokedex();
+        render();
+      }}
+    ]);
+  });
+
+  // ---- Shiny found: confetti + jingle ----
+  // Spawns a burst of falling confetti pieces (plain DOM/CSS animation,
+  // removed after they finish) — no external libraries needed.
+  function launchConfetti(){
+    const colors = ['#E0342B', '#F4C430', '#3B5CC4', '#F7F3E6', '#1B1B1B', '#5CB85C'];
+    const layer = document.createElement('div');
+    layer.className = 'confetti-layer';
+    document.body.appendChild(layer);
+    const count = 90;
+    for(let i = 0; i < count; i++){
+      const piece = document.createElement('div');
+      piece.className = 'confetti-piece';
+      const left = Math.random() * 100;
+      const duration = 1.8 + Math.random() * 1.4;
+      const delay = Math.random() * 0.3;
+      const drift = (Math.random() - 0.5) * 180;
+      const spin = 360 * (2 + Math.random() * 3) * (Math.random() < 0.5 ? -1 : 1);
+      const color = colors[Math.floor(Math.random() * colors.length)];
+      piece.style.left = left + 'vw';
+      piece.style.background = color;
+      piece.style.animationDuration = duration + 's';
+      piece.style.animationDelay = delay + 's';
+      piece.style.setProperty('--drift', drift + 'px');
+      piece.style.setProperty('--spin', spin + 'deg');
+      if(Math.random() < 0.5){
+        piece.style.borderRadius = '50%';
+      }
+      layer.appendChild(piece);
+    }
+    setTimeout(() => layer.remove(), 3400);
+  }
+
+  // Toggles the active pokemon's "found" status. Marking it found triggers
+  // confetti + a jingle; unmarking (in case of a misclick) asks first.
+  foundBtn.addEventListener('click', () => {
+    const active = getActive();
+    if(!active) return;
+    if(active.found){
+      openModal(`Unmark ${active.name} as found?`, [
+        { label: 'Cancel', className: 'ghost' },
+        { label: 'Unmark', className: 'danger-outline', onClick: () => {
+          active.found = false;
+          savePokedex();
+          render();
+        }}
+      ]);
+      return;
+    }
+    active.found = true;
+    savePokedex();
+    render();
+    launchConfetti();
+    playFoundJingle();
+  });
+
+  // ---- Increment keybind ----
+  // Clicking Rebind arms `awaitingKey`; the very next keydown (handled
+  // below) becomes the new bound key instead of triggering an increment.
+  rebindBtn.addEventListener('click', () => {
+    awaitingKey = true;
+    rebindBtn.textContent = 'Press a key…';
+  });
+
+  oddsMethod.addEventListener('change', updateOdds);
+
+  // Global key listener: ignores keystrokes while typing in a form field,
+  // captures the next key press when rebinding, otherwise checks it
+  // against the saved keybind and increments if it matches.
+  document.addEventListener('keydown', (e) => {
+    const tag = document.activeElement.tagName;
+    if(tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT') return;
+
+    if(awaitingKey){
+      e.preventDefault();
+      settings.keybind = { code: e.code, label: keyLabel(e.code) };
+      awaitingKey = false;
+      rebindBtn.textContent = 'Rebind';
+      saveSettings();
+      render();
+      return;
+    }
+    if(e.code === settings.keybind.code){
+      e.preventDefault();
+      changeCount(1);
+    }
+  });
+
+  // ---- Sprite upload ----
+  // Reads the chosen image file as a base64 data URL entirely client-side,
+  // so the sprite is embedded in storage with no external hosting/network
+  // dependency (unlike pasted URLs, which can fail to load — see fetchBtn below).
+  fileInput.addEventListener('change', () => {
+    const file = fileInput.files[0];
+    if(!file) return;
+    if(file.size > 4.5 * 1024 * 1024){
+      setStatus('That file is too large — pick something under ~4MB.', true);
+      fileInput.value = '';
+      return;
+    }
+    const reader = new FileReader();
+    reader.onload = () => {
+      uploadedDataUrl = reader.result;
+      uploadPreview.src = uploadedDataUrl;
+      uploadPreview.style.display = 'block';
+      uploadText.textContent = file.name;
+      setStatus('File ready — add it to the Pokedex.', false);
+    };
+    reader.onerror = () => setStatus('Could not read that file.', true);
+    reader.readAsDataURL(file);
+  });
+
+  // ---- PokeAPI lookup (optional convenience) ----
+  // Best-effort fetch of a shiny sprite URL (falling back to the regular
+  // sprite) plus the species' generation, for the name currently typed in.
+  fetchBtn.addEventListener('click', async () => {
+    const name = nameInput.value.trim().toLowerCase();
+    if(!name){ setStatus('Enter a pokemon name first.', true); return; }
+    setStatus('Fetching shiny sprite…', false);
+    try{
+      const res = await fetch(`https://pokeapi.co/api/v2/pokemon/${name}`);
+      if(!res.ok) throw new Error('not found');
+      const data = await res.json();
+      const genV = data.sprites &&
+        data.sprites.versions &&
+        data.sprites.versions['generation-v'] &&
+        data.sprites.versions['generation-v']['black-white'];
+      const animatedShiny = genV && genV.animated && genV.animated.front_shiny;
+      const staticShiny = data.sprites && data.sprites.front_shiny;
+      const animatedDefault = genV && genV.animated && genV.animated.front_default;
+      const staticDefault = data.sprites && data.sprites.front_default;
+      const sprite = animatedShiny || staticShiny || animatedDefault || staticDefault;
+      if(!sprite) throw new Error('no sprite');
+      gifInput.value = sprite;
+
+      // best-effort: also fill in the generation
+      try{
+        if(data.species && data.species.url){
+          const speciesRes = await fetch(data.species.url);
+          if(speciesRes.ok){
+            const speciesData = await speciesRes.json();
+            const genNumber = speciesData.generation && GEN_NAME_TO_NUMBER[speciesData.generation.name];
+            if(genNumber) genInput.value = String(genNumber);
+          }
+        }
+      }catch(genErr){ /* non-fatal — generation stays whatever the user had selected */ }
+
+      if(animatedShiny || staticShiny){
+        setStatus('Shiny sprite found — note this may still fail to display; uploading a file is more reliable.', false);
+      } else {
+        setStatus('No shiny sprite available for that pokemon — filled in the regular sprite instead.', true);
+      }
+    }catch(err){
+      setStatus('Could not find a sprite for that name. Try uploading a file instead.', true);
+    }
+  });
+
+  // ---- Add to Pokedex ----
+  // Prefers an uploaded file over a pasted URL, requires a name + sprite,
+  // then appends a new entry and resets the form.
+  addBtn.addEventListener('click', () => {
+    const name = nameInput.value.trim();
+    const gifUrl = uploadedDataUrl || gifInput.value.trim();
+    const generation = genInput.value ? Number(genInput.value) : null;
+    if(!name){ setStatus('Enter a pokemon name.', true); return; }
+    if(!gifUrl){ setStatus('Upload a file or paste an image URL.', true); return; }
+    const id = name.toLowerCase() + '-' + Date.now();
+    pokedex.push({ id, name, gifUrl, count: 0, generation });
+    if(!settings.activeId) settings.activeId = id;
+    savePokedex();
+    saveSettings();
+    nameInput.value = '';
+    gifInput.value = '';
+    fileInput.value = '';
+    genInput.value = '';
+    uploadedDataUrl = '';
+    uploadPreview.style.display = 'none';
+    uploadText.textContent = 'Choose sprite/GIF file…';
+    setStatus('Added ' + name + '.', false);
+    render();
+  });
+
+  // ---- Backup: export ----
+  // Downloads the whole app state (pokedex + settings) as a timestamped
+  // JSON file the user can keep or move to another browser/computer.
+  exportBtn.addEventListener('click', () => {
+    try{
+      const payload = { exportedAt: new Date().toISOString(), pokedex, settings };
+      const blob = new Blob([JSON.stringify(payload, null, 2)], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      const stamp = new Date().toISOString().slice(0,10);
+      a.href = url;
+      a.download = `shiny-tally-backup-${stamp}.json`;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      URL.revokeObjectURL(url);
+      setBackupStatus('Backup downloaded.', false);
+    }catch(e){
+      setBackupStatus('Could not create backup file.', true);
+    }
+  });
+
+  // ---- Backup: import ----
+  // Reads a previously exported JSON file and lets the user choose to
+  // replace the current pokedex outright or merge it in (renaming any
+  // colliding IDs so nothing gets silently overwritten).
+  importInput.addEventListener('change', () => {
+    const file = importInput.files[0];
+    if(!file) return;
+    const reader = new FileReader();
+    reader.onload = () => {
+      try{
+        const data = JSON.parse(reader.result);
+        if(!data || !Array.isArray(data.pokedex)) throw new Error('bad shape');
+
+        // Finishes the import for a given strategy — pulled out so both
+        // modal buttons below can call it instead of duplicating logic.
+        const applyImport = (mode) => {
+          if(mode === 'replace'){
+            pokedex = data.pokedex;
+            if(data.settings) settings = Object.assign(settings, data.settings);
+          } else {
+            const existingIds = new Set(pokedex.map(p => p.id));
+            data.pokedex.forEach(p => {
+              if(!existingIds.has(p.id)){
+                pokedex.push(p);
+              } else {
+                pokedex.push(Object.assign({}, p, { id: p.id + '-' + Date.now() }));
+              }
+            });
+          }
+          savePokedex();
+          saveSettings();
+          applyTheme();
+          render();
+          setBackupStatus('Backup imported.', false);
+        };
+
+        openModal(`Import ${data.pokedex.length} pokemon from this backup?`, [
+          { label: 'Cancel', className: 'ghost' },
+          { label: 'Merge', className: 'ghost', onClick: () => applyImport('merge') },
+          { label: 'Replace', className: 'danger-outline', onClick: () => applyImport('replace') }
+        ]);
+      }catch(e){
+        setBackupStatus('That file doesn\'t look like a valid backup.', true);
+      }
+      importInput.value = '';
+    };
+    reader.onerror = () => setBackupStatus('Could not read that file.', true);
+    reader.readAsText(file);
+  });
+
+  // ---- Opening animation ----
+  const closedPokedex = document.getElementById('closedPokedex');
+  const appBody = document.getElementById('appBody');
+
+  // ---- Audio ----
+  // All sound effects are synthesized with the Web Audio API (no audio
+  // files to load/host). One shared AudioContext is reused across sounds;
+  // getAudioCtx() rebuilds/resumes it defensively since some browsers
+  // suspend audio contexts after modals or tab switches.
+  let audioCtx = null;
+  function getAudioCtx(){
+    try{
+      if(!audioCtx || audioCtx.state === 'closed'){
+        audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+      }
+      if(audioCtx.state !== 'running'){
+        audioCtx.resume().catch(() => {});
+      }
+      return audioCtx;
+    }catch(e){ return null; }
+  }
+  // Some browsers suspend the audio context after modals/tab-switches
+  // without reliably reporting it — nudge it awake on the next interaction.
+  document.addEventListener('visibilitychange', () => {
+    if(document.visibilityState === 'visible' && audioCtx) audioCtx.resume().catch(() => {});
+  });
+  window.addEventListener('focus', () => {
+    if(audioCtx) audioCtx.resume().catch(() => {});
+  });
+
+  // Plays one or more simultaneous sine-wave notes with a quick
+  // attack/decay envelope — the shared building block for every chime.
+  function playTone(notes){
+    const ctx = getAudioCtx();
+    if(!ctx) return;
+    const now = ctx.currentTime;
+    notes.forEach(({freq, gain: g}) => {
+      const osc = ctx.createOscillator();
+      const gainNode = ctx.createGain();
+      osc.type = 'sine';
+      osc.frequency.setValueAtTime(freq, now);
+      gainNode.gain.setValueAtTime(0.0001, now);
+      gainNode.gain.exponentialRampToValueAtTime(g, now + 0.012);
+      gainNode.gain.exponentialRampToValueAtTime(0.0001, now + 0.2);
+      osc.connect(gainNode).connect(ctx.destination);
+      osc.start(now);
+      osc.stop(now + 0.22);
+    });
+  }
+
+  function playIncrementChime(){
+    playTone([ {freq: 880, gain: 0.10}, {freq: 1318.51, gain: 0.045} ]);
+  }
+
+  function playDecrementChime(){
+    playTone([ {freq: 659.25, gain: 0.10}, {freq: 987.77, gain: 0.045} ]);
+  }
+
+  function playFoundJingle(){
+    const ctx = getAudioCtx();
+    if(!ctx) return;
+    const now = ctx.currentTime;
+    const sequence = [
+      { freq: 523.25, time: 0,    dur: 0.16, gain: 0.15 }, // C5
+      { freq: 659.25, time: 0.1,  dur: 0.16, gain: 0.15 }, // E5
+      { freq: 783.99, time: 0.2,  dur: 0.16, gain: 0.15 }, // G5
+      { freq: 1046.5, time: 0.3,  dur: 0.4,  gain: 0.19 }, // C6 — held
+      { freq: 1318.51, time: 0.32, dur: 0.36, gain: 0.08 } // E6 — harmony shimmer
+    ];
+    sequence.forEach(n => {
+      const t = now + n.time;
+      const osc = ctx.createOscillator();
+      const gainNode = ctx.createGain();
+      osc.type = 'sine';
+      osc.frequency.setValueAtTime(n.freq, t);
+      gainNode.gain.setValueAtTime(0.0001, t);
+      gainNode.gain.exponentialRampToValueAtTime(n.gain, t + 0.02);
+      gainNode.gain.exponentialRampToValueAtTime(0.0001, t + n.dur);
+      osc.connect(gainNode).connect(ctx.destination);
+      osc.start(t);
+      osc.stop(t + n.dur + 0.05);
+    });
+  }
+
+  // Plays when the closed-Pokedex splash is tapped: a low "unlatch" thunk
+  // followed by a rising four-note power-on chime.
+  function playOpenChime(){
+    const ctx = getAudioCtx();
+    if(!ctx) return;
+    const now = ctx.currentTime;
+
+    // low mechanical "unlatch" thunk
+    const thunkOsc = ctx.createOscillator();
+    const thunkGain = ctx.createGain();
+    thunkOsc.type = 'square';
+    thunkOsc.frequency.setValueAtTime(130, now);
+    thunkGain.gain.setValueAtTime(0.16, now);
+    thunkGain.gain.exponentialRampToValueAtTime(0.001, now + 0.12);
+    thunkOsc.connect(thunkGain).connect(ctx.destination);
+    thunkOsc.start(now);
+    thunkOsc.stop(now + 0.13);
+
+    // rising power-on chime
+    const notes = [523.25, 659.25, 783.99, 1046.5];
+    notes.forEach((freq, i) => {
+      const t = now + 0.15 + i * 0.09;
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      osc.type = 'sine';
+      osc.frequency.setValueAtTime(freq, t);
+      gain.gain.setValueAtTime(0.0001, t);
+      gain.gain.exponentialRampToValueAtTime(0.2, t + 0.02);
+      gain.gain.exponentialRampToValueAtTime(0.0001, t + 0.35);
+      osc.connect(gain).connect(ctx.destination);
+      osc.start(t);
+      osc.stop(t + 0.4);
+    });
+  }
+
+  // Tapping the closed splash plays the open chime, animates the lid
+  // flipping away (see .closed-pokedex.opening in CSS), then swaps it out
+  // for the real app body once the animation has had time to finish.
+  closedPokedex.addEventListener('click', () => {
+    playOpenChime();
+    closedPokedex.classList.add('opening');
+    setTimeout(() => {
+      closedPokedex.style.display = 'none';
+      appBody.style.display = 'block';
+      void appBody.offsetWidth;
+      appBody.classList.add('opened');
+    }, 420);
+  });
+
+  // ---- Go ----
+  loadState();
+})();
+</script>
+</body>
+</html>
