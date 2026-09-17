@@ -1,6 +1,6 @@
 This is a Pokémon shiny hunt counter.
 
-It's an all-in-one web app solution to keeping track of all your hunts across every game and Pokémon Generation.
+It's an all-in-one web app solution to keeping track of all your hunts across every game and Pokémon Generation, with 0 downloads required.
 
 *It features:
   - A Pokédex that stores a sorted collection of all and any pokémon you choose to hunt.
