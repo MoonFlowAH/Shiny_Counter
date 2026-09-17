@@ -445,6 +445,18 @@
     box-shadow:0 10px 0 rgba(0,0,0,0.15);
   }
   .modal-box p{margin:0 0 16px;font-weight:700;font-size:0.95rem;}
+  .modal-input{
+    width:100%;
+    background:var(--card-bg);
+    border:2px solid var(--trim-black);
+    border-radius:9px;
+    padding:9px 11px;
+    color:var(--text-dark);
+    font-family:'JetBrains Mono', monospace;
+    font-size:1rem;
+    font-weight:700;
+    margin-bottom:14px;
+  }
   .modal-actions{display:flex;gap:8px;flex-wrap:wrap;justify-content:flex-end;}
 
   /* "Closed device" splash screen and its flip-open animation into .app-body */
@@ -546,13 +558,14 @@
         <div class="panel-inner counter-panel">
           <div class="lcd">
             <div class="count-value" id="countValue">0</div>
-            <div class="count-label">ENCOUNTERS</div>
+            <div class="count-label">ENCOUNTERS / RESETS</div>
           </div>
           <div class="btn-row">
             <button class="ghost" id="decBtn">−1</button>
             <button class="primary" id="incBtn">+1</button>
             <button class="danger-outline" id="resetBtn">Reset</button>
           </div>
+          <button class="ghost" id="setCountBtn" style="width:100%;">✎ Set starting count…</button>
           <button class="success" id="foundBtn" style="width:100%;">✓ Mark shiny found!</button>
           <div class="keybind-row">
             <span>Increment key</span>
@@ -666,6 +679,7 @@
   const incBtn = document.getElementById('incBtn');
   const decBtn = document.getElementById('decBtn');
   const resetBtn = document.getElementById('resetBtn');
+  const setCountBtn = document.getElementById('setCountBtn');
   const foundBtn = document.getElementById('foundBtn');
   const foundBanner = document.getElementById('foundBanner');
   const rosterEl = document.getElementById('roster');
@@ -729,6 +743,54 @@
       if(e.target === overlay) overlay.remove();
     });
     document.body.appendChild(overlay);
+  }
+
+  // Like openModal, but with a number input for the user to type a value
+  // into (replaces window.prompt(), which is blocked the same way
+  // confirm()/alert() can be — see openModal above). onConfirm receives
+  // the entered value as a non-negative integer.
+  function openPromptModal(message, defaultValue, onConfirm){
+    const overlay = document.createElement('div');
+    overlay.className = 'modal-overlay';
+    const box = document.createElement('div');
+    box.className = 'modal-box';
+    const p = document.createElement('p');
+    p.textContent = message;
+    box.appendChild(p);
+    const input = document.createElement('input');
+    input.type = 'number';
+    input.min = '0';
+    input.className = 'modal-input';
+    input.value = defaultValue;
+    box.appendChild(input);
+    const actions = document.createElement('div');
+    actions.className = 'modal-actions';
+    const cancelBtn = document.createElement('button');
+    cancelBtn.textContent = 'Cancel';
+    cancelBtn.className = 'ghost';
+    cancelBtn.addEventListener('click', () => overlay.remove());
+    const setBtn = document.createElement('button');
+    setBtn.textContent = 'Set';
+    setBtn.className = 'primary';
+    const confirmValue = () => {
+      const val = Math.max(0, parseInt(input.value, 10) || 0);
+      overlay.remove();
+      onConfirm(val);
+    };
+    setBtn.addEventListener('click', confirmValue);
+    input.addEventListener('keydown', (e) => {
+      if(e.key === 'Enter') confirmValue();
+    });
+    actions.appendChild(cancelBtn);
+    actions.appendChild(setBtn);
+    box.appendChild(actions);
+    overlay.appendChild(box);
+    overlay.addEventListener('click', (e) => {
+      if(e.target === overlay) overlay.remove();
+    });
+    document.body.appendChild(overlay);
+    input.focus();
+    input.select();
   }
 
   // ---- Generation helpers ----
@@ -881,6 +943,7 @@
       activeNameEl.textContent = active.name;
       countValueEl.textContent = active.count || 0;
       incBtn.disabled = false; decBtn.disabled = false; resetBtn.disabled = false;
+      setCountBtn.disabled = false;
       foundBtn.disabled = false;
       foundBtn.textContent = active.found ? 'Unmark shiny found' : '✓ Mark shiny found!';
       foundBanner.style.display = active.found ? 'block' : 'none';
@@ -889,6 +952,7 @@
       activeNameEl.textContent = 'No pokemon selected';
       countValueEl.textContent = 0;
       incBtn.disabled = true; decBtn.disabled = true; resetBtn.disabled = true;
+      setCountBtn.disabled = true;
       foundBtn.disabled = true;
       foundBtn.textContent = '✓ Mark shiny found!';
       foundBanner.style.display = 'none';
@@ -942,6 +1006,19 @@
         render();
       }}
     ]);
+  });
+
+  // Lets the user jump the counter straight to a specific number — handy
+  // for starting mid-hunt (e.g. entering a count you already had on
+  // paper) rather than only being able to count up from zero.
+  setCountBtn.addEventListener('click', () => {
+    const active = getActive();
+    if(!active) return;
+    openPromptModal(`Set the counter for ${active.name} to:`, active.count || 0, (val) => {
+      active.count = val;
+      savePokedex();
+      render();
+    });
   });
 
   // ---- Shiny found: confetti + jingle ----
