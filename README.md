@@ -3,7 +3,7 @@ This is a Pokémon shiny hunt counter.
 It's an all-in-one web app solution to keeping track of all your hunts across every game and Pokémon Generation, with 0 downloads required.
 
 *It features:
-  - A Pokédex that stores a sorted collection of all and any pokémon you choose to hunt.
+  - A Pokédex that stores a sorted visual and animated collection of all pokémon you choose to hunt.
   - A visual odds estimate that displays your cumulative chance at obtaining a shiny, which updates in real time as you add to the counter.
   - The ability to manually set the counter to a starting number of your choosing.
   - The ability to upload your own custom sprite/3D model in a .gif format, for any Pokémon you add to your collection/hunt.
