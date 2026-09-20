@@ -4,13 +4,14 @@ It's an all-in-one web app solution to keeping track of all your hunts across ev
 
 *It features:
   - A Pokédex that stores a sorted visual and animated collection of all pokémon you choose to hunt.
+  - A Living Dex to fill out and overview all shiny pokémon across every generation.
   - A visual odds estimate that displays your cumulative chance at obtaining a shiny, which updates in real time as you add to the counter.
   - The ability to manually set the counter to a starting number of your choosing.
-  - The ability to upload your own custom sprite/3D model in a .gif format, for any Pokémon you add to your collection/hunt.
-  - Automatically can fetch sprites from an online database through one button click, should the user not choose their own to upload.
+  - The ability to upload your own custom sprite/3D model in a .gif format, for any Pokémon you add to your Living Dex collection/hunt.
+  - Can automatically fetch sprites from an online database through one button click using just the pokémon's name, should the user not choose their own to upload.
   - Data Export/Import to a file for backups.
        - Data is stored locally, incase you forget to export to a file.
-  - Short, but Sweet Sound Effects when using the counter. 
+  - Short, but Sweet Sound Effects. 
   - A light and dark mode.
 
 *HOW TO USE:
