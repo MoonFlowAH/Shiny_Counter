@@ -268,14 +268,26 @@
   /* Shared look for every <select> in the app (sort, odds method, generation) */
   .odds-row{font-size:0.78rem;color:var(--muted);display:flex;flex-direction:column;gap:6px;font-weight:600;}
   .themed-select{
-    background:var(--cream);
+    background-color:var(--cream);
     color:var(--text-dark);
     border:2px solid var(--trim-black);
     border-radius:8px;
-    padding:6px 8px;
+    padding:6px 26px 6px 8px;
     font-family:'Baloo 2', sans-serif;
     font-size:0.82rem;
     font-weight:700;
+    /* Reset native control chrome (some browsers draw a faint shadow/line
+       under <select> that isn't reachable with normal CSS) and draw our
+       own dropdown arrow instead, so it looks identical everywhere. */
+    appearance:none;
+    -webkit-appearance:none;
+    -moz-appearance:none;
+    outline:none;
+    box-shadow:none;
+    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' fill='none' stroke='%231B1B1B' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+    background-repeat:no-repeat;
+    background-position:right 8px center;
+    background-size:10px 7px;
   }
   .odds-result{
     color:var(--danger);
@@ -285,6 +297,14 @@
     border-radius:999px;
     display:inline-block;
     width:fit-content;
+  }
+  /* When no pokemon is selected (or the % hasn't been computed yet),
+     this chip has no text but still had a faint tinted sliver from its
+     own padding/background — hide it entirely until it has content. */
+  .odds-result:empty{
+    display:none;
+    padding:0;
+    background:transparent;
   }
 
   /* Roster */
@@ -297,6 +317,50 @@
   }
   .roster-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;flex-wrap:wrap;gap:8px;}
   .roster-header h2{font-size:1.05rem;margin:0;font-weight:800;}
+
+  /* My Hunts / Living Dex tab switch */
+  .pokedex-tabs{display:flex;gap:8px;margin-bottom:14px;}
+  .tab-btn{
+    font-family:'Baloo 2', sans-serif;font-weight:700;
+    border-radius:10px;border:2px solid var(--trim-black);
+    background:var(--card-bg);color:var(--text-dark);
+    padding:8px 14px;cursor:pointer;font-size:0.85rem;
+    box-shadow:0 3px 0 var(--trim-black);
+  }
+  .tab-btn.active{background:var(--yellow);}
+  .tab-btn:active{transform:translateY(2px);box-shadow:0 1px 0 var(--trim-black);}
+
+  /* Living Dex: full completion-sheet page, grouped by generation */
+  .dex-note{font-size:0.75rem;color:var(--muted);font-weight:600;margin:0 0 14px;}
+  .dex-total{
+    font-weight:800;font-size:1.05rem;margin-bottom:14px;text-align:center;
+  }
+  .dex-gen-section{margin-bottom:18px;}
+  .dex-gen-header{
+    display:flex;justify-content:space-between;align-items:baseline;flex-wrap:wrap;
+    gap:6px;margin-bottom:8px;font-weight:800;font-size:0.85rem;
+  }
+  .dex-gen-games{color:var(--muted);font-weight:600;font-size:0.72rem;}
+  .dex-gen-count{
+    font-family:'JetBrains Mono', monospace;color:var(--danger);
+    background:var(--count-chip-bg);padding:1px 8px;border-radius:999px;
+    font-weight:700;font-size:0.75rem;
+  }
+  .dex-tile-grid{
+    display:grid;grid-template-columns:repeat(auto-fill, minmax(34px, 1fr));gap:4px;
+  }
+  .dex-tile{
+    aspect-ratio:1/1;border-radius:6px;border:1px solid var(--trim-black);
+    background:var(--card-bg);display:flex;align-items:center;justify-content:center;
+    overflow:hidden;position:relative;
+  }
+  .dex-tile img{
+    width:100%;height:100%;object-fit:contain;image-rendering:pixelated;
+    filter:grayscale(1) brightness(0.55) contrast(0.9);
+  }
+  .dex-tile.found{border-color:var(--yellow-dark);box-shadow:0 0 0 1px var(--yellow-dark) inset;}
+  .dex-tile.found img{filter:none;}
+  .dex-num-fallback{font-family:'JetBrains Mono', monospace;font-size:0.55rem;color:var(--muted);}
   .roster-controls{display:flex;align-items:center;gap:10px;flex-wrap:wrap;}
   .roster{
     display:grid;
@@ -335,12 +399,15 @@
     display:inline-block;
   }
   .mon-card .mon-gen{font-size:0.65rem;color:var(--muted);font-weight:700;letter-spacing:0.02em;}
-  .mon-card .remove{
-    position:absolute;top:2px;right:4px;
+  .mon-card .card-actions{
+    position:absolute;top:2px;right:4px;display:flex;flex-direction:column;gap:0px;
+  }
+  .mon-card .card-actions button{
     background:none;border:none;color:var(--muted);
     font-size:0.8rem;padding:2px 5px;border-radius:5px;box-shadow:none;
   }
-  .mon-card .remove:hover{color:var(--danger);background:rgba(0,0,0,0.08);}
+  .mon-card .card-actions .edit-btn:hover{color:var(--blue);background:rgba(0,0,0,0.08);}
+  .mon-card .card-actions .remove:hover{color:var(--danger);background:rgba(0,0,0,0.08);}
   .mon-card .found-badge{
     position:absolute;top:3px;left:5px;
     width:18px;height:18px;border-radius:50%;
@@ -363,7 +430,7 @@
     gap:10px;
   }
   .add-form .row{display:flex;gap:8px;flex-wrap:wrap;align-items:center;}
-  .add-form input[type="text"]{
+  .add-form input[type="text"], .add-form input[type="number"]{
     flex:1;
     min-width:140px;
     background:var(--card-bg);
@@ -526,7 +593,7 @@
     <div class="ball-mark"></div>
     <div class="header-text">
       <h1>Shiny Hunt Counter</h1>
-      <p>Track encounters per species until the shiny shows up.</p>
+      <p>Track the amount of encounters or resets it takes to find a shiny.</p>
     </div>
     <div class="theme-toggle-wrap">
       <label class="theme-toggle" title="Toggle dark mode">
@@ -608,7 +675,7 @@
   <div class="roster-card">
     <div class="roster-header">
       <h2>Pokedex</h2>
-      <div class="roster-controls">
+      <div class="roster-controls" id="rosterControls">
         <span style="color:var(--muted);font-size:0.8rem;font-weight:700;" id="rosterCount"></span>
         <select id="sortSelect" class="themed-select" title="Sort Pokedex">
           <option value="added">Order added</option>
@@ -622,7 +689,23 @@
         </select>
       </div>
     </div>
-    <div class="roster" id="roster"></div>
+
+    <!-- Two-page switch: your own hunted pokemon vs. the full living-dex
+         completion sheet across every generation -->
+    <div class="pokedex-tabs">
+      <button class="tab-btn active" id="tabRosterBtn" type="button">My Hunts</button>
+      <button class="tab-btn" id="tabDexBtn" type="button">Living Dex</button>
+    </div>
+
+    <div id="rosterView">
+      <div class="roster" id="roster"></div>
+    </div>
+
+    <div id="dexView" style="display:none;">
+      <p class="dex-note">Sprites here load from an online sprite database — an internet connection is needed the first time this loads.</p>
+      <div id="dexSummary"></div>
+      <div id="dexGridWrap"></div>
+    </div>
 
     <div class="backup-row">
       <button class="ghost" id="exportBtn" type="button">⬇ Export backup</button>
@@ -659,6 +742,7 @@
           <option value="8">Gen VIII — Sword / Shield / BDSP / Legends Arceus</option>
           <option value="9">Gen IX — Scarlet / Violet</option>
         </select>
+        <input type="number" id="dexNumInput" placeholder="Dex # (optional)" min="1" max="1025" style="max-width:130px;">
       </div>
       <div class="row">
         <button class="primary" id="addBtn" type="button">Add to Pokedex</button>
@@ -703,6 +787,7 @@
   const nameInput = document.getElementById('nameInput');
   const gifInput = document.getElementById('gifInput');
   const genInput = document.getElementById('genInput');
+  const dexNumInput = document.getElementById('dexNumInput');
   const fetchBtn = document.getElementById('fetchBtn');
   const addBtn = document.getElementById('addBtn');
   const formStatus = document.getElementById('formStatus');
@@ -808,6 +893,71 @@
     input.select();
   }
 
+  // A small two-field popup for backfilling an entry's Generation and
+  // National Dex number after the fact — needed for pokemon added before
+  // the Living Dex feature existed, or added without those fields set.
+  function openEditPokemonModal(entry){
+    const overlay = document.createElement('div');
+    overlay.className = 'modal-overlay';
+    const box = document.createElement('div');
+    box.className = 'modal-box';
+    const p = document.createElement('p');
+    p.textContent = `Edit ${entry.name}`;
+    box.appendChild(p);
+
+    const genSelect = document.createElement('select');
+    genSelect.className = 'themed-select modal-input';
+    genSelect.style.paddingRight = '26px';
+    genSelect.innerHTML = `
+      <option value="">Generation (unknown)</option>
+      <option value="1">Gen I — Red / Blue / Yellow</option>
+      <option value="2">Gen II — Gold / Silver / Crystal</option>
+      <option value="3">Gen III — Ruby / Sapphire / Emerald / FR / LG</option>
+      <option value="4">Gen IV — Diamond / Pearl / Platinum / HG / SS</option>
+      <option value="5">Gen V — Black / White / B2 / W2</option>
+      <option value="6">Gen VI — X / Y / OR / AS</option>
+      <option value="7">Gen VII — Sun / Moon / US / UM / LGPE</option>
+      <option value="8">Gen VIII — Sword / Shield / BDSP / Legends Arceus</option>
+      <option value="9">Gen IX — Scarlet / Violet</option>
+    `;
+    genSelect.value = entry.generation ? String(entry.generation) : '';
+    box.appendChild(genSelect);
+
+    const dexInput = document.createElement('input');
+    dexInput.type = 'number';
+    dexInput.min = '1';
+    dexInput.max = String(DEX_TOTAL);
+    dexInput.placeholder = 'Dex # (1–' + DEX_TOTAL + ')';
+    dexInput.className = 'modal-input';
+    dexInput.value = entry.dexNumber || '';
+    box.appendChild(dexInput);
+
+    const actions = document.createElement('div');
+    actions.className = 'modal-actions';
+    const cancelBtn = document.createElement('button');
+    cancelBtn.textContent = 'Cancel';
+    cancelBtn.className = 'ghost';
+    cancelBtn.addEventListener('click', () => overlay.remove());
+    const saveBtn = document.createElement('button');
+    saveBtn.textContent = 'Save';
+    saveBtn.className = 'primary';
+    saveBtn.addEventListener('click', () => {
+      entry.generation = genSelect.value ? Number(genSelect.value) : null;
+      entry.dexNumber = dexInput.value ? Number(dexInput.value) : null;
+      overlay.remove();
+      savePokedex();
+      render();
+    });
+    actions.appendChild(cancelBtn);
+    actions.appendChild(saveBtn);
+    box.appendChild(actions);
+    overlay.appendChild(box);
+    overlay.addEventListener('click', (e) => {
+      if(e.target === overlay) overlay.remove();
+    });
+    document.body.appendChild(overlay);
+  }
+
   // ---- Generation helpers ----
   // GEN_ROMAN: number -> roman numeral, for the little "Gen III" roster tag.
   // GEN_NAME_TO_NUMBER: maps PokeAPI's species.generation.name (e.g.
@@ -818,6 +968,22 @@
     'generation-v':5, 'generation-vi':6, 'generation-vii':7, 'generation-viii':8, 'generation-ix':9
   };
   function toRoman(gen){ return GEN_ROMAN[gen] || gen; }
+
+  // National Dex number ranges per generation (used to build the Living
+  // Dex completion sheet — these should match the game lists in the
+  // Generation <select> above). Total across all of them is 1025.
+  const GEN_INFO = [
+    { gen: 1, range: [1, 151],     games: 'Red / Blue / Yellow' },
+    { gen: 2, range: [152, 251],   games: 'Gold / Silver / Crystal' },
+    { gen: 3, range: [252, 386],   games: 'Ruby / Sapphire / Emerald / FR / LG' },
+    { gen: 4, range: [387, 493],   games: 'Diamond / Pearl / Platinum / HG / SS' },
+    { gen: 5, range: [494, 649],   games: 'Black / White / B2 / W2' },
+    { gen: 6, range: [650, 721],   games: 'X / Y / OR / AS' },
+    { gen: 7, range: [722, 809],   games: 'Sun / Moon / US / UM / LGPE' },
+    { gen: 8, range: [810, 905],   games: 'Sword / Shield / BDSP / Legends Arceus' },
+    { gen: 9, range: [906, 1025],  games: 'Scarlet / Violet' }
+  ];
+  const DEX_TOTAL = GEN_INFO[GEN_INFO.length - 1].range[1];
 
   // Turns a KeyboardEvent.code (e.g. "KeyA", "Digit5", "Space") into a
   // short human-readable label for the keybind display.
@@ -925,12 +1091,16 @@
       const card = document.createElement('div');
       card.className = 'mon-card' + (p.id === settings.activeId ? ' active' : '');
       card.innerHTML = `
-        <button class="remove" data-id="${p.id}" title="Remove">✕</button>
+        <div class="card-actions">
+          <button class="remove" data-id="${p.id}" title="Remove">✕</button>
+          <button class="edit-btn" data-id="${p.id}" title="Edit generation / Dex #">✎</button>
+        </div>
         ${p.found ? '<span class="found-badge">✓</span>' : ''}
         <div class="thumb"><img src="${p.gifUrl}" alt="${p.name}" onerror="this.style.opacity=0.1"></div>
         <div class="mon-name">${p.name}</div>
         <div class="mon-count">${p.count || 0}</div>
         ${p.generation ? `<div class="mon-gen">Gen ${toRoman(p.generation)}</div>` : ''}
+        ${p.dexNumber ? `<div class="mon-gen">#${String(p.dexNumber).padStart(3,'0')}</div>` : ''}
       `;
       card.addEventListener('click', (e) => {
         if(e.target.closest('.remove')) return;
@@ -949,6 +1119,14 @@
         savePokedex();
         saveSettings();
         render();
+      });
+    });
+    rosterEl.querySelectorAll('.edit-btn').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const id = btn.getAttribute('data-id');
+        const entry = pokedex.find(p => p.id === id);
+        if(entry) openEditPokemonModal(entry);
       });
     });
 
@@ -975,6 +1153,11 @@
 
     keycapLabelEl.textContent = settings.keybind.label;
     updateOdds();
+
+    // Keep the Living Dex page in sync too, but only rebuild its (large)
+    // tile grid when it's actually the visible tab — no point paying that
+    // cost on every increment while the user is on the My Hunts tab.
+    if(activeTab === 'dex') renderLivingDex();
   }
 
   // Recomputes the "cumulative chance so far" line under the sprite,
@@ -990,8 +1173,84 @@
     const n = active.count || 0;
     const cumulative = 1 - Math.pow(1 - p, n);
     const pct = (cumulative * 100).toFixed(1);
-    activeOddsEl.textContent = `${n} encounter${n===1?'':'s'} logged`;
+    activeOddsEl.textContent = `${n} Encounters/Resets Logged`;
     oddsResult.textContent = `~${pct}% cumulative`;
+  }
+
+  // ---- Living Dex (second page): full 1–1025 completion sheet ----
+  const tabRosterBtn = document.getElementById('tabRosterBtn');
+  const tabDexBtn = document.getElementById('tabDexBtn');
+  const rosterView = document.getElementById('rosterView');
+  const dexView = document.getElementById('dexView');
+  const rosterControls = document.getElementById('rosterControls');
+  const dexSummaryEl = document.getElementById('dexSummary');
+  const dexGridWrapEl = document.getElementById('dexGridWrap');
+  let activeTab = 'roster';
+
+  function switchTab(tab){
+    activeTab = tab;
+    const isRoster = tab === 'roster';
+    rosterView.style.display = isRoster ? 'block' : 'none';
+    dexView.style.display = isRoster ? 'none' : 'block';
+    rosterControls.style.display = isRoster ? 'flex' : 'none';
+    tabRosterBtn.classList.toggle('active', isRoster);
+    tabDexBtn.classList.toggle('active', !isRoster);
+    if(!isRoster) renderLivingDex();
+  }
+  tabRosterBtn.addEventListener('click', () => switchTab('roster'));
+  tabDexBtn.addEventListener('click', () => switchTab('dex'));
+
+  // Builds the full 1–1025 tile grid, grouped by generation. A tile is
+  // "found" only if some pokedex entry has that exact dexNumber AND is
+  // marked found — everything else renders greyed out. Sprite images come
+  // from a public sprite database keyed by National Dex number, since we
+  // obviously can't ask the user to upload 1000+ files themselves.
+  function renderLivingDex(){
+    const foundByNumber = {};
+    pokedex.forEach(p => {
+      if(p.found && p.dexNumber) foundByNumber[p.dexNumber] = p;
+    });
+    const totalFound = Object.keys(foundByNumber).length;
+    const spriteBase = 'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon';
+
+    dexSummaryEl.innerHTML = `<div class="dex-total">🏆 ${totalFound} / ${DEX_TOTAL} Shinies Found</div>`;
+
+    let html = '';
+    GEN_INFO.forEach(g => {
+      const [start, end] = g.range;
+      let genFound = 0;
+      for(let n = start; n <= end; n++){ if(foundByNumber[n]) genFound++; }
+      const genTotal = end - start + 1;
+
+      html += `
+        <div class="dex-gen-section">
+          <div class="dex-gen-header">
+            <span>Gen ${toRoman(g.gen)} <span class="dex-gen-games">— ${g.games}</span></span>
+            <span class="dex-gen-count">${genFound} / ${genTotal}</span>
+          </div>
+          <div class="dex-tile-grid">
+      `;
+      for(let n = start; n <= end; n++){
+        const entry = foundByNumber[n];
+        const isFound = !!entry;
+        // Prefer the user's own uploaded/linked sprite for a found tile —
+        // it's what they actually caught — falling back to the public
+        // shiny-sprite database only if they didn't provide one.
+        const src = isFound
+          ? (entry.gifUrl || `${spriteBase}/shiny/${n}.png`)
+          : `${spriteBase}/${n}.png`;
+        const label = isFound ? entry.name : ('#' + n);
+        html += `
+          <div class="dex-tile${isFound ? ' found' : ''}" title="${label}">
+            <img src="${src}" loading="lazy" alt="${label}"
+                 onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+            <span class="dex-num-fallback" style="display:none;">#${n}</span>
+          </div>
+        `;
+      }
+      html += `</div></div>`;
+    });
+    dexGridWrapEl.innerHTML = html;
   }
 
   // ---- Counter actions ----
@@ -1170,6 +1429,10 @@
       if(!sprite) throw new Error('no sprite');
       gifInput.value = sprite;
 
+      // best-effort: also fill in the National Dex number (used by the
+      // Living Dex page) — data.id matches it for the default/base form.
+      if(data.id) dexNumInput.value = data.id;
+
       // best-effort: also fill in the generation
       try{
         if(data.species && data.species.url){
@@ -1199,10 +1462,11 @@
     const name = nameInput.value.trim();
     const gifUrl = uploadedDataUrl || gifInput.value.trim();
     const generation = genInput.value ? Number(genInput.value) : null;
+    const dexNumber = dexNumInput.value ? Number(dexNumInput.value) : null;
     if(!name){ setStatus('Enter a pokemon name.', true); return; }
     if(!gifUrl){ setStatus('Upload a file or paste an image URL.', true); return; }
     const id = name.toLowerCase() + '-' + Date.now();
-    pokedex.push({ id, name, gifUrl, count: 0, generation });
+    pokedex.push({ id, name, gifUrl, count: 0, generation, dexNumber });
     if(!settings.activeId) settings.activeId = id;
     savePokedex();
     saveSettings();
@@ -1210,6 +1474,7 @@
     gifInput.value = '';
     fileInput.value = '';
     genInput.value = '';
+    dexNumInput.value = '';
     uploadedDataUrl = '';
     uploadPreview.style.display = 'none';
     uploadText.textContent = 'Choose sprite/GIF file…';
