@@ -22,6 +22,7 @@
   /* ============================================================
      THEME VARIABLES
      All colors are defined here as CSS custom properties so the
+     
      dark-mode override block below can simply redefine them.
      ============================================================ */
   :root{
@@ -253,6 +254,10 @@
     font-size:0.85rem;
     font-weight:600;
   }
+  .gamepad-status{
+    font-size:0.72rem;font-weight:700;color:var(--found-text);
+    text-align:center;min-height:14px;cursor:help;
+  }
   .keycap{
     font-family:'JetBrains Mono', monospace;
     background:var(--chrome);
@@ -319,7 +324,7 @@
   .roster-header h2{font-size:1.05rem;margin:0;font-weight:800;}
 
   /* My Hunts / Living Dex tab switch */
-  .pokedex-tabs{display:flex;gap:8px;margin-bottom:14px;}
+  .pokedex-tabs{display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap;}
   .tab-btn{
     font-family:'Baloo 2', sans-serif;font-weight:700;
     border-radius:10px;border:2px solid var(--trim-black);
@@ -331,7 +336,11 @@
   .tab-btn:active{transform:translateY(2px);box-shadow:0 1px 0 var(--trim-black);}
 
   /* Living Dex: full completion-sheet page, grouped by generation */
-  .dex-note{font-size:0.75rem;color:var(--muted);font-weight:600;margin:0 0 14px;}
+  .dex-note{font-size:0.75rem;color:var(--muted);font-weight:600;margin:0 0 10px;}
+  .dex-hide-toggle{margin:0 0 14px;justify-content:flex-start;}
+  .phase-dex-toggle{margin:4px 0 2px;justify-content:flex-start;align-items:flex-start;gap:10px;}
+  .phase-dex-toggle .toggle-label{font-size:0.8rem;color:var(--text-dark);white-space:normal;line-height:1.3;}
+  .phase-dex-toggle .toggle-track{flex:0 0 auto;margin-top:2px;}
   .dex-total{
     font-weight:800;font-size:1.05rem;margin-bottom:14px;text-align:center;
   }
@@ -352,8 +361,10 @@
   .dex-tile{
     aspect-ratio:1/1;border-radius:6px;border:1px solid var(--trim-black);
     background:var(--card-bg);display:flex;align-items:center;justify-content:center;
-    overflow:hidden;position:relative;
+    overflow:hidden;position:relative;cursor:pointer;transition:transform 0.1s ease;
   }
+  .dex-tile:hover{transform:scale(1.08);box-shadow:0 0 0 1px var(--blue) inset;}
+  .dex-tile:active{transform:scale(0.96);}
   .dex-tile img{
     width:100%;height:100%;object-fit:contain;image-rendering:pixelated;
     filter:grayscale(1) brightness(0.55) contrast(0.9);
@@ -399,6 +410,10 @@
     display:inline-block;
   }
   .mon-card .mon-gen{font-size:0.65rem;color:var(--muted);font-weight:700;letter-spacing:0.02em;}
+  .mon-card .mon-gen.phase-tag{
+    color:var(--yellow-dark);background:rgba(244,196,48,0.16);
+    padding:1px 8px;border-radius:999px;display:inline-block;
+  }
   .mon-card .card-actions{
     position:absolute;top:2px;right:4px;display:flex;flex-direction:column;gap:0px;
   }
@@ -406,8 +421,20 @@
     background:none;border:none;color:var(--muted);
     font-size:0.8rem;padding:2px 5px;border-radius:5px;box-shadow:none;
   }
-  .mon-card .card-actions .edit-btn:hover{color:var(--blue);background:rgba(0,0,0,0.08);}
   .mon-card .card-actions .remove:hover{color:var(--danger);background:rgba(0,0,0,0.08);}
+  .mon-card .card-actions .info-btn:hover{color:var(--blue);background:rgba(0,0,0,0.08);}
+  .mon-card .edit-btn{
+    position:absolute;bottom:2px;right:4px;
+    background:none;border:none;color:var(--muted);
+    font-size:0.8rem;padding:2px 5px;border-radius:5px;box-shadow:none;
+  }
+  .mon-card .edit-btn:hover{color:var(--blue);background:rgba(0,0,0,0.08);}
+  .mon-card .phase-btn{
+    position:absolute;bottom:2px;left:4px;
+    background:none;border:none;color:var(--muted);
+    font-size:0.8rem;padding:2px 5px;border-radius:5px;box-shadow:none;
+  }
+  .mon-card .phase-btn:hover{color:var(--yellow-dark);background:rgba(0,0,0,0.08);}
   .mon-card .found-badge{
     position:absolute;top:3px;left:5px;
     width:18px;height:18px;border-radius:50%;
@@ -420,6 +447,19 @@
   .found-banner{
     color:var(--found-text);font-weight:800;font-size:0.85rem;margin-top:-6px;
   }
+  .hunt-time{color:var(--muted);font-size:0.72rem;font-weight:700;margin-top:-6px;}
+  .modal-field-label{font-size:0.78rem;font-weight:700;color:var(--muted);margin:-6px 0 6px;}
+  .phase-edit-list{display:flex;flex-direction:column;gap:4px;margin-bottom:4px;}
+  .phase-edit-row{
+    display:flex;justify-content:space-between;align-items:center;gap:8px;
+    background:var(--count-chip-bg);border-radius:8px;padding:4px 8px;
+    font-size:0.78rem;font-weight:600;
+  }
+  .phase-edit-row .phase-remove-btn{
+    background:none;border:none;color:var(--muted);font-size:0.75rem;
+    padding:2px 6px;border-radius:5px;box-shadow:none;flex:0 0 auto;
+  }
+  .phase-edit-row .phase-remove-btn:hover{color:var(--danger);background:rgba(0,0,0,0.08);}
   .empty-roster{color:var(--muted);font-size:0.85rem;grid-column:1/-1;padding:14px 0;font-weight:600;}
 
   /* "Add to Pokedex" form: name, sprite upload/URL, generation, submit */
@@ -457,8 +497,8 @@
     color:var(--text-dark);
   }
   .upload-label:hover{border-color:var(--shell-dark);}
-  #uploadPreviewWrap{width:28px;height:28px;flex:0 0 28px;display:flex;align-items:center;justify-content:center;}
-  #uploadPreview{max-width:28px;max-height:28px;image-rendering:pixelated;}
+  #uploadPreviewWrap, .upload-preview-wrap{width:28px;height:28px;flex:0 0 28px;display:flex;align-items:center;justify-content:center;}
+  #uploadPreview, .upload-preview{max-width:28px;max-height:28px;image-rendering:pixelated;}
 
   /* Export/Import backup controls, shown above the add-form */
   .backup-row{
@@ -534,6 +574,86 @@
     margin-bottom:14px;
   }
   .modal-actions{display:flex;gap:8px;flex-wrap:wrap;justify-content:flex-end;}
+
+  /* Pokemon info popup — taller/scrollable since game data can run long */
+  .modal-box.info-modal-box{max-width:440px;max-height:82vh;overflow-y:auto;}
+  /* "Poketch"-style frame around the info-modal sprite: a wristband
+     peeking out top/bottom behind a rounded black device case, with a
+     green pixel-grid LCD screen and a little side button, evoking a
+     Pokétch-like wearable rather than a plain image box. */
+  .info-sprite-wrap{
+    position:relative;
+    display:flex;justify-content:center;
+    margin:2px 0 18px;
+    padding:14px 0 10px;
+  }
+  .info-sprite-band{
+    position:absolute;left:50%;transform:translateX(-50%);
+    width:64px;height:26px;background:var(--shell);
+    border:2px solid var(--trim-black);border-radius:10px;
+  }
+  .info-sprite-band.band-top{top:-10px;}
+  .info-sprite-band.band-bottom{bottom:-10px;}
+  .info-sprite-case{
+    position:relative;z-index:1;
+    display:flex;align-items:center;gap:6px;
+    background:var(--trim-black);
+    border-radius:16px;
+    padding:8px 10px;
+    box-shadow:0 3px 0 rgba(0,0,0,0.35);
+  }
+  .info-sprite-screen{
+    background:
+      repeating-linear-gradient(0deg, rgba(0,0,0,0.05) 0 2px, transparent 2px 4px),
+      var(--lcd-bg);
+    border:2px solid var(--lcd-dark);
+    border-radius:8px;
+    padding:6px;
+    display:flex;align-items:center;justify-content:center;
+  }
+  .info-sprite{width:88px;height:88px;object-fit:contain;image-rendering:pixelated;}
+  .info-sprite-btn{
+    width:16px;height:16px;border-radius:50%;
+    background:radial-gradient(circle at 35% 30%, #ff8a80, var(--danger) 70%);
+    border:2px solid var(--trim-black);
+    box-shadow:0 1px 0 rgba(0,0,0,0.4);
+    flex:0 0 auto;
+  }
+  .info-section{margin-bottom:12px;}
+  .info-heading{font-weight:800;font-size:0.95rem;margin-bottom:8px;}
+  /* Each game-data subsection heading sits on its own semi-opaque black
+     "bubble" with a distinct accent color, so the four sections are easy
+     to tell apart at a glance. Fixed hex colors (not theme variables) —
+     the bubble is dark regardless of light/dark mode, so the color needs
+     to read against black specifically, not against the page theme. */
+  .info-subheading{
+    display:inline-block;
+    font-weight:800;
+    font-size:0.78rem;
+    margin:10px 0 4px;
+    padding:4px 12px;
+    border-radius:999px;
+    background:rgba(0,0,0,0.62);
+    letter-spacing:0.02em;
+  }
+  .info-subheading.subhead-abilities{color:#F4C430;}
+  .info-subheading.subhead-moveset{color:#FF4D4D;}
+  .info-subheading.subhead-encounters{color:#FFFFFF;}
+  .info-subheading.subhead-evolution .grad-text{
+    background-image:linear-gradient(90deg, #ff3b30, #ff9500, #ffcc00, #34c759, #2f8fff, #5856d6, #c04df9);
+    -webkit-background-clip:text;
+    background-clip:text;
+    color:transparent;
+    -webkit-text-fill-color:transparent;
+  }
+  .info-row{display:flex;justify-content:space-between;gap:10px;font-size:0.82rem;padding:3px 0;}
+  .info-row span:first-child{color:var(--muted);font-weight:600;}
+  .info-row span:last-child{font-weight:700;text-align:right;}
+  .info-list{margin:0;padding-left:18px;font-size:0.78rem;font-weight:600;}
+  .info-list li{margin-bottom:2px;text-transform:capitalize;}
+  .info-loading{font-size:0.8rem;color:var(--muted);font-weight:600;}
+  .info-version-group{margin-bottom:8px;}
+  .info-version-group strong{font-size:0.78rem;text-transform:capitalize;}
 
   /* "Closed device" splash screen and its flip-open animation into .app-body */
   .stage{perspective:1200px;}
@@ -632,6 +752,7 @@
           </div>
           <div class="active-name" id="activeName">No pokemon selected</div>
           <div class="active-sub" id="activeOdds"></div>
+          <div class="hunt-time" id="huntTimeDisplay"></div>
           <div class="found-banner" id="foundBanner" style="display:none;">✓ Shiny found!</div>
         </div>
       </div>
@@ -656,14 +777,32 @@
               <button class="ghost" id="rebindBtn" style="margin-left:8px;padding:5px 10px;font-size:0.75rem;box-shadow:0 2px 0 var(--trim-black);">Rebind</button>
             </span>
           </div>
+          <div class="gamepad-status" id="gamepadStatus" title="A: +1 · B: −1 · X: toggle found · Y: info · D-pad: navigate roster/tabs"></div>
           <div class="odds-row">
             <span>Method (affects odds estimate only):</span>
             <select id="oddsMethod" class="themed-select">
-              <option value="4096">Full odds — 1/4096</option>
-              <option value="2731">Shiny Charm — 1/2731</option>
-              <option value="1365">Charm + chain/SOS — 1/1365</option>
-              <option value="512">Masuda method — 1/512</option>
-              <option value="8192">Older games (Gen 1–5) — 1/8192</option>
+              <optgroup label="Standard">
+                <option value="4096">Full odds — 1/4096</option>
+                <option value="2731">Shiny Charm — 1/2731</option>
+                <option value="512">Masuda method — 1/512</option>
+                <option value="683">Masuda method + Charm — 1/683</option>
+                <option value="8192">Older games (Gen 1–5) — 1/8192</option>
+              </optgroup>
+              <optgroup label="SOS Chaining (Sun/Moon/US/UM) — auto-tracks count">
+                <option value="4096" data-group="sos" data-min="0" data-max="10" data-auto="true">Chain 1–10 — 1/4096</option>
+                <option value="820" data-group="sos" data-min="11" data-max="20" data-auto="true">Chain 11–20 — 1/820</option>
+                <option value="455" data-group="sos" data-min="21" data-max="30" data-auto="true">Chain 21–30 — 1/455</option>
+                <option value="315" data-group="sos" data-min="31" data-max="9999" data-auto="true">Chain 31+ (max) — 1/315</option>
+                <option value="273" data-group="sos" data-min="31" data-max="9999">Chain 31+ (max) + Charm — 1/273</option>
+              </optgroup>
+              <optgroup label="Poké Radar (max chain 40)">
+                <option value="200">Diamond / Pearl / Platinum — 1/200</option>
+                <option value="100">Brilliant Diamond / Shining Pearl — 1/100</option>
+              </optgroup>
+              <optgroup label="Dynamax Adventures (Sword/Shield)">
+                <option value="300">No Shiny Charm — 1/300</option>
+                <option value="100">With Shiny Charm — 1/100</option>
+              </optgroup>
             </select>
             <span class="odds-result" id="oddsResult"></span>
           </div>
@@ -690,11 +829,13 @@
       </div>
     </div>
 
-    <!-- Two-page switch: your own hunted pokemon vs. the full living-dex
-         completion sheet across every generation -->
+    <!-- Four-way switch: your hunts split by status, plus the full
+         living-dex completion sheet across every generation -->
     <div class="pokedex-tabs">
-      <button class="tab-btn active" id="tabRosterBtn" type="button">My Hunts</button>
-      <button class="tab-btn" id="tabDexBtn" type="button">Living Dex</button>
+      <button class="tab-btn active" type="button" data-tab="active">Active</button>
+      <button class="tab-btn" type="button" data-tab="paused">Paused</button>
+      <button class="tab-btn" type="button" data-tab="completed">Completed</button>
+      <button class="tab-btn" type="button" data-tab="dex">Living Dex</button>
     </div>
 
     <div id="rosterView">
@@ -702,7 +843,12 @@
     </div>
 
     <div id="dexView" style="display:none;">
-      <p class="dex-note">Sprites here load from an online sprite database — an internet connection is needed the first time this loads.</p>
+      <p class="dex-note">Sprites here load from an online sprite database — an internet connection is needed the first time this loads. Tap any tile to see its info.</p>
+      <label class="theme-toggle dex-hide-toggle" title="Hide pokemon you haven't caught yet">
+        <input type="checkbox" id="hideUncaughtToggle">
+        <span class="toggle-track"><span class="toggle-thumb"></span></span>
+        <span class="toggle-label">Hide uncaught</span>
+      </label>
       <div id="dexSummary"></div>
       <div id="dexGridWrap"></div>
     </div>
@@ -710,7 +856,7 @@
     <div class="backup-row">
       <button class="ghost" id="exportBtn" type="button">⬇ Export backup</button>
       <label class="ghost import-label" for="importInput">⬆ Import backup</label>
-      <input type="file" id="importInput" accept="application/json" style="display:none;">
+      <input type="file" id="importInput" accept=".csv,text/csv" style="display:none;">
       <span class="form-status" id="backupStatus"></span>
     </div>
 
@@ -781,6 +927,7 @@
   const setCountBtn = document.getElementById('setCountBtn');
   const foundBtn = document.getElementById('foundBtn');
   const foundBanner = document.getElementById('foundBanner');
+  const huntTimeDisplay = document.getElementById('huntTimeDisplay');
   const rosterEl = document.getElementById('roster');
   const rosterCountEl = document.getElementById('rosterCount');
   const sortSelect = document.getElementById('sortSelect');
@@ -932,6 +1079,127 @@
     dexInput.value = entry.dexNumber || '';
     box.appendChild(dexInput);
 
+    // Regional form — populated asynchronously (best-effort, needs a
+    // connection). Starts disabled with a loading option, then either
+    // fills in with any Alolan/Galarian/Hisuian/Paldean varieties found,
+    // or reports that none exist.
+    const formFieldLabel = document.createElement('div');
+    formFieldLabel.className = 'modal-field-label';
+    formFieldLabel.textContent = 'Regional form';
+    box.appendChild(formFieldLabel);
+
+    const formSelect = document.createElement('select');
+    formSelect.className = 'themed-select modal-input';
+    formSelect.style.paddingRight = '26px';
+    formSelect.disabled = true;
+    formSelect.innerHTML = `<option value="">Checking for regional forms…</option>`;
+    box.appendChild(formSelect);
+
+    fetchRegionalForms(entry.name).then(forms => {
+      if(forms.length === 0){
+        formSelect.innerHTML = `<option value="">No regional forms found</option>`;
+        return;
+      }
+      let html = `<option value="">Base form (no region)</option>`;
+      forms.forEach(f => { html += `<option value="${f.apiName}">${f.label}</option>`; });
+      formSelect.innerHTML = html;
+      formSelect.value = entry.form || '';
+      formSelect.disabled = false;
+    });
+
+    const statusLabel = document.createElement('div');
+    statusLabel.className = 'modal-field-label';
+    statusLabel.textContent = 'Hunt status (Completed is set via the found button)';
+    box.appendChild(statusLabel);
+    const statusSelect = document.createElement('select');
+    statusSelect.className = 'themed-select modal-input';
+    statusSelect.style.paddingRight = '26px';
+    statusSelect.innerHTML = `
+      <option value="active">Active</option>
+      <option value="paused">Paused</option>
+    `;
+    statusSelect.value = entry.status || 'active';
+    box.appendChild(statusSelect);
+
+    const startLabel = document.createElement('div');
+    startLabel.className = 'modal-field-label';
+    startLabel.textContent = 'Hunt start date';
+    box.appendChild(startLabel);
+    const startInput = document.createElement('input');
+    startInput.type = 'date';
+    startInput.className = 'modal-input';
+    startInput.value = entry.startDate || '';
+    box.appendChild(startInput);
+
+    const foundLabel = document.createElement('div');
+    foundLabel.className = 'modal-field-label';
+    foundLabel.textContent = 'Shiny found date';
+    box.appendChild(foundLabel);
+    const foundInput = document.createElement('input');
+    foundInput.type = 'date';
+    foundInput.className = 'modal-input';
+    foundInput.value = entry.foundDate || '';
+    box.appendChild(foundInput);
+
+    const timeLabel = document.createElement('div');
+    timeLabel.className = 'modal-field-label';
+    timeLabel.textContent = `Time hunted so far: ${formatHuntTime(entry.huntSeconds)}`;
+    box.appendChild(timeLabel);
+
+    // ---- Phases: add/remove ----
+    // Works on a local copy so Cancel doesn't touch the real entry —
+    // only committed to entry.phaseLog/phaseCount when Save is pressed.
+    const phasesLabel = document.createElement('div');
+    phasesLabel.className = 'modal-field-label';
+    phasesLabel.textContent = 'Phases';
+    box.appendChild(phasesLabel);
+
+    const phasesListEl = document.createElement('div');
+    phasesListEl.className = 'phase-edit-list';
+    box.appendChild(phasesListEl);
+
+    let workingPhaseLog = (entry.phaseLog || []).map(ph => ({ ...ph }));
+
+    function renderPhaseList(){
+      phasesListEl.innerHTML = workingPhaseLog.length
+        ? workingPhaseLog.map((ph, i) => `
+            <div class="phase-edit-row" data-idx="${i}">
+              <span>Phase ${i + 1}: ${ph.name}${ph.date ? ` — ${ph.date}` : ''}</span>
+              <button type="button" class="phase-remove-btn" data-idx="${i}" title="Remove this phase">✕</button>
+            </div>
+          `).join('')
+        : '<div class="modal-field-label" style="margin:0;">No phases logged.</div>';
+      phasesListEl.querySelectorAll('.phase-remove-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+          workingPhaseLog.splice(Number(btn.dataset.idx), 1);
+          renderPhaseList();
+        });
+      });
+    }
+    renderPhaseList();
+
+    const addPhaseRow = document.createElement('div');
+    addPhaseRow.style.cssText = 'display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-top:4px;';
+    const addPhaseInput = document.createElement('input');
+    addPhaseInput.type = 'text';
+    addPhaseInput.className = 'modal-input';
+    addPhaseInput.style.cssText = 'flex:1;min-width:140px;';
+    addPhaseInput.placeholder = 'Add a phase (pokemon name)';
+    const addPhaseBtn = document.createElement('button');
+    addPhaseBtn.type = 'button';
+    addPhaseBtn.className = 'ghost';
+    addPhaseBtn.textContent = '+ Add';
+    addPhaseBtn.addEventListener('click', () => {
+      const phaseName = addPhaseInput.value.trim();
+      if(!phaseName) return;
+      workingPhaseLog.push({ name: phaseName, gifUrl: null, date: todayISO() });
+      addPhaseInput.value = '';
+      renderPhaseList();
+    });
+    addPhaseRow.appendChild(addPhaseInput);
+    addPhaseRow.appendChild(addPhaseBtn);
+    box.appendChild(addPhaseRow);
+
     const actions = document.createElement('div');
     actions.className = 'modal-actions';
     const cancelBtn = document.createElement('button');
@@ -941,9 +1209,30 @@
     const saveBtn = document.createElement('button');
     saveBtn.textContent = 'Save';
     saveBtn.className = 'primary';
-    saveBtn.addEventListener('click', () => {
+    saveBtn.addEventListener('click', async () => {
       entry.generation = genSelect.value ? Number(genSelect.value) : null;
       entry.dexNumber = dexInput.value ? Number(dexInput.value) : null;
+      entry.status = statusSelect.value;
+      entry.startDate = startInput.value || null;
+      entry.foundDate = foundInput.value || null;
+      entry.phaseLog = workingPhaseLog;
+      entry.phaseCount = workingPhaseLog.length;
+
+      const chosenForm = formSelect.value || null;
+      if(chosenForm !== (entry.form || null)){
+        // The regional form changed — fetch that variety's own shiny
+        // sprite and switch to it. Falls back to leaving the sprite
+        // untouched if the lookup fails (e.g. offline).
+        saveBtn.disabled = true;
+        saveBtn.textContent = 'Fetching sprite…';
+        try{
+          const apiName = chosenForm || entry.name.toLowerCase();
+          const result = await fetchShinySpriteFromPokeAPI(apiName);
+          if(result.sprite) entry.gifUrl = result.sprite;
+        }catch(e){ /* keep the existing sprite if the lookup fails */ }
+        entry.form = chosenForm;
+      }
+
       overlay.remove();
       savePokedex();
       render();
@@ -958,7 +1247,462 @@
     document.body.appendChild(overlay);
   }
 
-  // ---- Generation helpers ----
+  // ---- Log a phase ----
+  // "Phasing" is when a different shiny than the one you're hunting for
+  // shows up instead. The hunt for the original target keeps going
+  // exactly as before (same species, same count, same running timer) —
+  // logging a phase just tallies it and remembers what showed up, via a
+  // "Phase 1", "Phase 2", ... label rather than swapping the entry over
+  // to the phased species.
+  function openPhaseModal(entry){
+    const overlay = document.createElement('div');
+    overlay.className = 'modal-overlay';
+    const box = document.createElement('div');
+    box.className = 'modal-box';
+
+    const nextPhaseNumber = (entry.phaseCount || 0) + 1;
+
+    const title = document.createElement('p');
+    title.textContent = `Log Phase ${nextPhaseNumber} for ${entry.name}`;
+    box.appendChild(title);
+
+    const note = document.createElement('div');
+    note.className = 'modal-field-label';
+    note.textContent = `Records that a different shiny showed up while hunting ${entry.name}. Your ${entry.name} hunt keeps its count, timer, and dates exactly as they are — this just tags it "Phase ${nextPhaseNumber}" and remembers what appeared.`;
+    box.appendChild(note);
+
+    const nameLabel = document.createElement('div');
+    nameLabel.className = 'modal-field-label';
+    nameLabel.textContent = 'Pokemon that showed up instead';
+    box.appendChild(nameLabel);
+
+    const nameRow = document.createElement('div');
+    nameRow.style.cssText = 'display:flex;gap:8px;flex-wrap:wrap;align-items:center;';
+    const nameInputEl = document.createElement('input');
+    nameInputEl.type = 'text';
+    nameInputEl.className = 'modal-input';
+    nameInputEl.style.flex = '1';
+    nameInputEl.style.minWidth = '140px';
+    nameInputEl.placeholder = 'Pokemon name (e.g. Zubat)';
+    const fetchSpriteBtn = document.createElement('button');
+    fetchSpriteBtn.type = 'button';
+    fetchSpriteBtn.className = 'ghost';
+    fetchSpriteBtn.textContent = 'Fetch sprite';
+    nameRow.appendChild(nameInputEl);
+    nameRow.appendChild(fetchSpriteBtn);
+    box.appendChild(nameRow);
+
+    const uploadLabel = document.createElement('label');
+    uploadLabel.className = 'upload-label';
+    uploadLabel.innerHTML = `
+      <span class="upload-preview-wrap"><img class="upload-preview" style="display:none;"></span>
+      <span class="upload-text">Or choose a sprite/GIF file…</span>
+    `;
+    const phaseFileInput = document.createElement('input');
+    phaseFileInput.type = 'file';
+    phaseFileInput.accept = 'image/*';
+    phaseFileInput.style.display = 'none';
+    uploadLabel.appendChild(phaseFileInput);
+    box.appendChild(uploadLabel);
+
+    const addToDexRow = document.createElement('label');
+    addToDexRow.className = 'theme-toggle phase-dex-toggle';
+    addToDexRow.innerHTML = `
+      <input type="checkbox" class="phase-add-dex-toggle">
+      <span class="toggle-track"><span class="toggle-thumb"></span></span>
+      <span class="toggle-label">Also add to Completed, with this hunt's info copied over</span>
+    `;
+    box.appendChild(addToDexRow);
+    const addToDexToggle = addToDexRow.querySelector('.phase-add-dex-toggle');
+
+    const phaseStatus = document.createElement('div');
+    phaseStatus.className = 'form-status';
+    box.appendChild(phaseStatus);
+
+    let phasedGifUrl = '';
+    let phasedGeneration = null;
+    let phasedDexNumber = null;
+    const phaseUploadPreview = uploadLabel.querySelector('.upload-preview');
+    const phaseUploadText = uploadLabel.querySelector('.upload-text');
+
+    phaseFileInput.addEventListener('change', () => {
+      const file = phaseFileInput.files[0];
+      if(!file) return;
+      if(file.size > 4.5 * 1024 * 1024){
+        phaseStatus.textContent = 'That file is too large — pick something under ~4MB.';
+        phaseFileInput.value = '';
+        return;
+      }
+      const reader = new FileReader();
+      reader.onload = () => {
+        phasedGifUrl = reader.result;
+        phaseUploadPreview.src = phasedGifUrl;
+        phaseUploadPreview.style.display = 'block';
+        phaseUploadText.textContent = file.name;
+        phaseStatus.textContent = 'File ready.';
+      };
+      reader.onerror = () => { phaseStatus.textContent = 'Could not read that file.'; };
+      reader.readAsDataURL(file);
+    });
+
+    fetchSpriteBtn.addEventListener('click', async () => {
+      const name = nameInputEl.value.trim().toLowerCase();
+      if(!name){ phaseStatus.textContent = 'Enter a pokemon name first.'; return; }
+      phaseStatus.textContent = 'Fetching shiny sprite…';
+      try{
+        const result = await fetchShinySpriteFromPokeAPI(name);
+        if(!result.sprite) throw new Error('no sprite');
+        phasedGifUrl = result.sprite;
+        phasedDexNumber = result.dexNumber || null;
+        phaseUploadPreview.src = phasedGifUrl;
+        phaseUploadPreview.style.display = 'block';
+        phaseUploadText.textContent = 'Fetched from PokeAPI';
+        try{
+          const speciesRes = await fetch(`https://pokeapi.co/api/v2/pokemon-species/${name}`);
+          if(speciesRes.ok){
+            const speciesData = await speciesRes.json();
+            const genNumber = speciesData.generation && GEN_NAME_TO_NUMBER[speciesData.generation.name];
+            if(genNumber) phasedGeneration = genNumber;
+          }
+        }catch(genErr){ /* non-fatal */ }
+        phaseStatus.textContent = result.hasShiny
+          ? 'Shiny sprite found — note this may still fail to display; uploading a file is more reliable.'
+          : 'No shiny sprite available — filled in the regular sprite instead.';
+      }catch(err){
+        phaseStatus.textContent = 'Could not find a sprite for that name. Try uploading a file instead.';
+      }
+    });
+
+    const actions = document.createElement('div');
+    actions.className = 'modal-actions';
+    const cancelBtn = document.createElement('button');
+    cancelBtn.textContent = 'Cancel';
+    cancelBtn.className = 'ghost';
+    cancelBtn.addEventListener('click', () => overlay.remove());
+    const confirmBtn = document.createElement('button');
+    confirmBtn.textContent = `Log Phase ${nextPhaseNumber}`;
+    confirmBtn.className = 'primary';
+    confirmBtn.addEventListener('click', () => {
+      const phasedName = nameInputEl.value.trim();
+      if(!phasedName){ phaseStatus.textContent = 'Enter the pokemon that showed up.'; return; }
+      const addToDex = addToDexToggle.checked;
+      if(addToDex && !phasedGifUrl){
+        phaseStatus.textContent = 'Fetch a sprite or upload a file first — needed to add it to Completed.';
+        return;
+      }
+
+      entry.phaseCount = nextPhaseNumber;
+      if(!Array.isArray(entry.phaseLog)) entry.phaseLog = [];
+      entry.phaseLog.push({ name: phasedName, gifUrl: phasedGifUrl || null, date: todayISO() });
+
+      if(addToDex){
+        const id = phasedName.toLowerCase() + '-' + Date.now();
+        pokedex.push({
+          id, name: phasedName, gifUrl: phasedGifUrl,
+          count: entry.count || 0, generation: phasedGeneration, dexNumber: phasedDexNumber,
+          form: null, status: 'active',
+          addedDate: todayISO(), startDate: entry.startDate || todayISO(),
+          foundDate: todayISO(), huntSeconds: entry.huntSeconds || 0,
+          found: true, phaseCount: 0, phaseLog: []
+        });
+      }
+
+      overlay.remove();
+      savePokedex();
+      render();
+      if(addToDex){
+        launchConfetti();
+        playFoundJingle();
+        setStatus(`Logged Phase ${nextPhaseNumber} and added ${phasedName} to Completed with ${entry.name}'s hunt info copied over.`, false);
+      } else {
+        playPhaseTone();
+        setStatus(`Logged Phase ${nextPhaseNumber} (${phasedName}) — still hunting ${entry.name}.`, false);
+      }
+    });
+    actions.appendChild(cancelBtn);
+    actions.appendChild(confirmBtn);
+    box.appendChild(actions);
+
+    overlay.appendChild(box);
+    overlay.addEventListener('click', (e) => { if(e.target === overlay) overlay.remove(); });
+    document.body.appendChild(overlay);
+  }
+
+  // ---- Pokemon info popup ----
+  // Describes one evolution requirement (item, level, friendship, trade,
+  // etc.) in plain words — used when walking the evolution chain below.
+  function describeEvolutionDetail(ed){
+    if(!ed) return '';
+    if(ed.min_level) return `Lv. ${ed.min_level}`;
+    if(ed.item) return `use ${ed.item.name.replace(/-/g,' ')}`;
+    if(ed.held_item) return `hold ${ed.held_item.name.replace(/-/g,' ')}`;
+    if(ed.min_happiness) return `friendship ${ed.min_happiness}+`;
+    if(ed.min_affection) return `affection ${ed.min_affection}+`;
+    if(ed.known_move) return `knows ${ed.known_move.name.replace(/-/g,' ')}`;
+    if(ed.known_move_type) return `knows a ${ed.known_move_type.name}-type move`;
+    if(ed.location) return `near ${ed.location.name.replace(/-/g,' ')}`;
+    if(ed.time_of_day) return `during the ${ed.time_of_day}`;
+    if(ed.trigger && ed.trigger.name === 'trade') return 'trade';
+    return ed.trigger ? ed.trigger.name.replace(/-/g,' ') : 'special condition';
+  }
+
+  // Walks a PokeAPI evolution chain into a flat list of "A → B (how)"
+  // lines — flatter than the tree PokeAPI returns, but reads cleanly and
+  // handles branching evolutions (like Eevee) without extra work.
+  function describeEvolutionChain(node){
+    const lines = [];
+    function walk(n){
+      (n.evolves_to || []).forEach(child => {
+        const details = (child.evolution_details || []).map(describeEvolutionDetail).filter(Boolean);
+        const detailText = details.length ? details.join(' or ') : 'special condition';
+        lines.push(`${n.species.name.replace(/-/g,' ')} → ${child.species.name.replace(/-/g,' ')} (${detailText})`);
+        walk(child);
+      });
+    }
+    walk(node);
+    return lines;
+  }
+
+  // Groups a pokemon's location_area_encounters response by game
+  // version, keeping each location's max encounter chance.
+  function summarizeEncounters(encounterList){
+    const byVersion = {};
+    (encounterList || []).forEach(loc => {
+      const locName = loc.location_area.name.replace(/-/g,' ');
+      (loc.version_details || []).forEach(vd => {
+        const ver = vd.version.name.replace(/-/g,' ');
+        if(!byVersion[ver]) byVersion[ver] = [];
+        byVersion[ver].push({ location: locName, chance: vd.max_chance });
+      });
+    });
+    return byVersion;
+  }
+
+  // Pulls together everything the info popup shows about the species
+  // itself (as opposed to the user's own hunt stats): abilities, a
+  // level-up moveset with PP, evolution requirements, and wild encounter
+  // locations/rates per game. This is inherently a lot of PokeAPI calls
+  // (one per level-up move, to get its PP) so it's only ever run when
+  // the info popup is actually opened, and every piece fails gracefully
+  // on its own rather than taking the whole panel down with it.
+  async function fetchPokemonGameData(name){
+    const lower = name.toLowerCase();
+    const res = await fetch(`https://pokeapi.co/api/v2/pokemon/${lower}`);
+    if(!res.ok) throw new Error('not found');
+    const data = await res.json();
+
+    const abilities = (data.abilities || []).map(a => ({
+      name: a.ability.name.replace(/-/g,' '),
+      hidden: a.is_hidden
+    }));
+
+    // Level-up moves: keep the lowest level seen for each move across
+    // every game version it's been learnable in.
+    const levelMoves = {};
+    (data.moves || []).forEach(m => {
+      const moveName = m.move.name;
+      (m.version_group_details || []).forEach(vgd => {
+        if(vgd.move_learn_method && vgd.move_learn_method.name === 'level-up'){
+          const lvl = vgd.level_learned_at;
+          if(!(moveName in levelMoves) || lvl < levelMoves[moveName]) levelMoves[moveName] = lvl;
+        }
+      });
+    });
+    const moveList = Object.keys(levelMoves)
+      .map(n => ({ name: n, level: levelMoves[n] }))
+      .sort((a,b) => a.level - b.level)
+      .slice(0, 30); // cap it — some pokemon relearn dozens of moves across gens
+
+    const moves = await Promise.all(moveList.map(async mv => {
+      try{
+        const mRes = await fetch(`https://pokeapi.co/api/v2/move/${mv.name}`);
+        if(!mRes.ok) return { ...mv, pp: null };
+        const mData = await mRes.json();
+        return { ...mv, pp: mData.pp };
+      }catch(e){ return { ...mv, pp: null }; }
+    }));
+
+    let evolution = [];
+    try{
+      if(data.species && data.species.url){
+        const specRes = await fetch(data.species.url);
+        if(specRes.ok){
+          const specData = await specRes.json();
+          if(specData.evolution_chain && specData.evolution_chain.url){
+            const chainRes = await fetch(specData.evolution_chain.url);
+            if(chainRes.ok){
+              const chainData = await chainRes.json();
+              evolution = describeEvolutionChain(chainData.chain);
+            }
+          }
+        }
+      }
+    }catch(e){ /* best-effort — leave evolution empty */ }
+
+    let encounters = {};
+    try{
+      if(data.location_area_encounters){
+        const encRes = await fetch(data.location_area_encounters);
+        if(encRes.ok) encounters = summarizeEncounters(await encRes.json());
+      }
+    }catch(e){ /* best-effort — leave encounters empty */ }
+
+    return { abilities, moves, evolution, encounters, resolvedName: data.name, dexNumber: data.id };
+  }
+
+  // Renders the (async-loaded) game-data section's inner HTML once
+  // fetchPokemonGameData resolves.
+  function renderGameDataHTML(gameData){
+    let html = '<div class="info-heading">Game data</div>';
+
+    html += '<div class="info-subheading subhead-abilities">Abilities</div>';
+    html += gameData.abilities.length
+      ? '<ul class="info-list">' + gameData.abilities.map(a =>
+          `<li>${a.name}${a.hidden ? ' (Hidden)' : ''}</li>`
+        ).join('') + '</ul>'
+      : '<div class="info-loading">No ability data found.</div>';
+
+    html += '<div class="info-subheading subhead-evolution"><span class="grad-text">Evolution</span></div>';
+    html += gameData.evolution.length
+      ? '<ul class="info-list">' + gameData.evolution.map(line => `<li>${line}</li>`).join('') + '</ul>'
+      : '<div class="info-loading">Does not evolve.</div>';
+
+    html += '<div class="info-subheading subhead-moveset">Level-up moveset (PP)</div>';
+    html += gameData.moves.length
+      ? '<ul class="info-list">' + gameData.moves.map(m =>
+          `<li>Lv. ${m.level} — ${m.name.replace(/-/g,' ')}${m.pp != null ? ` (PP ${m.pp})` : ''}</li>`
+        ).join('') + '</ul>'
+      : '<div class="info-loading">No level-up moves found.</div>';
+
+    html += '<div class="info-subheading subhead-encounters">Encounter locations</div>';
+    const versions = Object.keys(gameData.encounters || {});
+    html += versions.length
+      ? versions.map(ver => {
+          const list = gameData.encounters[ver];
+          const shown = list.slice(0, 5);
+          const extra = list.length - shown.length;
+          return `<div class="info-version-group">
+            <strong>${ver}</strong>
+            <ul class="info-list">
+              ${shown.map(l => `<li>${l.location} — ~${l.chance}%</li>`).join('')}
+              ${extra > 0 ? `<li>+${extra} more location${extra===1?'':'s'}</li>` : ''}
+            </ul>
+          </div>`;
+        }).join('')
+      : '<div class="info-loading">No wild encounter data (may be a static, gift, or evolution-only pokemon).</div>';
+
+    return html;
+  }
+
+  // The info popup itself: shows the user's own tracked stats instantly
+  // (no network needed), then fetches and fills in the species' in-game
+  // data underneath. Needs an internet connection for the second half —
+  // it degrades to a plain notice if that fetch fails.
+  // entry: a matched, found pokedex entry (full "Your hunt" stats shown).
+  // dexNumberFallback: used when entry is null/undefined — happens when a
+  // Living Dex tile with no matching tracked entry is clicked. In that
+  // case we skip the hunt-stats section and fetch game data straight from
+  // the National Dex number (PokeAPI accepts numeric ids interchangeably
+  // with names), updating the placeholder title once the name resolves.
+  function openInfoModal(entry, dexNumberFallback){
+    const overlay = document.createElement('div');
+    overlay.className = 'modal-overlay';
+    const box = document.createElement('div');
+    box.className = 'modal-box info-modal-box';
+
+    const spriteBase = 'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon';
+    const spriteSrc = entry
+      ? (entry.gifUrl || (entry.dexNumber ? `${spriteBase}/shiny/${entry.dexNumber}.png` : ''))
+      : `${spriteBase}/shiny/${dexNumberFallback}.png`;
+    if(spriteSrc){
+      const spriteWrap = document.createElement('div');
+      spriteWrap.className = 'info-sprite-wrap';
+      spriteWrap.innerHTML = `
+        <div class="info-sprite-band band-top"></div>
+        <div class="info-sprite-band band-bottom"></div>
+        <div class="info-sprite-case">
+          <div class="info-sprite-screen">
+            <img class="info-sprite" src="${spriteSrc}" alt="" onerror="this.closest('.info-sprite-wrap').style.display='none';">
+          </div>
+          <div class="info-sprite-btn"></div>
+        </div>
+      `;
+      box.appendChild(spriteWrap);
+    }
+
+    const title = document.createElement('p');
+    title.textContent = entry ? `${entry.name} — Info` : `#${String(dexNumberFallback).padStart(3,'0')} — Info`;
+    box.appendChild(title);
+
+    if(entry){
+      const statsSection = document.createElement('div');
+      statsSection.className = 'info-section';
+      const statusText = entry.found ? 'Completed' : (entry.status === 'paused' ? 'Paused' : 'Active');
+      statsSection.innerHTML = `
+        <div class="info-heading">Your hunt</div>
+        <div class="info-row"><span>Status</span><span>${statusText}</span></div>
+        <div class="info-row"><span>Added to Pokedex</span><span>${entry.addedDate || '—'}</span></div>
+        <div class="info-row"><span>Encounters / Resets</span><span>${entry.count || 0}</span></div>
+        <div class="info-row"><span>Time hunting</span><span>${formatHuntTime(entry.huntSeconds)}</span></div>
+        <div class="info-row"><span>Start date</span><span>${entry.startDate || '—'}</span></div>
+        <div class="info-row"><span>End date</span><span>${entry.foundDate || '—'}</span></div>
+        <div class="info-row"><span>Phases</span><span>${entry.phaseCount || 0}</span></div>
+      `;
+      box.appendChild(statsSection);
+
+      if(entry.phaseLog && entry.phaseLog.length){
+        const phaseSection = document.createElement('div');
+        phaseSection.className = 'info-section';
+        phaseSection.innerHTML = `
+          <div class="info-heading">Phase log</div>
+          <ul class="info-list">
+            ${entry.phaseLog.map((ph, i) =>
+              `<li>Phase ${i + 1}: ${ph.name} — ${ph.date || '—'}</li>`
+            ).join('')}
+          </ul>
+        `;
+        box.appendChild(phaseSection);
+      }
+    } else {
+      const noteSection = document.createElement('div');
+      noteSection.className = 'info-section';
+      noteSection.innerHTML = `
+        <div class="info-heading">Your hunt</div>
+        <div class="info-loading">Not yet in your Pokedex — add it to start tracking encounters.</div>
+      `;
+      box.appendChild(noteSection);
+    }
+
+    const gameSection = document.createElement('div');
+    gameSection.className = 'info-section';
+    gameSection.innerHTML = '<div class="info-heading">Game data</div><div class="info-loading">Loading game data…</div>';
+    box.appendChild(gameSection);
+
+    const actions = document.createElement('div');
+    actions.className = 'modal-actions';
+    const closeBtn = document.createElement('button');
+    closeBtn.textContent = 'Close';
+    closeBtn.className = 'primary';
+    closeBtn.addEventListener('click', () => overlay.remove());
+    actions.appendChild(closeBtn);
+    box.appendChild(actions);
+
+    overlay.appendChild(box);
+    overlay.addEventListener('click', (e) => { if(e.target === overlay) overlay.remove(); });
+    document.body.appendChild(overlay);
+
+    const lookupId = entry ? (entry.form || entry.name) : dexNumberFallback;
+    fetchPokemonGameData(lookupId).then(gameData => {
+      gameSection.innerHTML = renderGameDataHTML(gameData);
+      if(!entry && gameData.resolvedName){
+        title.textContent = `${gameData.resolvedName.replace(/-/g,' ')} — Info`;
+      }
+    }).catch(() => {
+      gameSection.innerHTML = '<div class="info-heading">Game data</div><div class="info-loading">Couldn\'t load game data — check your connection.</div>';
+    });
+  }
+
+
   // GEN_ROMAN: number -> roman numeral, for the little "Gen III" roster tag.
   // GEN_NAME_TO_NUMBER: maps PokeAPI's species.generation.name (e.g.
   // "generation-iii") to a plain number so it can be sorted/stored simply.
@@ -984,6 +1728,81 @@
     { gen: 9, range: [906, 1025],  games: 'Scarlet / Violet' }
   ];
   const DEX_TOTAL = GEN_INFO[GEN_INFO.length - 1].range[1];
+
+  // ---- Regional forms ----
+  // PokeAPI names regional-form varieties with one of these suffixes
+  // (e.g. "raichu-alola"). Used both to detect them from a species'
+  // variety list and to turn one back into a display label.
+  const REGIONAL_SUFFIXES = { alola: 'Alolan', galar: 'Galarian', hisui: 'Hisuian', paldea: 'Paldean' };
+  function regionalFormLabel(apiName){
+    if(!apiName) return null;
+    for(const suffix in REGIONAL_SUFFIXES){
+      if(apiName.endsWith('-' + suffix)) return REGIONAL_SUFFIXES[suffix];
+    }
+    return null;
+  }
+
+  // Resolves the best available shiny sprite (falling back to the
+  // regular sprite) for a given PokeAPI pokemon name, plus its National
+  // Dex number. Shared by the main "fetch shiny" button and the regional
+  // form picker in the edit modal, so both stay in sync with each other.
+  async function fetchShinySpriteFromPokeAPI(apiName){
+    const res = await fetch(`https://pokeapi.co/api/v2/pokemon/${apiName}`);
+    if(!res.ok) throw new Error('not found');
+    const data = await res.json();
+    const genV = data.sprites &&
+      data.sprites.versions &&
+      data.sprites.versions['generation-v'] &&
+      data.sprites.versions['generation-v']['black-white'];
+    const animatedShiny = genV && genV.animated && genV.animated.front_shiny;
+    const staticShiny = data.sprites && data.sprites.front_shiny;
+    const animatedDefault = genV && genV.animated && genV.animated.front_default;
+    const staticDefault = data.sprites && data.sprites.front_default;
+    return {
+      sprite: animatedShiny || staticShiny || animatedDefault || staticDefault,
+      hasShiny: !!(animatedShiny || staticShiny),
+      dexNumber: data.id
+    };
+  }
+
+  // Best-effort lookup of a species' regional-form varieties (Alolan,
+  // Galarian, Hisuian, Paldean). Returns [] on any failure — the edit
+  // modal treats that the same as "this pokemon has no regional forms".
+  async function fetchRegionalForms(name){
+    try{
+      const res = await fetch(`https://pokeapi.co/api/v2/pokemon-species/${name.toLowerCase()}`);
+      if(!res.ok) return [];
+      const data = await res.json();
+      const forms = [];
+      (data.varieties || []).forEach(v => {
+        const vname = v.pokemon.name;
+        const label = regionalFormLabel(vname);
+        if(label) forms.push({ apiName: vname, label });
+      });
+      return forms;
+    }catch(e){ return []; }
+  }
+
+  // ---- Dates & hunting time ----
+  // Today's date as YYYY-MM-DD, in the browser's local timezone (used as
+  // the default start date for a newly added pokemon).
+  function todayISO(){
+    const d = new Date();
+    const offset = d.getTimezoneOffset();
+    return new Date(d.getTime() - offset * 60000).toISOString().slice(0, 10);
+  }
+
+  // Formats a duration in seconds as e.g. "3h 12m", "12m 04s", or "07s" —
+  // used for the live hunting-time readout under the active sprite.
+  function formatHuntTime(totalSeconds){
+    const s = Math.floor(totalSeconds || 0);
+    const h = Math.floor(s / 3600);
+    const m = Math.floor((s % 3600) / 60);
+    const sec = s % 60;
+    if(h > 0) return `${h}h ${m}m`;
+    if(m > 0) return `${m}m ${String(sec).padStart(2,'0')}s`;
+    return `${sec}s`;
+  }
 
   // Turns a KeyboardEvent.code (e.g. "KeyA", "Digit5", "Space") into a
   // short human-readable label for the keybind display.
@@ -1019,12 +1838,29 @@
       pokedex = raw ? JSON.parse(raw) : [];
     }catch(e){ pokedex = []; }
 
+    // Backfill fields that older entries (saved before a given feature
+    // existed, or entries phased in from before addedDate was tracked)
+    // may be missing, so the info popup never shows a blank "Added to
+    // Pokedex" — falls back to the start date, or today, as a best guess.
+    pokedex.forEach(p => {
+      if(!p.addedDate) p.addedDate = p.startDate || todayISO();
+      if(!p.startDate) p.startDate = p.addedDate;
+      if(p.status === undefined) p.status = 'active';
+      if(p.huntSeconds === undefined) p.huntSeconds = 0;
+      if(p.form === undefined) p.form = null;
+      if(p.foundDate === undefined) p.foundDate = null;
+      if(p.phaseCount === undefined) p.phaseCount = 0;
+      if(!Array.isArray(p.phaseLog)) p.phaseLog = [];
+    });
+
     try{
       const raw = localStorage.getItem(SETTINGS_KEY);
       if(raw) settings = JSON.parse(raw);
     }catch(e){ /* keep defaults */ }
 
     if(!settings.keybind) settings.keybind = { code: 'Space', label: 'Space' };
+    if(settings.hideUncaught === undefined) settings.hideUncaught = false;
+    savePokedex();
     applyTheme();
     render();
   }
@@ -1048,8 +1884,21 @@
   // ---- Sorting ----
   // Returns a *copy* of pokedex in the order chosen by the sort dropdown —
   // the underlying array/order used for storage is never mutated by this.
+  // A hunt is "Completed" once found, regardless of its status field;
+  // otherwise it's "Paused" or "Active" per that field (defaulting to
+  // Active for older entries that predate this feature).
+  function getFilteredPokedex(){
+    return pokedex.filter(p => {
+      if(p.found) return activeTab === 'completed';
+      const status = p.status || 'active';
+      if(activeTab === 'paused') return status === 'paused';
+      if(activeTab === 'active') return status !== 'paused';
+      return false; // the Living Dex tab doesn't use this list
+    });
+  }
+
   function getSortedPokedex(){
-    const arr = pokedex.slice();
+    const arr = getFilteredPokedex();
     switch(settings.sortBy){
       case 'name-asc': arr.sort((a,b) => a.name.localeCompare(b.name)); break;
       case 'name-desc': arr.sort((a,b) => b.name.localeCompare(a.name)); break;
@@ -1080,30 +1929,40 @@
   function render(){
     rosterEl.innerHTML = '';
     sortSelect.value = settings.sortBy || 'added';
-    rosterCountEl.textContent = pokedex.length + (pokedex.length === 1 ? ' entry' : ' entries');
-    if(pokedex.length === 0){
+    const visible = getSortedPokedex();
+    const tabNoun = activeTab === 'completed' ? 'completed' : activeTab === 'paused' ? 'paused' : 'active';
+    rosterCountEl.textContent = visible.length + (visible.length === 1 ? ` ${tabNoun} entry` : ` ${tabNoun} entries`);
+    if(visible.length === 0){
       const empty = document.createElement('div');
       empty.className = 'empty-roster';
-      empty.textContent = 'No pokemon added yet.';
+      empty.textContent = activeTab === 'completed'
+        ? 'No completed hunts yet.'
+        : activeTab === 'paused'
+          ? 'No paused hunts.'
+          : 'No active hunts — add a pokemon below.';
       rosterEl.appendChild(empty);
     }
-    getSortedPokedex().forEach(p => {
+    visible.forEach(p => {
       const card = document.createElement('div');
       card.className = 'mon-card' + (p.id === settings.activeId ? ' active' : '');
       card.innerHTML = `
         <div class="card-actions">
           <button class="remove" data-id="${p.id}" title="Remove">✕</button>
-          <button class="edit-btn" data-id="${p.id}" title="Edit generation / Dex #">✎</button>
+          <button class="info-btn" data-id="${p.id}" title="Pokemon info">ℹ</button>
         </div>
+        <button class="edit-btn" data-id="${p.id}" title="Edit generation / Dex # / status">✎</button>
+        <button class="phase-btn" data-id="${p.id}" title="Phase — found a different shiny?">⇄</button>
         ${p.found ? '<span class="found-badge">✓</span>' : ''}
         <div class="thumb"><img src="${p.gifUrl}" alt="${p.name}" onerror="this.style.opacity=0.1"></div>
         <div class="mon-name">${p.name}</div>
         <div class="mon-count">${p.count || 0}</div>
         ${p.generation ? `<div class="mon-gen">Gen ${toRoman(p.generation)}</div>` : ''}
         ${p.dexNumber ? `<div class="mon-gen">#${String(p.dexNumber).padStart(3,'0')}</div>` : ''}
+        ${p.form ? `<div class="mon-gen">${regionalFormLabel(p.form)}</div>` : ''}
+        ${p.phaseCount ? `<div class="mon-gen phase-tag">Phase ${p.phaseCount}</div>` : ''}
       `;
       card.addEventListener('click', (e) => {
-        if(e.target.closest('.remove')) return;
+        if(e.target.closest('.remove') || e.target.closest('.edit-btn') || e.target.closest('.info-btn') || e.target.closest('.phase-btn')) return;
         settings.activeId = p.id;
         saveSettings();
         render();
@@ -1129,6 +1988,22 @@
         if(entry) openEditPokemonModal(entry);
       });
     });
+    rosterEl.querySelectorAll('.info-btn').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const id = btn.getAttribute('data-id');
+        const entry = pokedex.find(p => p.id === id);
+        if(entry) openInfoModal(entry);
+      });
+    });
+    rosterEl.querySelectorAll('.phase-btn').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const id = btn.getAttribute('data-id');
+        const entry = pokedex.find(p => p.id === id);
+        if(entry) openPhaseModal(entry);
+      });
+    });
 
     const active = getActive();
     if(active){
@@ -1140,6 +2015,7 @@
       foundBtn.disabled = false;
       foundBtn.textContent = active.found ? 'Unmark shiny found' : '✓ Mark shiny found!';
       foundBanner.style.display = active.found ? 'block' : 'none';
+      huntTimeDisplay.textContent = `⏱ ${formatHuntTime(active.huntSeconds)} hunting`;
     } else {
       screenEl.innerHTML = `<div class="empty">Add a pokemon below, then pick it to start tracking.</div>`;
       activeNameEl.textContent = 'No pokemon selected';
@@ -1149,6 +2025,7 @@
       foundBtn.disabled = true;
       foundBtn.textContent = '✓ Mark shiny found!';
       foundBanner.style.display = 'none';
+      huntTimeDisplay.textContent = '';
     }
 
     keycapLabelEl.textContent = settings.keybind.label;
@@ -1162,7 +2039,36 @@
 
   // Recomputes the "cumulative chance so far" line under the sprite,
   // based on the active pokemon's count and the chosen odds method.
+  // Checks whether the currently selected odds method is one of the SOS
+  // Chain tiers, and if the active pokemon's count has moved outside
+  // that tier's range, jumps the dropdown to whichever tier the count
+  // now falls into. Only ever switches between the plain (non-Charm)
+  // tiers — it never guesses whether you own the Shiny Charm — and does
+  // nothing at all if a non-chain method (Full Odds, Masuda, etc.) is
+  // selected, since there's no tier to track there.
+  function autoUpdateOddsTier(){
+    const selected = oddsMethod.options[oddsMethod.selectedIndex];
+    if(!selected || selected.dataset.group !== 'sos') return;
+    const active = getActive();
+    const count = active ? (active.count || 0) : 0;
+    const min = Number(selected.dataset.min);
+    const max = Number(selected.dataset.max);
+    if(count >= min && count <= max) return; // still the right tier
+
+    for(let i = 0; i < oddsMethod.options.length; i++){
+      const opt = oddsMethod.options[i];
+      if(opt.dataset.group === 'sos' && opt.dataset.auto === 'true'){
+        const oMin = Number(opt.dataset.min), oMax = Number(opt.dataset.max);
+        if(count >= oMin && count <= oMax){
+          oddsMethod.selectedIndex = i;
+          break;
+        }
+      }
+    }
+  }
+
   function updateOdds(){
+    autoUpdateOddsTier();
     const active = getActive();
     const p = 1 / Number(oddsMethod.value);
     if(!active){
@@ -1177,35 +2083,60 @@
     oddsResult.textContent = `~${pct}% cumulative`;
   }
 
-  // ---- Living Dex (second page): full 1–1025 completion sheet ----
-  const tabRosterBtn = document.getElementById('tabRosterBtn');
-  const tabDexBtn = document.getElementById('tabDexBtn');
+  // ---- Pokedex tabs: Active / Paused / Completed hunts, plus the
+  // Living Dex completion sheet ----
+  const tabButtons = document.querySelectorAll('.tab-btn');
   const rosterView = document.getElementById('rosterView');
   const dexView = document.getElementById('dexView');
   const rosterControls = document.getElementById('rosterControls');
   const dexSummaryEl = document.getElementById('dexSummary');
   const dexGridWrapEl = document.getElementById('dexGridWrap');
-  let activeTab = 'roster';
+  const hideUncaughtToggle = document.getElementById('hideUncaughtToggle');
+  let activeTab = 'active';
 
   function switchTab(tab){
     activeTab = tab;
-    const isRoster = tab === 'roster';
-    rosterView.style.display = isRoster ? 'block' : 'none';
-    dexView.style.display = isRoster ? 'none' : 'block';
-    rosterControls.style.display = isRoster ? 'flex' : 'none';
-    tabRosterBtn.classList.toggle('active', isRoster);
-    tabDexBtn.classList.toggle('active', !isRoster);
-    if(!isRoster) renderLivingDex();
+    const isDex = tab === 'dex';
+    rosterView.style.display = isDex ? 'none' : 'block';
+    dexView.style.display = isDex ? 'block' : 'none';
+    rosterControls.style.display = isDex ? 'none' : 'flex';
+    tabButtons.forEach(btn => btn.classList.toggle('active', btn.dataset.tab === tab));
+    if(isDex) renderLivingDex(); else render();
   }
-  tabRosterBtn.addEventListener('click', () => switchTab('roster'));
-  tabDexBtn.addEventListener('click', () => switchTab('dex'));
+  tabButtons.forEach(btn => btn.addEventListener('click', () => switchTab(btn.dataset.tab)));
+
+  hideUncaughtToggle.addEventListener('change', () => {
+    settings.hideUncaught = hideUncaughtToggle.checked;
+    saveSettings();
+    renderLivingDex();
+  });
+
+  // Single delegated click listener for the whole grid — renderLivingDex()
+  // replaces the grid's innerHTML on every call, but the wrapper element
+  // itself persists, so this only needs to be wired up once. Clicking any
+  // tile (found or not) opens the same info popup used on roster cards;
+  // for an unfound tile there's no tracked entry, so we pass the dex
+  // number instead and openInfoModal fetches game data straight from it.
+  dexGridWrapEl.addEventListener('click', (e) => {
+    const tile = e.target.closest('.dex-tile');
+    if(!tile) return;
+    const num = Number(tile.dataset.num);
+    if(!num) return;
+    const entry = pokedex.find(p => p.found && p.dexNumber === num) || null;
+    openInfoModal(entry, num);
+  });
 
   // Builds the full 1–1025 tile grid, grouped by generation. A tile is
   // "found" only if some pokedex entry has that exact dexNumber AND is
   // marked found — everything else renders greyed out. Sprite images come
   // from a public sprite database keyed by National Dex number, since we
-  // obviously can't ask the user to upload 1000+ files themselves.
+  // obviously can't ask the user to upload 1000+ files themselves. Every
+  // tile is clickable (see the delegated listener above); when "Hide
+  // uncaught" is on, not-yet-found tiles (and any generation section left
+  // with nothing to show) are skipped entirely.
   function renderLivingDex(){
+    hideUncaughtToggle.checked = !!settings.hideUncaught;
+    const hideUncaught = !!settings.hideUncaught;
     const foundByNumber = {};
     pokedex.forEach(p => {
       if(p.found && p.dexNumber) foundByNumber[p.dexNumber] = p;
@@ -1222,17 +2153,13 @@
       for(let n = start; n <= end; n++){ if(foundByNumber[n]) genFound++; }
       const genTotal = end - start + 1;
 
-      html += `
-        <div class="dex-gen-section">
-          <div class="dex-gen-header">
-            <span>Gen ${toRoman(g.gen)} <span class="dex-gen-games">— ${g.games}</span></span>
-            <span class="dex-gen-count">${genFound} / ${genTotal}</span>
-          </div>
-          <div class="dex-tile-grid">
-      `;
+      if(hideUncaught && genFound === 0) return;
+
+      let tilesHtml = '';
       for(let n = start; n <= end; n++){
         const entry = foundByNumber[n];
         const isFound = !!entry;
+        if(hideUncaught && !isFound) continue;
         // Prefer the user's own uploaded/linked sprite for a found tile —
         // it's what they actually caught — falling back to the public
         // shiny-sprite database only if they didn't provide one.
@@ -1240,17 +2167,28 @@
           ? (entry.gifUrl || `${spriteBase}/shiny/${n}.png`)
           : `${spriteBase}/${n}.png`;
         const label = isFound ? entry.name : ('#' + n);
-        html += `
-          <div class="dex-tile${isFound ? ' found' : ''}" title="${label}">
+        tilesHtml += `
+          <div class="dex-tile${isFound ? ' found' : ''}" title="${label}" data-num="${n}">
             <img src="${src}" loading="lazy" alt="${label}"
                  onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
             <span class="dex-num-fallback" style="display:none;">#${n}</span>
           </div>
         `;
       }
-      html += `</div></div>`;
+
+      html += `
+        <div class="dex-gen-section">
+          <div class="dex-gen-header">
+            <span>Gen ${toRoman(g.gen)} <span class="dex-gen-games">— ${g.games}</span></span>
+            <span class="dex-gen-count">${genFound} / ${genTotal}</span>
+          </div>
+          <div class="dex-tile-grid">
+            ${tilesHtml}
+          </div>
+        </div>
+      `;
     });
-    dexGridWrapEl.innerHTML = html;
+    dexGridWrapEl.innerHTML = html || '<p class="dex-note">No shinies found yet — catch one to see it here!</p>';
   }
 
   // ---- Counter actions ----
@@ -1344,6 +2282,9 @@
       return;
     }
     active.found = true;
+    // Only auto-fill the found date if one isn't already set, so it
+    // never clobbers a date the user backfilled manually via Edit.
+    if(!active.foundDate) active.foundDate = todayISO();
     savePokedex();
     render();
     launchConfetti();
@@ -1382,6 +2323,86 @@
     }
   });
 
+  // ---- Gamepad / controller support ----
+  // Lets a connected controller drive the counter and move around the
+  // roster/tabs — handy since a controller's often already in hand while
+  // shiny hunting. Uses the standard Gamepad API mapping (A/B/X/Y face
+  // buttons, D-pad). Only polled via requestAnimationFrame while at least
+  // one gamepad is connected, with press-edge detection so holding a
+  // button down doesn't repeat the action every frame.
+  //   A............+1 encounter          X....toggle "shiny found"
+  //   B............-1 encounter          Y....open info for active hunt
+  //   D-pad up/down.....move active hunt selection within the current tab
+  //   D-pad left/right..switch between Active / Paused / Completed / Dex
+  const gamepadStatusEl = document.getElementById('gamepadStatus');
+  let gamepadPollHandle = null;
+  let prevGamepadButtons = {};
+
+  function updateGamepadStatus(){
+    if(!gamepadStatusEl) return;
+    const pads = navigator.getGamepads ? navigator.getGamepads() : [];
+    const connected = Array.prototype.some.call(pads, p => !!p);
+    gamepadStatusEl.textContent = connected ? '🎮 Controller connected' : '';
+  }
+
+  function cycleActivePokemon(direction){
+    const visible = getSortedPokedex();
+    if(visible.length === 0) return;
+    const currentIndex = visible.findIndex(p => p.id === settings.activeId);
+    const nextIndex = currentIndex === -1 ? 0 : (currentIndex + direction + visible.length) % visible.length;
+    settings.activeId = visible[nextIndex].id;
+    saveSettings();
+    render();
+  }
+
+  function cycleTab(direction){
+    const tabs = ['active', 'paused', 'completed', 'dex'];
+    const currentIndex = tabs.indexOf(activeTab);
+    const nextIndex = (currentIndex + direction + tabs.length) % tabs.length;
+    switchTab(tabs[nextIndex]);
+  }
+
+  function pollGamepad(){
+    const pads = navigator.getGamepads ? navigator.getGamepads() : [];
+    for(let p = 0; p < pads.length; p++){
+      const pad = pads[p];
+      if(!pad) continue;
+      const prev = prevGamepadButtons[pad.index] || [];
+      const nowPressed = [];
+      pad.buttons.forEach((btn, i) => {
+        const pressed = btn.pressed || btn.value > 0.5;
+        nowPressed[i] = pressed;
+        if(pressed && !prev[i]){
+          if(i === 0) changeCount(1);                                          // A
+          else if(i === 1) changeCount(-1);                                    // B
+          else if(i === 2) foundBtn.click();                                   // X
+          else if(i === 3){ const active = getActive(); if(active) openInfoModal(active); } // Y
+          else if(i === 12) cycleActivePokemon(-1);                            // D-pad up
+          else if(i === 13) cycleActivePokemon(1);                             // D-pad down
+          else if(i === 14) cycleTab(-1);                                      // D-pad left
+          else if(i === 15) cycleTab(1);                                       // D-pad right
+        }
+      });
+      prevGamepadButtons[pad.index] = nowPressed;
+    }
+    gamepadPollHandle = requestAnimationFrame(pollGamepad);
+  }
+
+  window.addEventListener('gamepadconnected', () => {
+    updateGamepadStatus();
+    if(!gamepadPollHandle) pollGamepad();
+  });
+  window.addEventListener('gamepaddisconnected', (e) => {
+    delete prevGamepadButtons[e.gamepad.index];
+    updateGamepadStatus();
+    const pads = navigator.getGamepads ? navigator.getGamepads() : [];
+    const stillConnected = Array.prototype.some.call(pads, p => !!p);
+    if(!stillConnected && gamepadPollHandle){
+      cancelAnimationFrame(gamepadPollHandle);
+      gamepadPollHandle = null;
+    }
+  });
+
   // ---- Sprite upload ----
   // Reads the chosen image file as a base64 data URL entirely client-side,
   // so the sprite is embedded in storage with no external hosting/network
@@ -1414,38 +2435,25 @@
     if(!name){ setStatus('Enter a pokemon name first.', true); return; }
     setStatus('Fetching shiny sprite…', false);
     try{
-      const res = await fetch(`https://pokeapi.co/api/v2/pokemon/${name}`);
-      if(!res.ok) throw new Error('not found');
-      const data = await res.json();
-      const genV = data.sprites &&
-        data.sprites.versions &&
-        data.sprites.versions['generation-v'] &&
-        data.sprites.versions['generation-v']['black-white'];
-      const animatedShiny = genV && genV.animated && genV.animated.front_shiny;
-      const staticShiny = data.sprites && data.sprites.front_shiny;
-      const animatedDefault = genV && genV.animated && genV.animated.front_default;
-      const staticDefault = data.sprites && data.sprites.front_default;
-      const sprite = animatedShiny || staticShiny || animatedDefault || staticDefault;
-      if(!sprite) throw new Error('no sprite');
-      gifInput.value = sprite;
+      const result = await fetchShinySpriteFromPokeAPI(name);
+      if(!result.sprite) throw new Error('no sprite');
+      gifInput.value = result.sprite;
 
       // best-effort: also fill in the National Dex number (used by the
-      // Living Dex page) — data.id matches it for the default/base form.
-      if(data.id) dexNumInput.value = data.id;
+      // Living Dex page) — matches the default/base form.
+      if(result.dexNumber) dexNumInput.value = result.dexNumber;
 
       // best-effort: also fill in the generation
       try{
-        if(data.species && data.species.url){
-          const speciesRes = await fetch(data.species.url);
-          if(speciesRes.ok){
-            const speciesData = await speciesRes.json();
-            const genNumber = speciesData.generation && GEN_NAME_TO_NUMBER[speciesData.generation.name];
-            if(genNumber) genInput.value = String(genNumber);
-          }
+        const speciesRes = await fetch(`https://pokeapi.co/api/v2/pokemon-species/${name}`);
+        if(speciesRes.ok){
+          const speciesData = await speciesRes.json();
+          const genNumber = speciesData.generation && GEN_NAME_TO_NUMBER[speciesData.generation.name];
+          if(genNumber) genInput.value = String(genNumber);
         }
       }catch(genErr){ /* non-fatal — generation stays whatever the user had selected */ }
 
-      if(animatedShiny || staticShiny){
+      if(result.hasShiny){
         setStatus('Shiny sprite found — note this may still fail to display; uploading a file is more reliable.', false);
       } else {
         setStatus('No shiny sprite available for that pokemon — filled in the regular sprite instead.', true);
@@ -1466,7 +2474,15 @@
     if(!name){ setStatus('Enter a pokemon name.', true); return; }
     if(!gifUrl){ setStatus('Upload a file or paste an image URL.', true); return; }
     const id = name.toLowerCase() + '-' + Date.now();
-    pokedex.push({ id, name, gifUrl, count: 0, generation, dexNumber });
+    pokedex.push({
+      id, name, gifUrl, count: 0, generation, dexNumber,
+      form: null,                              // regional form (PokeAPI variety name), if any
+      status: 'active',                        // 'active' | 'paused' — Completed is derived from `found`
+      addedDate: todayISO(),                   // immutable — when this entry was first added
+      startDate: todayISO(),                   // editable in the edit modal
+      foundDate: null,                         // set automatically when marked found
+      huntSeconds: 0                           // accumulated by the background session timer
+    });
     if(!settings.activeId) settings.activeId = id;
     savePokedex();
     saveSettings();
@@ -1482,18 +2498,111 @@
     render();
   });
 
+  // ---- Backup: CSV helpers ----
+  // Backups are one row per Pokedex entry, so the file opens cleanly as a
+  // normal spreadsheet in Excel/Sheets/Numbers. App-level settings
+  // (keybind, dark mode, active hunt, etc) aren't a per-row table, so they
+  // don't round-trip through CSV — only Pokedex entries do. A phase log
+  // (which can have any number of phases) is packed into one cell as
+  // "name|date;name2|date2" rather than spread across extra columns.
+  const CSV_COLUMNS = ['id','name','count','generation','dexNumber','form','status','found','addedDate','startDate','foundDate','huntSeconds','phaseCount','phaseLog','gifUrl'];
+
+  function csvEscape(value){
+    const str = value === null || value === undefined ? '' : String(value);
+    if(/[",\n\r]/.test(str)) return '"' + str.replace(/"/g, '""') + '"';
+    return str;
+  }
+  function phaseLogToCell(phaseLog){
+    return (phaseLog || []).map(ph => `${(ph.name || '').replace(/[|;]/g, ' ')}|${ph.date || ''}`).join(';');
+  }
+  function phaseLogFromCell(cell){
+    if(!cell) return [];
+    return cell.split(';').filter(Boolean).map(part => {
+      const [name, date] = part.split('|');
+      return { name: (name || '').trim(), gifUrl: null, date: (date || '').trim() || null };
+    });
+  }
+  function pokedexToCSV(list){
+    const rows = [CSV_COLUMNS.join(',')];
+    list.forEach(p => {
+      const row = [
+        p.id, p.name, p.count || 0, p.generation || '', p.dexNumber || '', p.form || '',
+        p.status || 'active', p.found ? 'true' : 'false', p.addedDate || '', p.startDate || '',
+        p.foundDate || '', Math.round(p.huntSeconds || 0), p.phaseCount || 0,
+        phaseLogToCell(p.phaseLog), p.gifUrl || ''
+      ].map(csvEscape);
+      rows.push(row.join(','));
+    });
+    return rows.join('\r\n');
+  }
+  // Minimal RFC4180-style CSV parser: handles quoted fields, escaped ""
+  // and embedded commas. Doesn't need to handle embedded newlines inside
+  // a field since none of our columns legitimately contain them.
+  function parseCSV(text){
+    const rows = [];
+    let row = [], field = '', inQuotes = false;
+    for(let i = 0; i < text.length; i++){
+      const c = text[i];
+      if(inQuotes){
+        if(c === '"'){
+          if(text[i+1] === '"'){ field += '"'; i++; }
+          else inQuotes = false;
+        } else field += c;
+      } else if(c === '"'){
+        inQuotes = true;
+      } else if(c === ','){
+        row.push(field); field = '';
+      } else if(c === '\n' || c === '\r'){
+        if(c === '\r' && text[i+1] === '\n') i++;
+        row.push(field); field = '';
+        if(row.length > 1 || row[0] !== '') rows.push(row);
+        row = [];
+      } else field += c;
+    }
+    if(field !== '' || row.length) { row.push(field); rows.push(row); }
+    return rows;
+  }
+  function csvToPokedex(text){
+    const rows = parseCSV(text.replace(/^﻿/, '')); // strip BOM if Excel added one
+    if(rows.length < 2) return [];
+    const header = rows[0];
+    const idx = {};
+    header.forEach((h, i) => { idx[h.trim()] = i; });
+    return rows.slice(1).filter(r => r.length > 1 || r[0]).map(r => {
+      const get = key => (idx[key] !== undefined && r[idx[key]] !== undefined) ? r[idx[key]] : '';
+      const name = get('name').trim();
+      return {
+        id: get('id').trim() || (name.toLowerCase() + '-' + Date.now() + '-' + Math.random().toString(36).slice(2,6)),
+        name,
+        gifUrl: get('gifUrl'),
+        count: Number(get('count')) || 0,
+        generation: get('generation') ? Number(get('generation')) : null,
+        dexNumber: get('dexNumber') ? Number(get('dexNumber')) : null,
+        form: get('form') || null,
+        status: get('status') || 'active',
+        found: get('found').trim().toLowerCase() === 'true',
+        addedDate: get('addedDate') || null,
+        startDate: get('startDate') || null,
+        foundDate: get('foundDate') || null,
+        huntSeconds: Number(get('huntSeconds')) || 0,
+        phaseCount: Number(get('phaseCount')) || 0,
+        phaseLog: phaseLogFromCell(get('phaseLog'))
+      };
+    }).filter(p => p.name);
+  }
+
   // ---- Backup: export ----
-  // Downloads the whole app state (pokedex + settings) as a timestamped
-  // JSON file the user can keep or move to another browser/computer.
+  // Downloads the Pokedex as a timestamped CSV spreadsheet the user can
+  // open in Excel/Sheets, edit, or move to another browser/computer.
   exportBtn.addEventListener('click', () => {
     try{
-      const payload = { exportedAt: new Date().toISOString(), pokedex, settings };
-      const blob = new Blob([JSON.stringify(payload, null, 2)], { type: 'application/json' });
+      const csv = pokedexToCSV(pokedex);
+      const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
       const url = URL.createObjectURL(blob);
       const a = document.createElement('a');
       const stamp = new Date().toISOString().slice(0,10);
       a.href = url;
-      a.download = `shiny-tally-backup-${stamp}.json`;
+      a.download = `shiny-tally-backup-${stamp}.csv`;
       document.body.appendChild(a);
       a.click();
       a.remove();
@@ -1505,8 +2614,9 @@
   });
 
   // ---- Backup: import ----
-  // Reads a previously exported JSON file and lets the user choose to
-  // replace the current pokedex outright or merge it in (renaming any
+  // Reads a previously exported CSV (or a spreadsheet edited by hand,
+  // provided it keeps the same column headers) and lets the user choose
+  // to replace the current pokedex outright or merge it in (renaming any
   // colliding IDs so nothing gets silently overwritten).
   importInput.addEventListener('change', () => {
     const file = importInput.files[0];
@@ -1514,18 +2624,17 @@
     const reader = new FileReader();
     reader.onload = () => {
       try{
-        const data = JSON.parse(reader.result);
-        if(!data || !Array.isArray(data.pokedex)) throw new Error('bad shape');
+        const importedPokedex = csvToPokedex(String(reader.result));
+        if(importedPokedex.length === 0) throw new Error('bad shape');
 
         // Finishes the import for a given strategy — pulled out so both
         // modal buttons below can call it instead of duplicating logic.
         const applyImport = (mode) => {
           if(mode === 'replace'){
-            pokedex = data.pokedex;
-            if(data.settings) settings = Object.assign(settings, data.settings);
+            pokedex = importedPokedex;
           } else {
             const existingIds = new Set(pokedex.map(p => p.id));
-            data.pokedex.forEach(p => {
+            importedPokedex.forEach(p => {
               if(!existingIds.has(p.id)){
                 pokedex.push(p);
               } else {
@@ -1534,19 +2643,17 @@
             });
           }
           savePokedex();
-          saveSettings();
-          applyTheme();
           render();
           setBackupStatus('Backup imported.', false);
         };
 
-        openModal(`Import ${data.pokedex.length} pokemon from this backup?`, [
+        openModal(`Import ${importedPokedex.length} pokemon from this backup?`, [
           { label: 'Cancel', className: 'ghost' },
           { label: 'Merge', className: 'ghost', onClick: () => applyImport('merge') },
           { label: 'Replace', className: 'danger-outline', onClick: () => applyImport('replace') }
         ]);
       }catch(e){
-        setBackupStatus('That file doesn\'t look like a valid backup.', true);
+        setBackupStatus('That file doesn\'t look like a valid backup CSV.', true);
       }
       importInput.value = '';
     };
@@ -1610,6 +2717,27 @@
 
   function playDecrementChime(){
     playTone([ {freq: 659.25, gain: 0.10}, {freq: 987.77, gain: 0.045} ]);
+  }
+
+  // A short "hm, not that one" descending blip for logging a phase — distinct
+  // from both the found jingle (celebratory) and the plain count chimes.
+  function playPhaseTone(){
+    const ctx = getAudioCtx();
+    if(!ctx) return;
+    const now = ctx.currentTime;
+    [ {freq: 740, time: 0}, {freq: 493.88, time: 0.09} ].forEach(n => {
+      const t = now + n.time;
+      const osc = ctx.createOscillator();
+      const gainNode = ctx.createGain();
+      osc.type = 'triangle';
+      osc.frequency.setValueAtTime(n.freq, t);
+      gainNode.gain.setValueAtTime(0.0001, t);
+      gainNode.gain.exponentialRampToValueAtTime(0.09, t + 0.015);
+      gainNode.gain.exponentialRampToValueAtTime(0.0001, t + 0.16);
+      osc.connect(gainNode).connect(ctx.destination);
+      osc.start(t);
+      osc.stop(t + 0.18);
+    });
   }
 
   function playFoundJingle(){
@@ -1686,6 +2814,46 @@
       appBody.classList.add('opened');
     }, 420);
   });
+
+  // ---- Background hunting-time timer ----
+  // Accumulates real elapsed time into the currently-active pokemon's
+  // huntSeconds, once per second, but only while the tab is actually
+  // visible (so leaving it open in a background tab overnight doesn't
+  // silently rack up hours of "hunting"). lastTickTime is refreshed on
+  // every tick regardless of visibility, so a delta is never computed
+  // across a long hidden gap; a 5-second cap per tick is a second safety
+  // net against laptop-sleep style anomalies. Saves are throttled to
+  // roughly every 5 seconds of actual accumulated time, with an
+  // immediate flush when the tab is hidden or the page is closed so
+  // nothing gets lost.
+  let lastTickTime = Date.now();
+  let unsavedHuntSeconds = 0;
+
+  function flushHuntTime(){
+    if(unsavedHuntSeconds > 0){
+      unsavedHuntSeconds = 0;
+      savePokedex();
+    }
+  }
+
+  setInterval(() => {
+    const now = Date.now();
+    const delta = Math.min((now - lastTickTime) / 1000, 5);
+    lastTickTime = now;
+    if(document.visibilityState !== 'visible') return;
+    const active = getActive();
+    if(!active || active.found || active.status === 'paused') return; // stop accumulating once caught or paused
+    active.huntSeconds = (active.huntSeconds || 0) + delta;
+    unsavedHuntSeconds += delta;
+    huntTimeDisplay.textContent = `⏱ ${formatHuntTime(active.huntSeconds)} hunting`;
+    if(unsavedHuntSeconds >= 5) flushHuntTime();
+  }, 1000);
+
+  document.addEventListener('visibilitychange', () => {
+    lastTickTime = Date.now();
+    if(document.visibilityState !== 'visible') flushHuntTime();
+  });
+  window.addEventListener('beforeunload', flushHuntTime);
 
   // ---- Go ----
   loadState();
