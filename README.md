@@ -55,7 +55,7 @@ The Settings tab has an OBS Integration panel that connects directly to OBS's bu
 5. Pick which OBS source each field should update from the dropdowns (Sprite / Name / Count / Timer).
 6. Turn on **"Keep all of the above updated live"** to have the tracker push updates automatically as you hunt.
 
-Once connected, the sprite is pushed as the animated shiny GIF (regional forms included) with a clean, transparent background, so it composites over your overlay with no black or white box behind it.
+Once connected, the sprite is pushed as the animated shiny GIF (regional forms included) with a clean, transparent background, so it composites over your overlay.
 
 ## Controller Controls
 
