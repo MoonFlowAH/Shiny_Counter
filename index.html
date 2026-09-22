@@ -19,12 +19,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;600;700;800&family=JetBrains+Mono:wght@500;700;800&display=swap" rel="stylesheet">
 <style>
-  /* ============================================================
-     THEME VARIABLES
-     All colors are defined here as CSS custom properties so the
-     
-     dark-mode override block below can simply redefine them.
-     ============================================================ */
+  /* Theme colors, defined as CSS variables. Dark mode overrides them below. */
   :root{
     --desk: #E4E0D4;           /* page background (the "desk" the device sits on) */
     --shell: #E0342B;          /* Pokedex shell red */
@@ -52,9 +47,8 @@
     --danger: #B23A2E;
   }
 
-  /* Dark mode: re-declares the theme variables above. Everything
-     else in this stylesheet references the variables, so no other
-     rule needs to change when this class is toggled on <body>. */
+  /* Dark mode overrides the variables above. Everything else in this
+     stylesheet uses those variables, so nothing else needs to change. */
   body.dark-mode{
     --desk: #14181B;
     --shell: #B8291F;
@@ -93,8 +87,7 @@
   }
   .header-text{flex:1;}
 
-  /* Dark mode toggle switch — a checkbox visually hidden and replaced
-     with a styled pill/thumb so it matches the device's chunky look. */
+  /* Dark mode switch: a checkbox hidden and replaced with a pill/thumb. */
   .theme-toggle-wrap{display:flex;flex-direction:column;align-items:flex-end;gap:4px;flex:0 0 auto;}
   .theme-toggle{display:flex;align-items:center;gap:8px;cursor:pointer;flex:0 0 auto;}
   .theme-toggle input{ position:absolute; opacity:0; width:0; height:0; }
@@ -258,6 +251,60 @@
     font-size:0.72rem;font-weight:700;color:var(--found-text);
     text-align:center;min-height:14px;cursor:help;
   }
+
+  /* Collapsible sections (keybinds, gamepad, auto-increment, add-pokemon
+     form, backups). Built on native <details>/<summary> — no JS needed. */
+  .accordion{
+    border:2px solid var(--trim-black);
+    border-radius:10px;
+    background:var(--cream);
+    overflow:hidden;
+  }
+  .accordion + .accordion{margin-top:10px;}
+  #settingsView{margin-bottom:10px;}
+  .accordion summary{
+    cursor:pointer;list-style:none;
+    padding:10px 12px;
+    font-weight:800;font-size:0.85rem;
+    display:flex;align-items:center;justify-content:space-between;
+    user-select:none;
+  }
+  .accordion summary::-webkit-details-marker{display:none;}
+  .accordion summary::after{
+    content:'';
+    width:0;height:0;flex-shrink:0;
+    border-left:5px solid transparent;
+    border-right:5px solid transparent;
+    border-top:7px solid var(--muted);
+    transition:transform 0.15s ease;
+  }
+  .accordion[open] summary{border-bottom:2px solid var(--trim-black);}
+  .accordion[open] summary::after{transform:rotate(180deg);}
+  /* Custom inline-SVG icons, used everywhere in place of emoji so the app
+     looks the same on every device instead of falling back to each OS's
+     own emoji font (e.g. the default colorful iOS glyphs). Sized off the
+     surrounding text via 1em, and colored via currentColor so they pick
+     up whatever color the button/text around them already uses. */
+  .icon{width:1em;height:1em;flex-shrink:0;vertical-align:-0.15em;}
+  .icon-label{display:inline-flex;align-items:center;gap:8px;}
+  .accordion-body{
+    padding:12px;
+    display:flex;flex-direction:column;gap:12px;
+  }
+  .auto-panel{
+    background:var(--cream);border:2px solid var(--trim-black);border-radius:10px;
+    padding:10px 12px;display:flex;flex-direction:column;gap:8px;
+  }
+  .auto-panel-label{font-size:0.78rem;font-weight:800;color:var(--muted);}
+  .auto-panel-row{display:flex;align-items:center;gap:8px;flex-wrap:wrap;}
+  .auto-panel-row input.auto-interval-input{
+    width:64px;flex:0 0 64px;text-align:center;
+    margin-bottom:0;padding:9px 6px;
+    font-size:0.92rem;line-height:1.2;
+    box-shadow:0 3px 0 var(--trim-black);
+  }
+  .auto-panel-unit{font-size:0.8rem;font-weight:700;color:var(--muted);}
+  .auto-panel .keybind-row{background:transparent;border:none;padding:0;}
   .keycap{
     font-family:'JetBrains Mono', monospace;
     background:var(--chrome);
@@ -270,6 +317,9 @@
     display:inline-block;
   }
 
+  .obs-panel-label{font-size:0.75rem;color:var(--muted);font-weight:600;line-height:1.35;}
+  #obsTextSourceRow{margin-top:10px;padding-top:10px;border-top:1px solid var(--trim-black);}
+
   /* Shared look for every <select> in the app (sort, odds method, generation) */
   .odds-row{font-size:0.78rem;color:var(--muted);display:flex;flex-direction:column;gap:6px;font-weight:600;}
   .themed-select{
@@ -281,9 +331,8 @@
     font-family:'Baloo 2', sans-serif;
     font-size:0.82rem;
     font-weight:700;
-    /* Reset native control chrome (some browsers draw a faint shadow/line
-       under <select> that isn't reachable with normal CSS) and draw our
-       own dropdown arrow instead, so it looks identical everywhere. */
+    /* Remove native dropdown styling and draw our own arrow instead,
+       so selects look the same in every browser. */
     appearance:none;
     -webkit-appearance:none;
     -moz-appearance:none;
@@ -303,9 +352,7 @@
     display:inline-block;
     width:fit-content;
   }
-  /* When no pokemon is selected (or the % hasn't been computed yet),
-     this chip has no text but still had a faint tinted sliver from its
-     own padding/background — hide it entirely until it has content. */
+  /* Hide this chip's padding/background when it has no text yet. */
   .odds-result:empty{
     display:none;
     padding:0;
@@ -344,6 +391,15 @@
   .dex-total{
     font-weight:800;font-size:1.05rem;margin-bottom:14px;text-align:center;
   }
+  #dexGridWrap{
+    max-height:48vh;overflow-y:auto;overflow-x:hidden;
+    padding:2px 4px 4px 2px;
+    margin-bottom:16px;
+    scrollbar-width:thin;scrollbar-color:var(--yellow-dark) transparent;
+  }
+  #dexGridWrap::-webkit-scrollbar{width:8px;}
+  #dexGridWrap::-webkit-scrollbar-thumb{background:var(--yellow-dark);border-radius:999px;}
+  #dexGridWrap::-webkit-scrollbar-track{background:transparent;}
   .dex-gen-section{margin-bottom:18px;}
   .dex-gen-header{
     display:flex;justify-content:space-between;align-items:baseline;flex-wrap:wrap;
@@ -351,9 +407,9 @@
   }
   .dex-gen-games{color:var(--muted);font-weight:600;font-size:0.72rem;}
   .dex-gen-count{
-    font-family:'JetBrains Mono', monospace;color:var(--danger);
+    font-family:'Baloo 2', sans-serif;color:var(--danger);
     background:var(--count-chip-bg);padding:1px 8px;border-radius:999px;
-    font-weight:700;font-size:0.75rem;
+    font-weight:700;font-size:0.8rem;
   }
   .dex-tile-grid{
     display:grid;grid-template-columns:repeat(auto-fill, minmax(34px, 1fr));gap:4px;
@@ -378,7 +434,17 @@
     grid-template-columns:repeat(auto-fill, minmax(108px, 1fr));
     gap:10px;
     margin-bottom:16px;
+    max-height:48vh;
+    overflow-y:auto;
+    overflow-x:hidden;
+    align-content:start;
+    padding:2px 4px 2px 2px;
+    scrollbar-width:thin;
+    scrollbar-color:var(--shell-dark) transparent;
   }
+  .roster::-webkit-scrollbar{width:8px;}
+  .roster::-webkit-scrollbar-thumb{background:var(--shell-dark);border-radius:999px;}
+  .roster::-webkit-scrollbar-track{background:transparent;}
   .mon-card{
     background:var(--card-bg);
     border:2px solid var(--trim-black);
@@ -409,6 +475,23 @@
     border-radius:999px;
     display:inline-block;
   }
+  /* Row wrapping each card's count with its own +/- buttons, so any
+     hunt's counter can be bumped right from the roster — not just
+     whichever one is active in the big display panel. */
+  .mon-card .mon-count-row{
+    display:flex;align-items:center;gap:6px;
+  }
+  .mon-card .card-count-btn{
+    width:22px;height:22px;padding:0;
+    display:flex;align-items:center;justify-content:center;
+    font-size:0.85rem;font-weight:800;line-height:1;
+    border-radius:7px;border:2px solid var(--trim-black);
+    background:var(--chrome);color:var(--text-dark);
+    box-shadow:0 2px 0 var(--trim-black);
+  }
+  .mon-card .card-count-btn:active{transform:translateY(2px);box-shadow:none;}
+  .mon-card .card-count-btn.card-dec{color:var(--danger);}
+  .mon-card .card-count-btn.card-inc{color:var(--found-text);}
   .mon-card .mon-gen{font-size:0.65rem;color:var(--muted);font-weight:700;letter-spacing:0.02em;}
   .mon-card .mon-gen.phase-tag{
     color:var(--yellow-dark);background:rgba(244,196,48,0.16);
@@ -464,8 +547,6 @@
 
   /* "Add to Pokedex" form: name, sprite upload/URL, generation, submit */
   .add-form{
-    border-top:2px dashed var(--trim-black);
-    padding-top:16px;
     display:grid;
     gap:10px;
   }
@@ -500,12 +581,9 @@
   #uploadPreviewWrap, .upload-preview-wrap{width:28px;height:28px;flex:0 0 28px;display:flex;align-items:center;justify-content:center;}
   #uploadPreview, .upload-preview{max-width:28px;max-height:28px;image-rendering:pixelated;}
 
-  /* Export/Import backup controls, shown above the add-form */
+  /* Export/Import backup controls */
   .backup-row{
     display:flex;align-items:center;gap:10px;flex-wrap:wrap;
-    margin-bottom:16px;
-    padding-bottom:16px;
-    border-bottom:2px dashed var(--trim-black);
   }
   .import-label{
     font-family:'Baloo 2', sans-serif;
@@ -543,8 +621,7 @@
     100%{transform:translateY(105vh) translateX(var(--drift,0px)) rotate(var(--spin,360deg));opacity:0.9;}
   }
 
-  /* Custom confirm/choice popup — replaces the browser's native confirm(),
-     which some sandboxed environments silently block (see openModal in JS) */
+  /* Custom confirm/choice popup, built in JS (see openModal). */
   .modal-overlay{
     position:fixed;inset:0;z-index:10000;
     background:rgba(27,27,27,0.55);
@@ -575,12 +652,10 @@
   }
   .modal-actions{display:flex;gap:8px;flex-wrap:wrap;justify-content:flex-end;}
 
-  /* Pokemon info popup — taller/scrollable since game data can run long */
+  /* Pokemon info popup — taller and scrollable, since game data can run long */
   .modal-box.info-modal-box{max-width:440px;max-height:82vh;overflow-y:auto;}
-  /* "Poketch"-style frame around the info-modal sprite: a wristband
-     peeking out top/bottom behind a rounded black device case, with a
-     green pixel-grid LCD screen and a little side button, evoking a
-     Pokétch-like wearable rather than a plain image box. */
+  /* Pokétch-style frame around the info-modal sprite: a wristband behind
+     a rounded black case, with a green LCD screen and a side button. */
   .info-sprite-wrap{
     position:relative;
     display:flex;justify-content:center;
@@ -621,11 +696,9 @@
   }
   .info-section{margin-bottom:12px;}
   .info-heading{font-weight:800;font-size:0.95rem;margin-bottom:8px;}
-  /* Each game-data subsection heading sits on its own semi-opaque black
-     "bubble" with a distinct accent color, so the four sections are easy
-     to tell apart at a glance. Fixed hex colors (not theme variables) —
-     the bubble is dark regardless of light/dark mode, so the color needs
-     to read against black specifically, not against the page theme. */
+  /* Each game-data subheading has its own accent color on a dark bubble.
+     Fixed hex colors, not theme variables — the bubble stays dark in
+     both light and dark mode. */
   .info-subheading{
     display:inline-block;
     font-weight:800;
@@ -655,7 +728,7 @@
   .info-version-group{margin-bottom:8px;}
   .info-version-group strong{font-size:0.78rem;text-transform:capitalize;}
 
-  /* "Closed device" splash screen and its flip-open animation into .app-body */
+  /* Closed-device splash screen and its flip-open animation into .app-body */
   .stage{perspective:1200px;}
 
   .closed-pokedex{
@@ -753,7 +826,7 @@
           <div class="active-name" id="activeName">No pokemon selected</div>
           <div class="active-sub" id="activeOdds"></div>
           <div class="hunt-time" id="huntTimeDisplay"></div>
-          <div class="found-banner" id="foundBanner" style="display:none;">✓ Shiny found!</div>
+          <div class="found-banner" id="foundBanner" style="display:none;"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="4 13 9 18 20 6"></polyline></svg> Shiny found!</div>
         </div>
       </div>
 
@@ -768,16 +841,9 @@
             <button class="primary" id="incBtn">+1</button>
             <button class="danger-outline" id="resetBtn">Reset</button>
           </div>
-          <button class="ghost" id="setCountBtn" style="width:100%;">✎ Set starting count…</button>
-          <button class="success" id="foundBtn" style="width:100%;">✓ Mark shiny found!</button>
-          <div class="keybind-row">
-            <span>Increment key</span>
-            <span>
-              <span class="keycap" id="keycapLabel">Space</span>
-              <button class="ghost" id="rebindBtn" style="margin-left:8px;padding:5px 10px;font-size:0.75rem;box-shadow:0 2px 0 var(--trim-black);">Rebind</button>
-            </span>
-          </div>
-          <div class="gamepad-status" id="gamepadStatus" title="A: +1 · B: −1 · X: toggle found · Y: info · D-pad: navigate roster/tabs"></div>
+          <button class="ghost" id="setCountBtn" style="width:100%;"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20l1-5L16 4l4 4L9 19l-5 1z"></path><path d="M13.5 6.5l4 4"></path></svg> Set starting count…</button>
+          <button class="success" id="foundBtn" style="width:100%;"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="4 13 9 18 20 6"></polyline></svg> Mark shiny found!</button>
+
           <div class="odds-row">
             <span>Method (affects odds estimate only):</span>
             <select id="oddsMethod" class="themed-select">
@@ -806,6 +872,45 @@
             </select>
             <span class="odds-result" id="oddsResult"></span>
           </div>
+
+          <details class="accordion">
+            <summary><span class="icon-label"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3.25"></circle><path d="M12 3.5v2.4M12 18.1v2.4M20.5 12h-2.4M5.9 12H3.5M17.66 6.34l-1.7 1.7M8.04 15.96l-1.7 1.7M17.66 17.66l-1.7-1.7M8.04 8.04l-1.7-1.7"></path></svg> Controls &amp; Automation</span></summary>
+            <div class="accordion-body">
+              <div class="keybind-row">
+                <span>Increment key</span>
+                <span>
+                  <span class="keycap" id="keycapLabel">Space</span>
+                  <button class="ghost" id="rebindBtn" style="margin-left:8px;padding:5px 10px;font-size:0.75rem;box-shadow:0 2px 0 var(--trim-black);">Rebind</button>
+                </span>
+              </div>
+              <div class="gamepad-status" id="gamepadStatus" title="A: +1 · B: −1 · X: toggle found · Y: info · D-pad: navigate roster/tabs"></div>
+
+              <div class="auto-panel">
+                <div class="auto-panel-label">Auto-increment</div>
+                <div class="auto-panel-row">
+                  <input type="number" id="autoIntervalInput" class="modal-input auto-interval-input" min="0.1" step="0.1" value="5">
+                  <span class="auto-panel-unit">sec</span>
+                  <button class="success" id="autoGoBtn" type="button"><svg class="icon" viewBox="0 0 24 24" fill="currentColor"><polygon points="6 4 20 12 6 20"></polygon></svg> Go</button>
+                  <button class="danger-outline" id="autoStopBtn" type="button" disabled><svg class="icon" viewBox="0 0 24 24" fill="currentColor"><rect x="6" y="6" width="12" height="12" rx="2"></rect></svg> Stop</button>
+                </div>
+                <div class="keybind-row">
+                  <span>Start key</span>
+                  <span>
+                    <span class="keycap" id="autoStartKeycap">G</span>
+                    <button class="ghost" id="autoStartRebindBtn" style="margin-left:8px;padding:5px 10px;font-size:0.75rem;box-shadow:0 2px 0 var(--trim-black);">Rebind</button>
+                  </span>
+                </div>
+                <div class="keybind-row">
+                  <span>Stop key</span>
+                  <span>
+                    <span class="keycap" id="autoStopKeycap">H</span>
+                    <button class="ghost" id="autoStopRebindBtn" style="margin-left:8px;padding:5px 10px;font-size:0.75rem;box-shadow:0 2px 0 var(--trim-black);">Rebind</button>
+                  </span>
+                </div>
+                <div class="form-status" id="autoStatus"></div>
+              </div>
+            </div>
+          </details>
         </div>
       </div>
     </div>
@@ -836,6 +941,7 @@
       <button class="tab-btn" type="button" data-tab="paused">Paused</button>
       <button class="tab-btn" type="button" data-tab="completed">Completed</button>
       <button class="tab-btn" type="button" data-tab="dex">Living Dex</button>
+      <button class="tab-btn" type="button" data-tab="settings">Settings</button>
     </div>
 
     <div id="rosterView">
@@ -853,48 +959,102 @@
       <div id="dexGridWrap"></div>
     </div>
 
-    <div class="backup-row">
-      <button class="ghost" id="exportBtn" type="button">⬇ Export backup</button>
-      <label class="ghost import-label" for="importInput">⬆ Import backup</label>
-      <input type="file" id="importInput" accept=".csv,text/csv" style="display:none;">
-      <span class="form-status" id="backupStatus"></span>
+    <div id="settingsView" style="display:none;">
+      <details class="accordion" open>
+        <summary><span class="icon-label"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="2.5" y="6.5" width="13" height="11" rx="2"></rect><path d="M15.5 10l6-3.5v11l-6-3.5"></path></svg> OBS Integration</span></summary>
+        <div class="accordion-body">
+          <div class="obs-panel-label">Connect to OBS's WebSocket server (Tools &gt; WebSocket Server Settings in OBS) to push the active hunt's sprite, name, count and hunting time onto sources live. The sprite is pushed as a static shiny image (not the animated GIF) since the animated ones render with a black/white matte baked in.</div>
+          <label class="modal-field-label" for="obsUrlInput" style="margin-top:6px;">Server address</label>
+          <input type="text" id="obsUrlInput" class="modal-input" placeholder="ws://localhost:4455">
+          <label class="modal-field-label" for="obsPasswordInput">Password</label>
+          <input type="password" id="obsPasswordInput" class="modal-input" placeholder="Server password (leave blank if auth is off)">
+          <div class="auto-panel-row">
+            <button class="success" id="obsConnectBtn" type="button">Connect</button>
+            <button class="danger-outline" id="obsDisconnectBtn" type="button" disabled>Disconnect</button>
+          </div>
+          <div class="form-status" id="obsStatus">Not connected.</div>
+
+          <div id="obsTextSourceRow" style="display:none;">
+            <label class="modal-field-label" for="obsSpriteSourceSelect">Sprite source (Browser Source)</label>
+            <select id="obsSpriteSourceSelect" class="themed-select"></select>
+
+            <label class="modal-field-label" for="obsNameSourceSelect" style="margin-top:8px;">Name source (Text)</label>
+            <select id="obsNameSourceSelect" class="themed-select"></select>
+
+            <label class="modal-field-label" for="obsCountSourceSelect" style="margin-top:8px;">Count source (Text)</label>
+            <select id="obsCountSourceSelect" class="themed-select"></select>
+
+            <label class="modal-field-label" for="obsTimerSourceSelect" style="margin-top:8px;">Timer source (Text)</label>
+            <select id="obsTimerSourceSelect" class="themed-select"></select>
+
+            <label class="theme-toggle" style="margin-top:10px;">
+              <input type="checkbox" id="obsAutoUpdateToggle">
+              <span class="toggle-track"><span class="toggle-thumb"></span></span>
+              <span class="toggle-label">Keep all of the above updated live</span>
+            </label>
+            <label class="theme-toggle" style="margin-top:6px;">
+              <input type="checkbox" id="obsMatchFontToggle" checked>
+              <span class="toggle-track"><span class="toggle-thumb"></span></span>
+              <span class="toggle-label">Style the count source like the LCD screen (JetBrains Mono, bold)</span>
+            </label>
+            <div class="obs-panel-label" style="margin-top:8px;">Only Text (GDI+/FreeType 2) sources appear for Name/Count/Timer, and only Browser sources for Sprite — add one of each in OBS first if a list comes up empty. The sprite is pushed as a self-contained transparent page (not a bare image link), so the Browser Source should render with no black or white border behind it automatically — no Custom CSS needed on your end for that.</div>
+          </div>
+        </div>
+      </details>
+
+      <details class="accordion" open>
+        <summary><span class="icon-label"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="7 3 7 21"></polyline><polyline points="4 6 7 3 10 6"></polyline><polyline points="17 21 17 3"></polyline><polyline points="14 18 17 21 20 18"></polyline></svg> Backup (Export / Import)</span></summary>
+        <div class="accordion-body">
+          <div class="backup-row">
+            <button class="ghost" id="exportBtn" type="button"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="3" x2="12" y2="17"></line><polyline points="6 11 12 17 18 11"></polyline><line x1="4" y1="21" x2="20" y2="21"></line></svg> Export backup</button>
+            <label class="ghost import-label" for="importInput"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="21" x2="12" y2="7"></line><polyline points="6 13 12 7 18 13"></polyline><line x1="4" y1="3" x2="20" y2="3"></line></svg> Import backup</label>
+            <input type="file" id="importInput" accept=".csv,text/csv" style="display:none;">
+            <span class="form-status" id="backupStatus"></span>
+          </div>
+        </div>
+      </details>
     </div>
 
-    <div class="add-form">
-      <div class="row">
-        <input type="text" id="nameInput" placeholder="Pokemon name (e.g. Zubat)">
+    <details class="accordion" id="addAccordion">
+      <summary>+ Add a Pokémon to hunt</summary>
+      <div class="accordion-body">
+        <div class="add-form">
+          <div class="row">
+            <input type="text" id="nameInput" placeholder="Pokemon name (e.g. Zubat)">
+          </div>
+          <div class="row">
+            <label class="upload-label" for="fileInput">
+              <span id="uploadPreviewWrap"><img id="uploadPreview" style="display:none;"></span>
+              <span id="uploadText">Choose sprite/GIF file…</span>
+            </label>
+            <input type="file" id="fileInput" accept="image/gif,image/png,image/jpeg,image/webp" style="display:none;">
+          </div>
+          <div class="row">
+            <input type="text" id="gifInput" placeholder="…or paste an image URL instead">
+            <button class="ghost" id="fetchBtn" type="button">Fetch shiny from PokeAPI</button>
+          </div>
+          <div class="row">
+            <select id="genInput" class="themed-select" title="Generation">
+              <option value="">Generation (unknown)</option>
+              <option value="1">Gen I — Red / Blue / Yellow</option>
+              <option value="2">Gen II — Gold / Silver / Crystal</option>
+              <option value="3">Gen III — Ruby / Sapphire / Emerald / FR / LG</option>
+              <option value="4">Gen IV — Diamond / Pearl / Platinum / HG / SS</option>
+              <option value="5">Gen V — Black / White / B2 / W2</option>
+              <option value="6">Gen VI — X / Y / OR / AS</option>
+              <option value="7">Gen VII — Sun / Moon / US / UM / LGPE</option>
+              <option value="8">Gen VIII — Sword / Shield / BDSP / Legends Arceus</option>
+              <option value="9">Gen IX — Scarlet / Violet</option>
+            </select>
+            <input type="number" id="dexNumInput" placeholder="Dex # (optional)" min="1" max="1025" style="max-width:130px;">
+          </div>
+          <div class="row">
+            <button class="primary" id="addBtn" type="button">Add to Pokedex</button>
+          </div>
+          <div class="form-status" id="formStatus">Uploading a file is the most reliable option — pasted URLs may not display in every browser.</div>
+        </div>
       </div>
-      <div class="row">
-        <label class="upload-label" for="fileInput">
-          <span id="uploadPreviewWrap"><img id="uploadPreview" style="display:none;"></span>
-          <span id="uploadText">Choose sprite/GIF file…</span>
-        </label>
-        <input type="file" id="fileInput" accept="image/gif,image/png,image/jpeg,image/webp" style="display:none;">
-      </div>
-      <div class="row">
-        <input type="text" id="gifInput" placeholder="…or paste an image URL instead">
-        <button class="ghost" id="fetchBtn" type="button">Try fetch shiny from PokeAPI</button>
-      </div>
-      <div class="row">
-        <select id="genInput" class="themed-select" title="Generation">
-          <option value="">Generation (unknown)</option>
-          <option value="1">Gen I — Red / Blue / Yellow</option>
-          <option value="2">Gen II — Gold / Silver / Crystal</option>
-          <option value="3">Gen III — Ruby / Sapphire / Emerald / FR / LG</option>
-          <option value="4">Gen IV — Diamond / Pearl / Platinum / HG / SS</option>
-          <option value="5">Gen V — Black / White / B2 / W2</option>
-          <option value="6">Gen VI — X / Y / OR / AS</option>
-          <option value="7">Gen VII — Sun / Moon / US / UM / LGPE</option>
-          <option value="8">Gen VIII — Sword / Shield / BDSP / Legends Arceus</option>
-          <option value="9">Gen IX — Scarlet / Violet</option>
-        </select>
-        <input type="number" id="dexNumInput" placeholder="Dex # (optional)" min="1" max="1025" style="max-width:130px;">
-      </div>
-      <div class="row">
-        <button class="primary" id="addBtn" type="button">Add to Pokedex</button>
-      </div>
-      <div class="form-status" id="formStatus">Uploading a file is the most reliable option — pasted URLs may not display in every browser.</div>
-    </div>
+    </details>
   </div>
 
   <footer>Runs entirely in your browser — your Pokedex and counts are saved on this computer.</footer>
@@ -911,9 +1071,37 @@
   const POKEDEX_KEY = 'shinyTally.pokedex';
   const SETTINGS_KEY = 'shinyTally.settings';
 
+  // Custom inline-SVG icons, used everywhere instead of emoji characters
+  // so the app looks the same on every device rather than falling back
+  // to whatever emoji font the OS supplies (e.g. iOS's own colorful
+  // glyphs). Sized off the surrounding text (1em) and colored via
+  // currentColor via the shared .icon CSS class, so they automatically
+  // match whatever button/text color they sit inside of.
+  const ICONS = {
+    check: '<svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="4 13 9 18 20 6"></polyline></svg>',
+    cross: '<svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="5" x2="19" y2="19"></line><line x1="19" y1="5" x2="5" y2="19"></line></svg>',
+    pencil: '<svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20l1-5L16 4l4 4L9 19l-5 1z"></path><path d="M13.5 6.5l4 4"></path></svg>',
+    swap: '<svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="7 4 3 8 7 12"></polyline><line x1="3" y1="8" x2="21" y2="8"></line><polyline points="17 12 21 16 17 20"></polyline><line x1="21" y1="16" x2="3" y2="16"></line></svg>',
+    trophy: '<svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 4h10v4a5 5 0 0 1-10 0V4z"></path><path d="M7 5H4a3 3 0 0 0 3 5"></path><path d="M17 5h3a3 3 0 0 1-3 5"></path><line x1="12" y1="13" x2="12" y2="16.5"></line><path d="M8.5 21h7"></path><path d="M9.5 21v-1.5a2.5 2.5 0 0 1 2.5-2.5 2.5 2.5 0 0 1 2.5 2.5V21"></path></svg>',
+    gamepad: '<svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="20" height="11" rx="5"></rect><line x1="7" y1="10.5" x2="7" y2="14.5"></line><line x1="5" y1="12.5" x2="9" y2="12.5"></line><circle cx="16" cy="10.5" r="1"></circle><circle cx="18.5" cy="13" r="1"></circle></svg>',
+    timer: '<svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="13" r="8"></circle><line x1="12" y1="13" x2="12" y2="9"></line><line x1="12" y1="13" x2="15" y2="14.5"></line><line x1="9" y1="2" x2="15" y2="2"></line><line x1="12" y1="2" x2="12" y2="5"></line></svg>',
+    arrowRight: '<svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="4" y1="12" x2="18" y2="12"></line><polyline points="13 6 19 12 13 18"></polyline></svg>',
+    info: '<svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"></circle><line x1="12" y1="11" x2="12" y2="16.5"></line><circle cx="12" cy="7.4" r="0.9" fill="currentColor" stroke="none"></circle></svg>'
+  };
+
   let pokedex = [];
-  let settings = { activeId: null, keybind: { code: 'Space', label: 'Space' } };
+  let settings = {
+    activeId: null,
+    keybind: { code: 'Space', label: 'Space' },
+    autoIntervalSeconds: 5,
+    autoStartKey: { code: 'KeyG', label: 'G' },
+    autoStopKey: { code: 'KeyH', label: 'H' },
+    obs: { url: 'ws://localhost:4455', spriteSourceName: null, nameSourceName: null, countSourceName: null, timerSourceName: null, autoUpdate: false, matchLcdFont: true }
+  };
   let awaitingKey = false;
+  let awaitingAutoStartKey = false;
+  let awaitingAutoStopKey = false;
+  let autoIncrementHandle = null;
 
   const screenEl = document.getElementById('screen');
   const activeNameEl = document.getElementById('activeName');
@@ -947,6 +1135,15 @@
   const importInput = document.getElementById('importInput');
   const backupStatus = document.getElementById('backupStatus');
   const darkModeToggle = document.getElementById('darkModeToggle');
+  const autoIntervalInput = document.getElementById('autoIntervalInput');
+  const autoGoBtn = document.getElementById('autoGoBtn');
+  const autoStopBtn = document.getElementById('autoStopBtn');
+  const autoStartKeycap = document.getElementById('autoStartKeycap');
+  const autoStopKeycap = document.getElementById('autoStopKeycap');
+  const autoStartRebindBtn = document.getElementById('autoStartRebindBtn');
+  const autoStopRebindBtn = document.getElementById('autoStopRebindBtn');
+  const autoStatus = document.getElementById('autoStatus');
+  const addAccordionEl = document.getElementById('addAccordion');
   let uploadedDataUrl = ''; // set by the file-upload handler; cleared after each Add
 
   // ---- Small status-message helpers for the two forms ----
@@ -961,9 +1158,8 @@
     formStatus.className = 'form-status' + (isErr ? ' err' : '');
   }
 
-  // Builds a themed popup with one or more buttons (each with its own
-  // callback). Used instead of confirm()/alert(), which some sandboxed
-  // browser environments block silently rather than showing a dialog.
+  // Shows a themed popup with one or more buttons, each with its own
+  // callback. Used in place of confirm()/alert().
   function openModal(message, buttons){
     const overlay = document.createElement('div');
     overlay.className = 'modal-overlay';
@@ -992,10 +1188,9 @@
     document.body.appendChild(overlay);
   }
 
-  // Like openModal, but with a number input for the user to type a value
-  // into (replaces window.prompt(), which is blocked the same way
-  // confirm()/alert() can be — see openModal above). onConfirm receives
-  // the entered value as a non-negative integer.
+  // Like openModal, but with a number input, used in place of
+  // window.prompt(). onConfirm receives the entered value as a
+  // non-negative integer.
   function openPromptModal(message, defaultValue, onConfirm){
     const overlay = document.createElement('div');
     overlay.className = 'modal-overlay';
@@ -1040,9 +1235,8 @@
     input.select();
   }
 
-  // A small two-field popup for backfilling an entry's Generation and
-  // National Dex number after the fact — needed for pokemon added before
-  // the Living Dex feature existed, or added without those fields set.
+  // Popup for editing an entry's Generation, National Dex number,
+  // regional form, hunt status, and dates.
   function openEditPokemonModal(entry){
     const overlay = document.createElement('div');
     overlay.className = 'modal-overlay';
@@ -1079,10 +1273,8 @@
     dexInput.value = entry.dexNumber || '';
     box.appendChild(dexInput);
 
-    // Regional form — populated asynchronously (best-effort, needs a
-    // connection). Starts disabled with a loading option, then either
-    // fills in with any Alolan/Galarian/Hisuian/Paldean varieties found,
-    // or reports that none exist.
+    // Starts disabled while it loads, then fills in with any
+    // Alolan/Galarian/Hisuian/Paldean varieties, or says there are none.
     const formFieldLabel = document.createElement('div');
     formFieldLabel.className = 'modal-field-label';
     formFieldLabel.textContent = 'Regional form';
@@ -1165,7 +1357,7 @@
         ? workingPhaseLog.map((ph, i) => `
             <div class="phase-edit-row" data-idx="${i}">
               <span>Phase ${i + 1}: ${ph.name}${ph.date ? ` — ${ph.date}` : ''}</span>
-              <button type="button" class="phase-remove-btn" data-idx="${i}" title="Remove this phase">✕</button>
+              <button type="button" class="phase-remove-btn" data-idx="${i}" title="Remove this phase">${ICONS.cross}</button>
             </div>
           `).join('')
         : '<div class="modal-field-label" style="margin:0;">No phases logged.</div>';
@@ -1220,15 +1412,22 @@
 
       const chosenForm = formSelect.value || null;
       if(chosenForm !== (entry.form || null)){
-        // The regional form changed — fetch that variety's own shiny
-        // sprite and switch to it. Falls back to leaving the sprite
-        // untouched if the lookup fails (e.g. offline).
+        // The regional form changed — fetch that variety's shiny sprite.
         saveBtn.disabled = true;
         saveBtn.textContent = 'Fetching sprite…';
         try{
           const apiName = chosenForm || entry.name.toLowerCase();
           const result = await fetchShinySpriteFromPokeAPI(apiName);
           if(result.sprite) entry.gifUrl = result.sprite;
+          // A regional form is a distinct Pokemon entry in PokeAPI, with
+          // its own id separate from the base species' National Dex
+          // number (entry.dexNumber, which stays e.g. 571 for any
+          // Zoroark form). That form-specific id is what the static
+          // sprites repo actually keys its regional-form images by, so
+          // it's kept separately here — see obsSpriteUrlFor(), which
+          // prefers it over entry.dexNumber for OBS sync. Cleared back to
+          // null when switching back to the base form.
+          entry.formDexNumber = chosenForm ? (result.dexNumber || null) : null;
         }catch(e){ /* keep the existing sprite if the lookup fails */ }
         entry.form = chosenForm;
       }
@@ -1248,12 +1447,9 @@
   }
 
   // ---- Log a phase ----
-  // "Phasing" is when a different shiny than the one you're hunting for
-  // shows up instead. The hunt for the original target keeps going
-  // exactly as before (same species, same count, same running timer) —
-  // logging a phase just tallies it and remembers what showed up, via a
-  // "Phase 1", "Phase 2", ... label rather than swapping the entry over
-  // to the phased species.
+  // A "phase" is when a different shiny shows up while hunting another
+  // one. This tags the entry "Phase 1", "Phase 2", etc. and records what
+  // showed up, without changing the species, count, or timer.
   function openPhaseModal(entry){
     const overlay = document.createElement('div');
     overlay.className = 'modal-overlay';
@@ -1455,7 +1651,7 @@
       (n.evolves_to || []).forEach(child => {
         const details = (child.evolution_details || []).map(describeEvolutionDetail).filter(Boolean);
         const detailText = details.length ? details.join(' or ') : 'special condition';
-        lines.push(`${n.species.name.replace(/-/g,' ')} → ${child.species.name.replace(/-/g,' ')} (${detailText})`);
+        lines.push(`${capitalizeName(n.species.name.replace(/-/g,' '))} ${ICONS.arrowRight} ${capitalizeName(child.species.name.replace(/-/g,' '))} (${detailText})`);
         walk(child);
       });
     }
@@ -1478,13 +1674,10 @@
     return byVersion;
   }
 
-  // Pulls together everything the info popup shows about the species
-  // itself (as opposed to the user's own hunt stats): abilities, a
-  // level-up moveset with PP, evolution requirements, and wild encounter
-  // locations/rates per game. This is inherently a lot of PokeAPI calls
-  // (one per level-up move, to get its PP) so it's only ever run when
-  // the info popup is actually opened, and every piece fails gracefully
-  // on its own rather than taking the whole panel down with it.
+  // Fetches everything the info popup shows about the species itself:
+  // abilities, level-up moveset with PP, evolution requirements, and
+  // wild encounter locations/rates per game. Each piece is wrapped in
+  // its own try/catch so one failed request doesn't blank the others.
   async function fetchPokemonGameData(name){
     const lower = name.toLowerCase();
     const res = await fetch(`https://pokeapi.co/api/v2/pokemon/${lower}`);
@@ -1537,7 +1730,7 @@
           }
         }
       }
-    }catch(e){ /* best-effort — leave evolution empty */ }
+    }catch(e){ /* leave evolution empty */ }
 
     let encounters = {};
     try{
@@ -1545,7 +1738,7 @@
         const encRes = await fetch(data.location_area_encounters);
         if(encRes.ok) encounters = summarizeEncounters(await encRes.json());
       }
-    }catch(e){ /* best-effort — leave encounters empty */ }
+    }catch(e){ /* leave encounters empty */ }
 
     return { abilities, moves, evolution, encounters, resolvedName: data.name, dexNumber: data.id };
   }
@@ -1594,16 +1787,12 @@
     return html;
   }
 
-  // The info popup itself: shows the user's own tracked stats instantly
-  // (no network needed), then fetches and fills in the species' in-game
-  // data underneath. Needs an internet connection for the second half —
-  // it degrades to a plain notice if that fetch fails.
-  // entry: a matched, found pokedex entry (full "Your hunt" stats shown).
-  // dexNumberFallback: used when entry is null/undefined — happens when a
-  // Living Dex tile with no matching tracked entry is clicked. In that
-  // case we skip the hunt-stats section and fetch game data straight from
-  // the National Dex number (PokeAPI accepts numeric ids interchangeably
-  // with names), updating the placeholder title once the name resolves.
+  // The info popup: shows the user's own hunt stats immediately, then
+  // fetches and fills in the species' game data below.
+  // entry: a tracked pokedex entry — shows its "Your hunt" stats.
+  // dexNumberFallback: used instead when entry is null (a Living Dex
+  // tile with no tracked entry) — fetches game data by Dex number and
+  // fills in the title once the species name resolves.
   function openInfoModal(entry, dexNumberFallback){
     const overlay = document.createElement('div');
     overlay.className = 'modal-overlay';
@@ -1631,7 +1820,7 @@
     }
 
     const title = document.createElement('p');
-    title.textContent = entry ? `${entry.name} — Info` : `#${String(dexNumberFallback).padStart(3,'0')} — Info`;
+    title.textContent = entry ? `${capitalizeName(entry.name)} — Info` : `#${String(dexNumberFallback).padStart(3,'0')} — Info`;
     box.appendChild(title);
 
     if(entry){
@@ -1657,7 +1846,7 @@
           <div class="info-heading">Phase log</div>
           <ul class="info-list">
             ${entry.phaseLog.map((ph, i) =>
-              `<li>Phase ${i + 1}: ${ph.name} — ${ph.date || '—'}</li>`
+              `<li>Phase ${i + 1}: ${capitalizeName(ph.name)} — ${ph.date || '—'}</li>`
             ).join('')}
           </ul>
         `;
@@ -1695,7 +1884,7 @@
     fetchPokemonGameData(lookupId).then(gameData => {
       gameSection.innerHTML = renderGameDataHTML(gameData);
       if(!entry && gameData.resolvedName){
-        title.textContent = `${gameData.resolvedName.replace(/-/g,' ')} — Info`;
+        title.textContent = `${capitalizeName(gameData.resolvedName.replace(/-/g,' '))} — Info`;
       }
     }).catch(() => {
       gameSection.innerHTML = '<div class="info-heading">Game data</div><div class="info-loading">Couldn\'t load game data — check your connection.</div>';
@@ -1712,6 +1901,17 @@
     'generation-v':5, 'generation-vi':6, 'generation-vii':7, 'generation-viii':8, 'generation-ix':9
   };
   function toRoman(gen){ return GEN_ROMAN[gen] || gen; }
+
+  // Pokemon names are stored lowercase (that's what PokeAPI returns), so
+  // anywhere a name is shown as actual text rather than through the
+  // .mon-name CSS class (which capitalizes visually on its own) — the
+  // Living Dex tile labels and the name pushed to OBS — this capitalizes
+  // just the first letter, leaving the rest (and any hyphenated regional
+  // form suffix) as-is.
+  function capitalizeName(name){
+    if(!name) return name;
+    return name.charAt(0).toUpperCase() + name.slice(1);
+  }
 
   // National Dex number ranges per generation (used to build the Living
   // Dex completion sheet — these should match the game lists in the
@@ -1765,9 +1965,8 @@
     };
   }
 
-  // Best-effort lookup of a species' regional-form varieties (Alolan,
-  // Galarian, Hisuian, Paldean). Returns [] on any failure — the edit
-  // modal treats that the same as "this pokemon has no regional forms".
+  // Looks up a species' regional-form varieties (Alolan, Galarian,
+  // Hisuian, Paldean). Returns [] on failure, same as "no regional forms".
   async function fetchRegionalForms(name){
     try{
       const res = await fetch(`https://pokeapi.co/api/v2/pokemon-species/${name.toLowerCase()}`);
@@ -1830,24 +2029,24 @@
   });
 
   // ---- Load / save ----
-  // Reads both localStorage entries (if present), falls back to sane
-  // defaults, applies the saved theme, and does the first render.
+  // Reads both localStorage entries, falls back to defaults if missing,
+  // applies the saved theme, and does the first render.
   function loadState(){
     try{
       const raw = localStorage.getItem(POKEDEX_KEY);
       pokedex = raw ? JSON.parse(raw) : [];
     }catch(e){ pokedex = []; }
 
-    // Backfill fields that older entries (saved before a given feature
-    // existed, or entries phased in from before addedDate was tracked)
-    // may be missing, so the info popup never shows a blank "Added to
-    // Pokedex" — falls back to the start date, or today, as a best guess.
+    // Fill in fields older saved entries may be missing (from before a
+    // feature existed), so the info popup never shows a blank "Added to
+    // Pokedex" — falls back to the start date, or today.
     pokedex.forEach(p => {
       if(!p.addedDate) p.addedDate = p.startDate || todayISO();
       if(!p.startDate) p.startDate = p.addedDate;
       if(p.status === undefined) p.status = 'active';
       if(p.huntSeconds === undefined) p.huntSeconds = 0;
       if(p.form === undefined) p.form = null;
+      if(p.formDexNumber === undefined) p.formDexNumber = null;
       if(p.foundDate === undefined) p.foundDate = null;
       if(p.phaseCount === undefined) p.phaseCount = 0;
       if(!Array.isArray(p.phaseLog)) p.phaseLog = [];
@@ -1860,8 +2059,30 @@
 
     if(!settings.keybind) settings.keybind = { code: 'Space', label: 'Space' };
     if(settings.hideUncaught === undefined) settings.hideUncaught = false;
+    if(!settings.autoIntervalSeconds) settings.autoIntervalSeconds = 5;
+    if(!settings.autoStartKey) settings.autoStartKey = { code: 'KeyG', label: 'G' };
+    if(!settings.autoStopKey) settings.autoStopKey = { code: 'KeyH', label: 'H' };
+    if(!settings.obs) settings.obs = { url: 'ws://localhost:4455', spriteSourceName: null, nameSourceName: null, countSourceName: null, timerSourceName: null, autoUpdate: false, matchLcdFont: true };
+    // Migrate from the older single-text-source layout, which only ever
+    // pushed a combined "name: count" string into one chosen source.
+    if(settings.obs.textSourceName !== undefined){
+      if(settings.obs.nameSourceName === undefined) settings.obs.nameSourceName = settings.obs.textSourceName;
+      delete settings.obs.textSourceName;
+    }
+    if(settings.obs.spriteSourceName === undefined) settings.obs.spriteSourceName = null;
+    if(settings.obs.countSourceName === undefined) settings.obs.countSourceName = null;
+    if(settings.obs.timerSourceName === undefined) settings.obs.timerSourceName = null;
+    if(settings.obs.matchLcdFont === undefined) settings.obs.matchLcdFont = true;
     savePokedex();
     applyTheme();
+    autoIntervalInput.value = settings.autoIntervalSeconds;
+    autoStartKeycap.textContent = settings.autoStartKey.label;
+    autoStopKeycap.textContent = settings.autoStopKey.label;
+    obsUrlInput.value = settings.obs.url || 'ws://localhost:4455';
+    // Start with the "add a pokemon" section expanded only when there's
+    // nothing in the Pokedex yet — otherwise keep it (and the other
+    // collapsible sections) tucked away so the page isn't a mile long.
+    if(pokedex.length === 0) addAccordionEl.open = true;
     render();
   }
 
@@ -1947,22 +2168,27 @@
       card.className = 'mon-card' + (p.id === settings.activeId ? ' active' : '');
       card.innerHTML = `
         <div class="card-actions">
-          <button class="remove" data-id="${p.id}" title="Remove">✕</button>
-          <button class="info-btn" data-id="${p.id}" title="Pokemon info">ℹ</button>
+          <button class="remove" data-id="${p.id}" title="Remove">${ICONS.cross}</button>
+          <button class="info-btn" data-id="${p.id}" title="Pokemon info">${ICONS.info}</button>
         </div>
-        <button class="edit-btn" data-id="${p.id}" title="Edit generation / Dex # / status">✎</button>
-        <button class="phase-btn" data-id="${p.id}" title="Phase — found a different shiny?">⇄</button>
-        ${p.found ? '<span class="found-badge">✓</span>' : ''}
+        <button class="edit-btn" data-id="${p.id}" title="Edit generation / Dex # / status">${ICONS.pencil}</button>
+        <button class="phase-btn" data-id="${p.id}" title="Phase — found a different shiny?">${ICONS.swap}</button>
+        ${p.found ? `<span class="found-badge">${ICONS.check}</span>` : ''}
         <div class="thumb"><img src="${p.gifUrl}" alt="${p.name}" onerror="this.style.opacity=0.1"></div>
         <div class="mon-name">${p.name}</div>
-        <div class="mon-count">${p.count || 0}</div>
+        <div class="mon-count-row">
+          <button class="card-count-btn card-dec" data-id="${p.id}" title="-1 encounter">−</button>
+          <div class="mon-count">${p.count || 0}</div>
+          <button class="card-count-btn card-inc" data-id="${p.id}" title="+1 encounter">+</button>
+        </div>
         ${p.generation ? `<div class="mon-gen">Gen ${toRoman(p.generation)}</div>` : ''}
         ${p.dexNumber ? `<div class="mon-gen">#${String(p.dexNumber).padStart(3,'0')}</div>` : ''}
         ${p.form ? `<div class="mon-gen">${regionalFormLabel(p.form)}</div>` : ''}
         ${p.phaseCount ? `<div class="mon-gen phase-tag">Phase ${p.phaseCount}</div>` : ''}
       `;
       card.addEventListener('click', (e) => {
-        if(e.target.closest('.remove') || e.target.closest('.edit-btn') || e.target.closest('.info-btn') || e.target.closest('.phase-btn')) return;
+        if(e.target.closest('.remove') || e.target.closest('.edit-btn') || e.target.closest('.info-btn') || e.target.closest('.phase-btn') || e.target.closest('.card-count-btn')) return;
+        if(p.id !== settings.activeId) stopAutoIncrement();
         settings.activeId = p.id;
         saveSettings();
         render();
@@ -1973,6 +2199,7 @@
       btn.addEventListener('click', (e) => {
         e.stopPropagation();
         const id = btn.getAttribute('data-id');
+        if(settings.activeId === id) stopAutoIncrement();
         pokedex = pokedex.filter(p => p.id !== id);
         if(settings.activeId === id) settings.activeId = null;
         savePokedex();
@@ -2004,6 +2231,17 @@
         if(entry) openPhaseModal(entry);
       });
     });
+    // Each card's own +/- buttons adjust that hunt's count directly,
+    // whether or not it's the one shown in the big display panel — this
+    // is what lets several hunts be tracked at once without switching
+    // which one is "active".
+    rosterEl.querySelectorAll('.card-count-btn').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const id = btn.getAttribute('data-id');
+        changeCount(btn.classList.contains('card-inc') ? 1 : -1, id);
+      });
+    });
 
     const active = getActive();
     if(active){
@@ -2013,9 +2251,9 @@
       incBtn.disabled = false; decBtn.disabled = false; resetBtn.disabled = false;
       setCountBtn.disabled = false;
       foundBtn.disabled = false;
-      foundBtn.textContent = active.found ? 'Unmark shiny found' : '✓ Mark shiny found!';
+      foundBtn.innerHTML = active.found ? 'Unmark shiny found' : `${ICONS.check} Mark shiny found!`;
       foundBanner.style.display = active.found ? 'block' : 'none';
-      huntTimeDisplay.textContent = `⏱ ${formatHuntTime(active.huntSeconds)} hunting`;
+      huntTimeDisplay.innerHTML = `${ICONS.timer} ${formatHuntTime(active.huntSeconds)} hunting`;
     } else {
       screenEl.innerHTML = `<div class="empty">Add a pokemon below, then pick it to start tracking.</div>`;
       activeNameEl.textContent = 'No pokemon selected';
@@ -2023,7 +2261,7 @@
       incBtn.disabled = true; decBtn.disabled = true; resetBtn.disabled = true;
       setCountBtn.disabled = true;
       foundBtn.disabled = true;
-      foundBtn.textContent = '✓ Mark shiny found!';
+      foundBtn.innerHTML = `${ICONS.check} Mark shiny found!`;
       foundBanner.style.display = 'none';
       huntTimeDisplay.textContent = '';
     }
@@ -2035,6 +2273,8 @@
     // tile grid when it's actually the visible tab — no point paying that
     // cost on every increment while the user is on the My Hunts tab.
     if(activeTab === 'dex') renderLivingDex();
+
+    obsPushActiveText();
   }
 
   // Recomputes the "cumulative chance so far" line under the sprite,
@@ -2094,14 +2334,19 @@
   const hideUncaughtToggle = document.getElementById('hideUncaughtToggle');
   let activeTab = 'active';
 
+  const settingsView = document.getElementById('settingsView');
+
   function switchTab(tab){
     activeTab = tab;
     const isDex = tab === 'dex';
-    rosterView.style.display = isDex ? 'none' : 'block';
+    const isSettings = tab === 'settings';
+    rosterView.style.display = (isDex || isSettings) ? 'none' : 'block';
     dexView.style.display = isDex ? 'block' : 'none';
-    rosterControls.style.display = isDex ? 'none' : 'flex';
+    settingsView.style.display = isSettings ? 'block' : 'none';
+    rosterControls.style.display = (isDex || isSettings) ? 'none' : 'flex';
     tabButtons.forEach(btn => btn.classList.toggle('active', btn.dataset.tab === tab));
-    if(isDex) renderLivingDex(); else render();
+    if(isDex) renderLivingDex();
+    else if(!isSettings) render();
   }
   tabButtons.forEach(btn => btn.addEventListener('click', () => switchTab(btn.dataset.tab)));
 
@@ -2144,7 +2389,7 @@
     const totalFound = Object.keys(foundByNumber).length;
     const spriteBase = 'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon';
 
-    dexSummaryEl.innerHTML = `<div class="dex-total">🏆 ${totalFound} / ${DEX_TOTAL} Shinies Found</div>`;
+    dexSummaryEl.innerHTML = `<div class="dex-total">${ICONS.trophy} ${totalFound} / ${DEX_TOTAL} Shinies Found</div>`;
 
     let html = '';
     GEN_INFO.forEach(g => {
@@ -2166,7 +2411,7 @@
         const src = isFound
           ? (entry.gifUrl || `${spriteBase}/shiny/${n}.png`)
           : `${spriteBase}/${n}.png`;
-        const label = isFound ? entry.name : ('#' + n);
+        const label = isFound ? capitalizeName(entry.name) : ('#' + n);
         tilesHtml += `
           <div class="dex-tile${isFound ? ' found' : ''}" title="${label}" data-num="${n}">
             <img src="${src}" loading="lazy" alt="${label}"
@@ -2192,12 +2437,15 @@
   }
 
   // ---- Counter actions ----
-  // Adjusts the active pokemon's count (never below 0), saves, re-renders,
-  // and plays the matching chime.
-  function changeCount(delta){
-    const active = getActive();
-    if(!active) return;
-    active.count = Math.max(0, (active.count || 0) + delta);
+  // Adjusts a pokemon's count (never below 0), saves, re-renders, and
+  // plays the matching chime. Defaults to the active hunt (for the main
+  // display panel's buttons, the keybind, gamepad, and auto-increment);
+  // pass an id to bump a different hunt's counter directly from its
+  // roster card, so multiple hunts can be tracked at once.
+  function changeCount(delta, id){
+    const target = id ? pokedex.find(p => p.id === id) : getActive();
+    if(!target) return;
+    target.count = Math.max(0, (target.count || 0) + delta);
     savePokedex();
     render();
     if(delta > 0) playIncrementChime();
@@ -2285,6 +2533,7 @@
     // Only auto-fill the found date if one isn't already set, so it
     // never clobbers a date the user backfilled manually via Edit.
     if(!active.foundDate) active.foundDate = todayISO();
+    stopAutoIncrement();
     savePokedex();
     render();
     launchConfetti();
@@ -2300,6 +2549,64 @@
   });
 
   oddsMethod.addEventListener('change', updateOdds);
+
+  // ---- Auto-increment ----
+  // Ticks the counter up on its own at a fixed interval, so you can set
+  // it going and step away instead of pressing the key every encounter.
+  // It's a plain setInterval bound to whatever pokemon is active when
+  // Start is pressed — switching the active hunt, marking it found, or
+  // running out of a hunt to increment all stop it automatically so it
+  // never silently keeps ticking against the wrong entry.
+  function setAutoRunningUI(running){
+    autoGoBtn.disabled = running;
+    autoStopBtn.disabled = !running;
+    autoIntervalInput.disabled = running;
+  }
+
+  function startAutoIncrement(){
+    if(autoIncrementHandle) return; // already running
+    const active = getActive();
+    if(!active){ autoStatus.textContent = 'Select a pokemon to hunt first.'; return; }
+    const seconds = Number(autoIntervalInput.value);
+    if(!seconds || seconds <= 0){ autoStatus.textContent = 'Enter an interval greater than 0.'; return; }
+    settings.autoIntervalSeconds = seconds;
+    saveSettings();
+    const boundId = active.id;
+    autoIncrementHandle = setInterval(() => {
+      const stillActive = getActive();
+      // Stop on its own if the hunt this was bound to is no longer the
+      // active one, or it's since been marked found — never keeps
+      // ticking against a hunt you've moved on from.
+      if(!stillActive || stillActive.id !== boundId || stillActive.found){
+        stopAutoIncrement();
+        return;
+      }
+      changeCount(1);
+    }, seconds * 1000);
+    setAutoRunningUI(true);
+    autoStatus.textContent = `Auto-incrementing ${active.name} every ${seconds}s.`;
+  }
+
+  function stopAutoIncrement(){
+    if(!autoIncrementHandle) return;
+    clearInterval(autoIncrementHandle);
+    autoIncrementHandle = null;
+    setAutoRunningUI(false);
+    autoStatus.textContent = 'Stopped.';
+  }
+
+  autoGoBtn.addEventListener('click', startAutoIncrement);
+  autoStopBtn.addEventListener('click', stopAutoIncrement);
+
+  // ---- Auto-increment start/stop keybinds ----
+  autoStartRebindBtn.addEventListener('click', () => {
+    awaitingAutoStartKey = true;
+    autoStartRebindBtn.textContent = 'Press a key…';
+  });
+  autoStopRebindBtn.addEventListener('click', () => {
+    awaitingAutoStopKey = true;
+    autoStopRebindBtn.textContent = 'Press a key…';
+  });
 
   // Global key listener: ignores keystrokes while typing in a form field,
   // captures the next key press when rebinding, otherwise checks it
@@ -2317,9 +2624,37 @@
       render();
       return;
     }
+    if(awaitingAutoStartKey){
+      e.preventDefault();
+      settings.autoStartKey = { code: e.code, label: keyLabel(e.code) };
+      awaitingAutoStartKey = false;
+      autoStartRebindBtn.textContent = 'Rebind';
+      autoStartKeycap.textContent = settings.autoStartKey.label;
+      saveSettings();
+      return;
+    }
+    if(awaitingAutoStopKey){
+      e.preventDefault();
+      settings.autoStopKey = { code: e.code, label: keyLabel(e.code) };
+      awaitingAutoStopKey = false;
+      autoStopRebindBtn.textContent = 'Rebind';
+      autoStopKeycap.textContent = settings.autoStopKey.label;
+      saveSettings();
+      return;
+    }
     if(e.code === settings.keybind.code){
       e.preventDefault();
       changeCount(1);
+      return;
+    }
+    if(e.code === settings.autoStartKey.code){
+      e.preventDefault();
+      startAutoIncrement();
+      return;
+    }
+    if(e.code === settings.autoStopKey.code){
+      e.preventDefault();
+      stopAutoIncrement();
     }
   });
 
@@ -2342,7 +2677,7 @@
     if(!gamepadStatusEl) return;
     const pads = navigator.getGamepads ? navigator.getGamepads() : [];
     const connected = Array.prototype.some.call(pads, p => !!p);
-    gamepadStatusEl.textContent = connected ? '🎮 Controller connected' : '';
+    gamepadStatusEl.innerHTML = connected ? `${ICONS.gamepad} Controller connected` : '';
   }
 
   function cycleActivePokemon(direction){
@@ -2356,7 +2691,7 @@
   }
 
   function cycleTab(direction){
-    const tabs = ['active', 'paused', 'completed', 'dex'];
+    const tabs = ['active', 'paused', 'completed', 'dex', 'settings'];
     const currentIndex = tabs.indexOf(activeTab);
     const nextIndex = (currentIndex + direction + tabs.length) % tabs.length;
     switchTab(tabs[nextIndex]);
@@ -2403,6 +2738,319 @@
     }
   });
 
+  // ---- OBS Integration ----
+  // Connects straight to OBS's built-in WebSocket server (obs-websocket
+  // v5, bundled with OBS 28+) so this page can push the active hunt's
+  // sprite, name, count and hunting time onto chosen sources live — a
+  // Browser Source for the sprite and Text sources for the rest. The
+  // sprite is always pushed as PokeAPI's *static* shiny PNG (real alpha
+  // transparency) rather than the animated GIF, whose frames bake in a
+  // solid black/white matte that OBS renders as-is — see
+  // obsSpriteUrlFor() below.
+  const obsUrlInput = document.getElementById('obsUrlInput');
+  const obsPasswordInput = document.getElementById('obsPasswordInput');
+  const obsConnectBtn = document.getElementById('obsConnectBtn');
+  const obsDisconnectBtn = document.getElementById('obsDisconnectBtn');
+  const obsStatusEl = document.getElementById('obsStatus');
+  const obsTextSourceRow = document.getElementById('obsTextSourceRow');
+  const obsSpriteSourceSelect = document.getElementById('obsSpriteSourceSelect');
+  const obsNameSourceSelect = document.getElementById('obsNameSourceSelect');
+  const obsCountSourceSelect = document.getElementById('obsCountSourceSelect');
+  const obsTimerSourceSelect = document.getElementById('obsTimerSourceSelect');
+  const obsAutoUpdateToggle = document.getElementById('obsAutoUpdateToggle');
+  const obsMatchFontToggle = document.getElementById('obsMatchFontToggle');
+
+  let obsSocket = null;
+  let obsIdentified = false;
+  let obsRequestId = 0;
+  const obsPendingRequests = new Map();
+  // Tracks the last value actually sent for each field, so a fast series
+  // of renders (or the once-a-second hunt-timer tick) doesn't spam OBS
+  // with a request for a field whose text hasn't changed.
+  const obsLastPushed = { sprite: undefined, name: undefined, count: undefined, timer: undefined };
+
+  // The static shiny sprite base — PokeAPI's raw sprites repo. Unlike the
+  // "generation-v/black-white/animated" GIFs, these are real PNGs with a
+  // genuine alpha channel, so they composite cleanly in OBS with no matte.
+  const OBS_STATIC_SPRITE_BASE = 'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny';
+
+  // Picks what to actually push as the OBS sprite for a given roster
+  // entry: the static shiny PNG for its exact form when we know one
+  // (true transparency, no black/white matte), falling back to whatever
+  // image the entry itself uses (a custom upload, say) when we don't.
+  // A regional form (Alolan/Galarian/Hisuian/Paldean) is its own separate
+  // Pokemon in PokeAPI's sprites repo, keyed by entry.formDexNumber, NOT
+  // by the base species' National Dex number in entry.dexNumber — using
+  // dexNumber alone for a form entry would fetch the regular (non-
+  // regional) sprite instead, which is what previously happened. The URL
+  // is wrapped via obsSpriteWrapperUrl() — see that function for why a
+  // raw image URL alone still isn't enough to avoid a black box.
+  function obsSpriteUrlFor(entry){
+    if(!entry) return '';
+    const spriteId = entry.formDexNumber || entry.dexNumber;
+    const imgUrl = spriteId ? `${OBS_STATIC_SPRITE_BASE}/${spriteId}.png` : (entry.gifUrl || '');
+    if(!imgUrl) return '';
+    return obsSpriteWrapperUrl(imgUrl);
+  }
+
+  // OBS's Browser Source, when pointed straight at a raw image URL,
+  // hands rendering to Chromium's built-in "view image" page — and that
+  // page paints its own solid white/black background, ignoring the
+  // source's Custom CSS entirely. That mismatch is what was showing up
+  // as a black square around the sprite in OBS. Wrapping the image in a
+  // tiny inline HTML page of our own (as a data: URL) sidesteps that
+  // built-in viewer, so our transparent-background styling actually
+  // takes effect and the sprite composites cleanly with no border.
+  function obsSpriteWrapperUrl(imgUrl){
+    const html = `<body style='margin:0;background:transparent;overflow:hidden'><img src='${imgUrl}' style='width:100%;height:100%;object-fit:contain;image-rendering:pixelated'></body>`;
+    return `data:text/html,${encodeURIComponent(html)}`;
+  }
+
+  // The LCD-chip look from the tracker's own count display and the
+  // stream-overlay art, applied to the count text source in OBS so it
+  // matches. Both OBS's GDI+ (Windows) and FreeType2 (Mac/Linux) text
+  // sources accept the same nested "font" shape.
+  const OBS_LCD_FONT = { face: 'JetBrains Mono', flags: 1, size: 72, style: 'Bold' };
+
+  function obsSetStatus(msg, isErr){
+    obsStatusEl.textContent = msg;
+    obsStatusEl.className = 'form-status' + (isErr ? ' err' : '');
+  }
+
+  // obs-websocket authenticates by hashing the password together with a
+  // salt and challenge OBS sends in its Hello message, both base64(sha256(...)).
+  async function obsSha256Base64(str){
+    const bytes = new TextEncoder().encode(str);
+    const hash = await crypto.subtle.digest('SHA-256', bytes);
+    return btoa(String.fromCharCode(...new Uint8Array(hash)));
+  }
+
+  // Sends a request over the socket and resolves once OBS answers it —
+  // wraps the request/response pattern in a normal Promise so callers can
+  // just await it instead of tracking IDs themselves.
+  function obsSend(requestType, requestData){
+    return new Promise((resolve, reject) => {
+      if(!obsSocket || !obsIdentified){ reject(new Error('not connected')); return; }
+      const requestId = String(++obsRequestId);
+      obsPendingRequests.set(requestId, { resolve, reject });
+      obsSocket.send(JSON.stringify({ op: 6, d: { requestType, requestId, requestData } }));
+    });
+  }
+
+  function obsConnect(){
+    const url = obsUrlInput.value.trim() || 'ws://localhost:4455';
+    const password = obsPasswordInput.value;
+    obsUrlInput.value = url;
+    obsSetStatus('Connecting…', false);
+    obsConnectBtn.disabled = true;
+
+    try{
+      obsSocket = new WebSocket(url);
+    }catch(e){
+      obsSetStatus('Could not connect — check the server address.', true);
+      obsConnectBtn.disabled = false;
+      return;
+    }
+
+    obsSocket.addEventListener('message', async (event) => {
+      let msg;
+      try{ msg = JSON.parse(event.data); }catch(e){ return; }
+
+      if(msg.op === 0){
+        // Hello: OBS says whether a password is required and, if so,
+        // sends the salt/challenge pair to hash it against.
+        const auth = msg.d.authentication;
+        let authentication;
+        if(auth){
+          const secret = await obsSha256Base64(password + auth.salt);
+          authentication = await obsSha256Base64(secret + auth.challenge);
+        }
+        obsSocket.send(JSON.stringify({
+          op: 1,
+          d: { rpcVersion: 1, authentication, eventSubscriptions: 0 }
+        }));
+      } else if(msg.op === 2){
+        // Identified: the handshake succeeded — connected and ready.
+        obsIdentified = true;
+        obsSetStatus('Connected to OBS.', false);
+        obsDisconnectBtn.disabled = false;
+        obsUrlInput.disabled = true;
+        obsPasswordInput.disabled = true;
+        obsLoadSources();
+      } else if(msg.op === 7){
+        // RequestResponse: resolves whichever obsSend() call is waiting on it.
+        const pending = obsPendingRequests.get(msg.d.requestId);
+        if(pending){
+          obsPendingRequests.delete(msg.d.requestId);
+          if(msg.d.requestStatus.result) pending.resolve(msg.d.responseData);
+          else pending.reject(new Error(msg.d.requestStatus.comment || 'request failed'));
+        }
+      }
+    });
+
+    obsSocket.addEventListener('close', () => {
+      const wasIdentified = obsIdentified;
+      obsIdentified = false;
+      obsSocket = null;
+      obsSetStatus(wasIdentified ? 'Disconnected from OBS.' : 'Could not connect — check the address and password.', !wasIdentified);
+      obsConnectBtn.disabled = false;
+      obsDisconnectBtn.disabled = true;
+      obsUrlInput.disabled = false;
+      obsPasswordInput.disabled = false;
+      obsTextSourceRow.style.display = 'none';
+    });
+
+    obsSocket.addEventListener('error', () => { /* the close handler above reports it */ });
+  }
+
+  function obsDisconnect(){
+    if(obsSocket) obsSocket.close();
+  }
+
+  // Fills a <select> with OBS inputs whose kind is in `kinds`, keeping
+  // the previously-chosen name selected if it still exists.
+  function obsFillSelect(selectEl, inputs, kinds, previousName, emptyLabel){
+    const matching = inputs.filter(i => kinds.includes(i.inputKind));
+    selectEl.innerHTML = matching.length
+      ? matching.map(i => `<option value="${i.inputName}">${i.inputName}</option>`).join('')
+      : `<option value="">${emptyLabel}</option>`;
+    if(previousName && matching.some(i => i.inputName === previousName)){
+      selectEl.value = previousName;
+      return previousName;
+    }
+    return selectEl.value || null;
+  }
+
+  // Fills the four source pickers (sprite/name/count/timer) from OBS's
+  // current input list, restoring whichever names were saved before.
+  async function obsLoadSources(){
+    try{
+      const data = await obsSend('GetInputList', {});
+      const inputs = data.inputs || [];
+      const textKinds = ['text_gdiplus_v3', 'text_gdiplus_v2', 'text_ft2_source_v2', 'text_ft2_source'];
+      const browserKinds = ['browser_source'];
+
+      settings.obs.spriteSourceName = obsFillSelect(obsSpriteSourceSelect, inputs, browserKinds, settings.obs.spriteSourceName, 'No browser sources found in OBS');
+      settings.obs.nameSourceName = obsFillSelect(obsNameSourceSelect, inputs, textKinds, settings.obs.nameSourceName, 'No text sources found in OBS');
+      settings.obs.countSourceName = obsFillSelect(obsCountSourceSelect, inputs, textKinds, settings.obs.countSourceName, 'No text sources found in OBS');
+      settings.obs.timerSourceName = obsFillSelect(obsTimerSourceSelect, inputs, textKinds, settings.obs.timerSourceName, 'No text sources found in OBS');
+
+      obsAutoUpdateToggle.checked = !!settings.obs.autoUpdate;
+      obsMatchFontToggle.checked = !!settings.obs.matchLcdFont;
+      obsTextSourceRow.style.display = 'block';
+      saveSettings();
+      obsLastPushed.sprite = obsLastPushed.name = obsLastPushed.count = obsLastPushed.timer = undefined;
+      obsPushActiveText();
+      obsApplyLcdFont();
+    }catch(e){
+      obsSetStatus('Connected, but could not list sources: ' + e.message, true);
+    }
+  }
+
+  // Pushes the JetBrains Mono LCD styling to the chosen count source.
+  // Only sent when the toggle is on and a count source is picked — this
+  // is a one-off style push, not something repeated on every tick.
+  async function obsApplyLcdFont(){
+    if(!obsIdentified || !settings.obs.matchLcdFont || !settings.obs.countSourceName) return;
+    try{
+      await obsSend('SetInputSettings', {
+        inputName: settings.obs.countSourceName,
+        inputSettings: { font: OBS_LCD_FONT }
+      });
+    }catch(e){ /* source may not support font settings */ }
+  }
+
+  // Formats hunt time to match the "00h 00m hunting" style baked into
+  // the stream-overlay art, so the live OBS text lines up with it.
+  function formatHuntTimeForObs(totalSeconds){
+    const s = Math.floor(totalSeconds || 0);
+    const h = Math.floor(s / 3600);
+    const m = Math.floor((s % 3600) / 60);
+    return `${String(h).padStart(2,'0')}h ${String(m).padStart(2,'0')}m hunting`;
+  }
+
+  // Pushes the active hunt's sprite, name, count and hunting time to
+  // whichever OBS sources are chosen for each. Called from render()
+  // after any state change, and also once a second from the hunting
+  // timer so the live duration keeps advancing on stream. Each field is
+  // only actually sent to OBS when its value changed since last push.
+  async function obsPushActiveText(){
+    if(!obsIdentified || !settings.obs.autoUpdate) return;
+    const active = getActive();
+    const name = active ? capitalizeName(active.name) : '';
+    const count = active ? String(Math.min(9999, active.count || 0)).padStart(4, '0') : '0000';
+    const timer = active ? formatHuntTimeForObs(active.huntSeconds) : '00h 00m hunting';
+    const sprite = obsSpriteUrlFor(active);
+
+    if(settings.obs.spriteSourceName && sprite !== obsLastPushed.sprite){
+      obsLastPushed.sprite = sprite;
+      try{
+        await obsSend('SetInputSettings', { inputName: settings.obs.spriteSourceName, inputSettings: { url: sprite } });
+      }catch(e){ /* source may have been renamed or removed in OBS */ }
+    }
+    if(settings.obs.nameSourceName && name !== obsLastPushed.name){
+      obsLastPushed.name = name;
+      try{
+        await obsSend('SetInputSettings', { inputName: settings.obs.nameSourceName, inputSettings: { text: name } });
+      }catch(e){ /* source may have been renamed or removed in OBS */ }
+    }
+    if(settings.obs.countSourceName && count !== obsLastPushed.count){
+      obsLastPushed.count = count;
+      try{
+        await obsSend('SetInputSettings', { inputName: settings.obs.countSourceName, inputSettings: { text: count } });
+      }catch(e){ /* source may have been renamed or removed in OBS */ }
+    }
+    if(settings.obs.timerSourceName && timer !== obsLastPushed.timer){
+      obsLastPushed.timer = timer;
+      try{
+        await obsSend('SetInputSettings', { inputName: settings.obs.timerSourceName, inputSettings: { text: timer } });
+      }catch(e){ /* source may have been renamed or removed in OBS */ }
+    }
+  }
+
+  obsConnectBtn.addEventListener('click', () => {
+    settings.obs.url = obsUrlInput.value.trim();
+    saveSettings();
+    obsConnect();
+  });
+  obsDisconnectBtn.addEventListener('click', obsDisconnect);
+  obsSpriteSourceSelect.addEventListener('change', () => {
+    settings.obs.spriteSourceName = obsSpriteSourceSelect.value || null;
+    saveSettings();
+    obsLastPushed.sprite = undefined;
+    obsPushActiveText();
+  });
+  obsNameSourceSelect.addEventListener('change', () => {
+    settings.obs.nameSourceName = obsNameSourceSelect.value || null;
+    saveSettings();
+    obsLastPushed.name = undefined;
+    obsPushActiveText();
+  });
+  obsCountSourceSelect.addEventListener('change', () => {
+    settings.obs.countSourceName = obsCountSourceSelect.value || null;
+    saveSettings();
+    obsLastPushed.count = undefined;
+    obsPushActiveText();
+    obsApplyLcdFont();
+  });
+  obsTimerSourceSelect.addEventListener('change', () => {
+    settings.obs.timerSourceName = obsTimerSourceSelect.value || null;
+    saveSettings();
+    obsLastPushed.timer = undefined;
+    obsPushActiveText();
+  });
+  obsAutoUpdateToggle.addEventListener('change', () => {
+    settings.obs.autoUpdate = obsAutoUpdateToggle.checked;
+    saveSettings();
+    obsLastPushed.sprite = obsLastPushed.name = obsLastPushed.count = obsLastPushed.timer = undefined;
+    obsPushActiveText();
+  });
+  obsMatchFontToggle.addEventListener('change', () => {
+    settings.obs.matchLcdFont = obsMatchFontToggle.checked;
+    saveSettings();
+    if(settings.obs.matchLcdFont) obsApplyLcdFont();
+  });
+
   // ---- Sprite upload ----
   // Reads the chosen image file as a base64 data URL entirely client-side,
   // so the sprite is embedded in storage with no external hosting/network
@@ -2428,8 +3076,8 @@
   });
 
   // ---- PokeAPI lookup (optional convenience) ----
-  // Best-effort fetch of a shiny sprite URL (falling back to the regular
-  // sprite) plus the species' generation, for the name currently typed in.
+  // Fetches a shiny sprite URL (falling back to the regular sprite) plus
+  // the species' generation, for the name currently typed in.
   fetchBtn.addEventListener('click', async () => {
     const name = nameInput.value.trim().toLowerCase();
     if(!name){ setStatus('Enter a pokemon name first.', true); return; }
@@ -2439,11 +3087,11 @@
       if(!result.sprite) throw new Error('no sprite');
       gifInput.value = result.sprite;
 
-      // best-effort: also fill in the National Dex number (used by the
-      // Living Dex page) — matches the default/base form.
+      // Also fill in the National Dex number (used by the Living Dex
+      // page) — matches the default/base form.
       if(result.dexNumber) dexNumInput.value = result.dexNumber;
 
-      // best-effort: also fill in the generation
+      // Also fill in the generation, if PokeAPI has it.
       try{
         const speciesRes = await fetch(`https://pokeapi.co/api/v2/pokemon-species/${name}`);
         if(speciesRes.ok){
@@ -2477,6 +3125,7 @@
     pokedex.push({
       id, name, gifUrl, count: 0, generation, dexNumber,
       form: null,                              // regional form (PokeAPI variety name), if any
+      formDexNumber: null,                     // that form's own PokeAPI id, if any — see obsSpriteUrlFor()
       status: 'active',                        // 'active' | 'paused' — Completed is derived from `found`
       addedDate: todayISO(),                   // immutable — when this entry was first added
       startDate: todayISO(),                   // editable in the edit modal
@@ -2505,7 +3154,7 @@
   // don't round-trip through CSV — only Pokedex entries do. A phase log
   // (which can have any number of phases) is packed into one cell as
   // "name|date;name2|date2" rather than spread across extra columns.
-  const CSV_COLUMNS = ['id','name','count','generation','dexNumber','form','status','found','addedDate','startDate','foundDate','huntSeconds','phaseCount','phaseLog','gifUrl'];
+  const CSV_COLUMNS = ['id','name','count','generation','dexNumber','form','formDexNumber','status','found','addedDate','startDate','foundDate','huntSeconds','phaseCount','phaseLog','gifUrl'];
 
   function csvEscape(value){
     const str = value === null || value === undefined ? '' : String(value);
@@ -2526,7 +3175,7 @@
     const rows = [CSV_COLUMNS.join(',')];
     list.forEach(p => {
       const row = [
-        p.id, p.name, p.count || 0, p.generation || '', p.dexNumber || '', p.form || '',
+        p.id, p.name, p.count || 0, p.generation || '', p.dexNumber || '', p.form || '', p.formDexNumber || '',
         p.status || 'active', p.found ? 'true' : 'false', p.addedDate || '', p.startDate || '',
         p.foundDate || '', Math.round(p.huntSeconds || 0), p.phaseCount || 0,
         phaseLogToCell(p.phaseLog), p.gifUrl || ''
@@ -2579,6 +3228,7 @@
         generation: get('generation') ? Number(get('generation')) : null,
         dexNumber: get('dexNumber') ? Number(get('dexNumber')) : null,
         form: get('form') || null,
+        formDexNumber: get('formDexNumber') ? Number(get('formDexNumber')) : null,
         status: get('status') || 'active',
         found: get('found').trim().toLowerCase() === 'true',
         addedDate: get('addedDate') || null,
@@ -2845,8 +3495,9 @@
     if(!active || active.found || active.status === 'paused') return; // stop accumulating once caught or paused
     active.huntSeconds = (active.huntSeconds || 0) + delta;
     unsavedHuntSeconds += delta;
-    huntTimeDisplay.textContent = `⏱ ${formatHuntTime(active.huntSeconds)} hunting`;
+    huntTimeDisplay.innerHTML = `${ICONS.timer} ${formatHuntTime(active.huntSeconds)} hunting`;
     if(unsavedHuntSeconds >= 5) flushHuntTime();
+    obsPushActiveText(); // keeps the OBS timer source advancing live too
   }, 1000);
 
   document.addEventListener('visibilitychange', () => {
