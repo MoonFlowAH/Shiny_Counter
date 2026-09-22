@@ -1,4 +1,4 @@
-# Shiny Hunt Counter
+# Shiny Hunt Counter -- Made by MoonFlower
 
 This is a Pokémon shiny hunt counter.
 
