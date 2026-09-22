@@ -963,7 +963,7 @@
       <details class="accordion" open>
         <summary><span class="icon-label"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="2.5" y="6.5" width="13" height="11" rx="2"></rect><path d="M15.5 10l6-3.5v11l-6-3.5"></path></svg> OBS Integration</span></summary>
         <div class="accordion-body">
-          <div class="obs-panel-label">Connect to OBS's WebSocket server (Tools &gt; WebSocket Server Settings in OBS) to push the active hunt's sprite, name, count and hunting time onto sources live. The sprite is pushed as a static shiny image (not the animated GIF) since the animated ones render with a black/white matte baked in.</div>
+          <div class="obs-panel-label">Connect to OBS's WebSocket server (Tools &gt; WebSocket Server Settings in OBS) to push the active hunt's sprite, name, count and hunting time onto sources live — including the animated shiny sprite, with a clean transparent background.</div>
           <label class="modal-field-label" for="obsUrlInput" style="margin-top:6px;">Server address</label>
           <input type="text" id="obsUrlInput" class="modal-input" placeholder="ws://localhost:4455">
           <label class="modal-field-label" for="obsPasswordInput">Password</label>
@@ -2769,26 +2769,32 @@
   // with a request for a field whose text hasn't changed.
   const obsLastPushed = { sprite: undefined, name: undefined, count: undefined, timer: undefined };
 
-  // The static shiny sprite base — PokeAPI's raw sprites repo. Unlike the
-  // "generation-v/black-white/animated" GIFs, these are real PNGs with a
-  // genuine alpha channel, so they composite cleanly in OBS with no matte.
+  // Fallback static shiny sprite base — PokeAPI's raw sprites repo — used
+  // only for the rare entry that has no sprite of its own on file yet.
   const OBS_STATIC_SPRITE_BASE = 'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny';
 
   // Picks what to actually push as the OBS sprite for a given roster
-  // entry: the static shiny PNG for its exact form when we know one
-  // (true transparency, no black/white matte), falling back to whatever
-  // image the entry itself uses (a custom upload, say) when we don't.
-  // A regional form (Alolan/Galarian/Hisuian/Paldean) is its own separate
-  // Pokemon in PokeAPI's sprites repo, keyed by entry.formDexNumber, NOT
-  // by the base species' National Dex number in entry.dexNumber — using
-  // dexNumber alone for a form entry would fetch the regular (non-
-  // regional) sprite instead, which is what previously happened. The URL
-  // is wrapped via obsSpriteWrapperUrl() — see that function for why a
-  // raw image URL alone still isn't enough to avoid a black box.
+  // entry: whatever sprite the entry itself already uses (entry.gifUrl —
+  // the animated shiny GIF for most Pokemon, a custom upload, or a
+  // regional-form sprite already resolved to the right variety when it
+  // was picked in the edit modal), falling back to building the static
+  // shiny PNG from its Dex number only if the entry has no sprite on
+  // file at all.
+  //
+  // The animated GIFs were originally believed to bake a solid black/
+  // white matte into their own pixel data, so this used to push the
+  // static PNG instead on purpose. That turned out to be a misdiagnosis:
+  // the real cause (confirmed by testing) is that OBS's Browser Source,
+  // when pointed straight at a raw image URL, hands rendering to
+  // Chromium's own built-in "view image" page, which paints its own
+  // solid background and ignores Custom CSS — for ANY raw image URL,
+  // animated or not. obsSpriteWrapperUrl() below sidesteps that by
+  // wrapping the image in a tiny transparent HTML page of our own, which
+  // fixes the black box for GIFs exactly the same way it does for PNGs.
   function obsSpriteUrlFor(entry){
     if(!entry) return '';
     const spriteId = entry.formDexNumber || entry.dexNumber;
-    const imgUrl = spriteId ? `${OBS_STATIC_SPRITE_BASE}/${spriteId}.png` : (entry.gifUrl || '');
+    const imgUrl = entry.gifUrl || (spriteId ? `${OBS_STATIC_SPRITE_BASE}/${spriteId}.png` : '');
     if(!imgUrl) return '';
     return obsSpriteWrapperUrl(imgUrl);
   }
