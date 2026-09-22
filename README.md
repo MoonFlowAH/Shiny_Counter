@@ -1,10 +1,10 @@
-# Shiny Hunt Counter -- Made by MoonFlower
+# Shiny Hunt Counter
 
 This is a Pokémon shiny hunt counter.
 
 It's an all-in-one web app solution to keeping track of all your hunts across every game and Pokémon generation, with 0 downloads required.
 
-## Features:
+## Features
 
 - A Pokédex that stores a sorted, visual, and animated collection of all Pokémon you choose to hunt.
 - A Living Dex to fill out and overview all shiny Pokémon across every generation — tap any tile for that Pokémon's info, and toggle "Hide uncaught" to see only what you've found.
@@ -55,7 +55,7 @@ The Settings tab has an OBS Integration panel that connects directly to OBS's bu
 5. Pick which OBS source each field should update from the dropdowns (Sprite / Name / Count / Timer).
 6. Turn on **"Keep all of the above updated live"** to have the tracker push updates automatically as you hunt.
 
-Once connected, the sprite is pushed as a clean, transparent shiny image (regional forms included) rather than the animated GIF, so it composites over your overlay with no black or white box behind it.
+Once connected, the sprite is pushed as the animated shiny GIF (regional forms included) with a clean, transparent background, so it composites over your overlay with no black or white box behind it.
 
 ## Controller Controls
 
@@ -67,3 +67,4 @@ Connect any standard gamepad and it's picked up automatically — a "Controller 
 - **Y** — open the info popup for your active hunt
 - **D-pad Up / Down** — move the active-hunt selection through your current tab's roster
 - **D-pad Left / Right** — switch between the Active / Paused / Completed / Living Dex tabs
+
