@@ -358,6 +358,13 @@
     padding:0;
     background:transparent;
   }
+  .odds-eta{
+    color:var(--muted);
+    font-weight:700;
+    font-size:0.72rem;
+    display:block;
+  }
+  .odds-eta:empty{ display:none; }
 
   /* Roster */
   .roster-card{
@@ -414,6 +421,56 @@
   .dex-tile-grid{
     display:grid;grid-template-columns:repeat(auto-fill, minmax(34px, 1fr));gap:4px;
   }
+
+  /* ---- Stats tab ---- */
+  .stats-section{margin-bottom:20px;}
+  .stats-section-title{font-weight:800;font-size:0.85rem;margin-bottom:8px;color:var(--text-dark);}
+  .stats-grid{
+    display:grid;grid-template-columns:repeat(auto-fit, minmax(120px, 1fr));gap:8px;
+  }
+  .stat-tile{
+    background:var(--cream);border:2px solid var(--trim-black);border-radius:10px;
+    padding:10px 12px;display:flex;flex-direction:column;gap:2px;
+  }
+  .stat-tile .stat-label{font-size:0.68rem;color:var(--muted);font-weight:700;text-transform:uppercase;letter-spacing:0.02em;}
+  .stat-tile .stat-value{font-size:1.15rem;font-weight:800;color:var(--text-dark);}
+  .stat-tile .stat-sub{font-size:0.7rem;color:var(--muted);font-weight:600;text-transform:capitalize;}
+  .record-list{display:flex;flex-direction:column;gap:6px;}
+  .record-row{
+    display:flex;align-items:center;gap:10px;
+    background:var(--card-bg);border:2px solid var(--trim-black);border-radius:9px;
+    padding:6px 10px;
+  }
+  .record-row img{width:28px;height:28px;image-rendering:pixelated;flex:0 0 28px;}
+  .record-row .record-label{font-size:0.72rem;color:var(--muted);font-weight:700;}
+  .record-row .record-main{font-size:0.85rem;font-weight:800;text-transform:capitalize;}
+  .record-row .record-detail{margin-left:auto;font-size:0.78rem;font-weight:700;color:var(--yellow-dark);text-align:right;}
+  .heatmap-wrap{overflow-x:auto;padding-bottom:4px;}
+  .heatmap-grid{display:grid;grid-auto-flow:column;grid-template-rows:repeat(7, 11px);gap:3px;width:max-content;}
+  .heatmap-cell{width:11px;height:11px;border-radius:3px;background:var(--count-chip-bg);border:1px solid rgba(0,0,0,0.08);}
+  .heatmap-cell.l1{background:#c9e8b8;}
+  .heatmap-cell.l2{background:#8fd06a;}
+  .heatmap-cell.l3{background:#4fae3a;}
+  .heatmap-cell.l4{background:#2c7a1f;}
+  .heatmap-legend{display:flex;align-items:center;gap:4px;font-size:0.68rem;color:var(--muted);font-weight:600;margin-top:6px;}
+  .heatmap-legend .heatmap-cell{width:10px;height:10px;}
+  .stats-empty{color:var(--muted);font-size:0.85rem;font-weight:600;padding:14px 0;text-align:center;}
+  .timeline-wrap{position:relative;padding-left:16px;max-height:420px;overflow-y:auto;}
+  .timeline-wrap::before{content:'';position:absolute;left:4px;top:4px;bottom:4px;width:2px;background:var(--trim-black);opacity:0.25;}
+  .timeline-month{font-size:0.72rem;font-weight:800;color:var(--muted);text-transform:uppercase;letter-spacing:0.03em;margin:12px 0 6px;position:relative;}
+  .timeline-month:first-child{margin-top:0;}
+  .timeline-row{position:relative;margin-bottom:8px;}
+  .timeline-dot{position:absolute;left:-16px;top:14px;width:9px;height:9px;border-radius:50%;background:var(--yellow);border:2px solid var(--trim-black);}
+  .timeline-card{
+    display:flex;align-items:center;gap:10px;
+    background:var(--card-bg);border:2px solid var(--trim-black);border-radius:9px;
+    padding:7px 10px;
+  }
+  .timeline-card img{width:32px;height:32px;image-rendering:pixelated;flex:0 0 32px;}
+  .timeline-name{font-size:0.85rem;font-weight:800;text-transform:capitalize;display:flex;align-items:center;gap:4px;}
+  .timeline-name .icon{width:0.85em;height:0.85em;}
+  .timeline-meta{font-size:0.72rem;color:var(--muted);font-weight:600;}
+  .timeline-date{margin-left:auto;font-size:0.72rem;font-weight:700;color:var(--yellow-dark);text-align:right;white-space:nowrap;}
   .dex-tile{
     aspect-ratio:1/1;border-radius:6px;border:1px solid var(--trim-black);
     background:var(--card-bg);display:flex;align-items:center;justify-content:center;
@@ -527,6 +584,16 @@
     border:2px solid var(--trim-black);
     box-shadow:none;
   }
+  .mon-card .square-badge{
+    position:absolute;top:3px;left:26px;
+    width:18px;height:18px;border-radius:5px;
+    background:var(--blue);color:#fff;
+    display:flex;align-items:center;justify-content:center;
+    font-size:0.85rem;font-weight:800;
+    border:2px solid var(--trim-black);
+    box-shadow:none;
+  }
+  .mon-card .square-badge .icon{width:0.6em;height:0.6em;}
   .found-banner{
     color:var(--found-text);font-weight:800;font-size:0.85rem;margin-top:-6px;
   }
@@ -871,6 +938,7 @@
               </optgroup>
             </select>
             <span class="odds-result" id="oddsResult"></span>
+            <span class="odds-eta" id="oddsEta"></span>
           </div>
 
           <details class="accordion">
@@ -941,6 +1009,7 @@
       <button class="tab-btn" type="button" data-tab="paused">Paused</button>
       <button class="tab-btn" type="button" data-tab="completed">Completed</button>
       <button class="tab-btn" type="button" data-tab="dex">Living Dex</button>
+      <button class="tab-btn" type="button" data-tab="stats">Stats</button>
       <button class="tab-btn" type="button" data-tab="settings">Settings</button>
     </div>
 
@@ -950,6 +1019,14 @@
 
     <div id="dexView" style="display:none;">
       <p class="dex-note">Sprites here load from an online sprite database — an internet connection is needed the first time this loads. Tap any tile to see its info.</p>
+      <label class="modal-field-label" for="dexRegionSelect" style="margin:0 0 6px;">Dex</label>
+      <select id="dexRegionSelect" class="themed-select" style="margin-bottom:10px;">
+        <option value="national">National</option>
+        <option value="paldea">Paldea</option>
+        <option value="galar">Galar</option>
+        <option value="alola">Alola (USUM)</option>
+        <option value="hisui">Hisui</option>
+      </select>
       <label class="theme-toggle dex-hide-toggle" title="Hide pokemon you haven't caught yet">
         <input type="checkbox" id="hideUncaughtToggle">
         <span class="toggle-track"><span class="toggle-thumb"></span></span>
@@ -959,7 +1036,29 @@
       <div id="dexGridWrap"></div>
     </div>
 
+    <div id="statsView" style="display:none;">
+      <div id="statsContent"></div>
+    </div>
+
     <div id="settingsView" style="display:none;">
+      <details class="accordion" open>
+        <summary><span class="icon-label"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"></circle><path d="M4 21c0-4.4 3.6-8 8-8s8 3.6 8 8"></path></svg> Profiles</span></summary>
+        <div class="accordion-body">
+          <div class="obs-panel-label">Keep a separate roster, Living Dex and settings per save file or game — switching profiles swaps the whole tracker over instantly.</div>
+          <label class="modal-field-label" for="profileSelect" style="margin-top:6px;">Active profile</label>
+          <select id="profileSelect" class="themed-select"></select>
+          <div class="auto-panel-row" style="margin-top:8px;">
+            <input type="text" id="profileNameInput" class="modal-input" placeholder="New profile name…">
+            <button class="ghost" id="profileCreateBtn" type="button">+ Create</button>
+          </div>
+          <div class="auto-panel-row" style="margin-top:8px;">
+            <button class="ghost" id="profileRenameBtn" type="button"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"></path><path d="M16.5 3.5a2.1 2.1 0 013 3L7 19l-4 1 1-4z"></path></svg> Rename</button>
+            <button class="danger-outline" id="profileDeleteBtn" type="button">Delete</button>
+          </div>
+          <div class="form-status" id="profileStatus"></div>
+        </div>
+      </details>
+
       <details class="accordion" open>
         <summary><span class="icon-label"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="2.5" y="6.5" width="13" height="11" rx="2"></rect><path d="M15.5 10l6-3.5v11l-6-3.5"></path></svg> OBS Integration</span></summary>
         <div class="accordion-body">
@@ -978,14 +1077,27 @@
             <label class="modal-field-label" for="obsSpriteSourceSelect">Sprite source (Browser Source)</label>
             <select id="obsSpriteSourceSelect" class="themed-select"></select>
 
-            <label class="modal-field-label" for="obsNameSourceSelect" style="margin-top:8px;">Name source (Text)</label>
-            <select id="obsNameSourceSelect" class="themed-select"></select>
+            <label class="theme-toggle" style="margin-top:10px;">
+              <input type="checkbox" id="obsCompactModeToggle">
+              <span class="toggle-track"><span class="toggle-thumb"></span></span>
+              <span class="toggle-label">Compact mode — one combined text source instead of three</span>
+            </label>
 
-            <label class="modal-field-label" for="obsCountSourceSelect" style="margin-top:8px;">Count source (Text)</label>
-            <select id="obsCountSourceSelect" class="themed-select"></select>
+            <div id="obsCombinedSourceWrap" style="display:none;">
+              <label class="modal-field-label" for="obsCombinedSourceSelect" style="margin-top:8px;">Combined name/count/timer source (Text)</label>
+              <select id="obsCombinedSourceSelect" class="themed-select"></select>
+            </div>
 
-            <label class="modal-field-label" for="obsTimerSourceSelect" style="margin-top:8px;">Timer source (Text)</label>
-            <select id="obsTimerSourceSelect" class="themed-select"></select>
+            <div id="obsIndividualSourcesWrap">
+              <label class="modal-field-label" for="obsNameSourceSelect" style="margin-top:8px;">Name source (Text)</label>
+              <select id="obsNameSourceSelect" class="themed-select"></select>
+
+              <label class="modal-field-label" for="obsCountSourceSelect" style="margin-top:8px;">Count source (Text)</label>
+              <select id="obsCountSourceSelect" class="themed-select"></select>
+
+              <label class="modal-field-label" for="obsTimerSourceSelect" style="margin-top:8px;">Timer source (Text)</label>
+              <select id="obsTimerSourceSelect" class="themed-select"></select>
+            </div>
 
             <label class="theme-toggle" style="margin-top:10px;">
               <input type="checkbox" id="obsAutoUpdateToggle">
@@ -997,7 +1109,16 @@
               <span class="toggle-track"><span class="toggle-thumb"></span></span>
               <span class="toggle-label">Style the count source like the LCD screen (JetBrains Mono, bold)</span>
             </label>
-            <div class="obs-panel-label" style="margin-top:8px;">Only Text (GDI+/FreeType 2) sources appear for Name/Count/Timer, and only Browser sources for Sprite — add one of each in OBS first if a list comes up empty. The sprite is pushed as a self-contained transparent page (not a bare image link), so the Browser Source should render with no black or white border behind it automatically — no Custom CSS needed on your end for that.</div>
+            <label class="theme-toggle" style="margin-top:6px;">
+              <input type="checkbox" id="obsMilestoneToggle" checked>
+              <span class="toggle-track"><span class="toggle-thumb"></span></span>
+              <span class="toggle-label">Flash a milestone alert on the sprite source every</span>
+            </label>
+            <div class="auto-panel-row" style="margin-top:4px;align-items:center;">
+              <input type="number" id="obsMilestoneInterval" class="modal-input" min="10" step="10" value="100" style="max-width:110px;">
+              <span class="obs-panel-label" style="margin:0;">encounters</span>
+            </div>
+            <div class="obs-panel-label" style="margin-top:8px;">Only Text (GDI+/FreeType 2) sources appear for text fields, and only Browser sources for Sprite — add one of each in OBS first if a list comes up empty. The sprite is pushed as a self-contained transparent page (not a bare image link), so the Browser Source should render with no black or white border behind it automatically — no Custom CSS needed on your end for that. The milestone alert briefly swaps the sprite source for a celebration graphic, then returns to the normal sprite — it needs a sprite source picked above. Compact mode is handy for a smaller stream overlay footprint — it pushes one "Name · Count · Timer" line into a single text source instead of managing three separate ones.</div>
           </div>
         </div>
       </details>
@@ -1011,6 +1132,16 @@
             <input type="file" id="importInput" accept=".csv,text/csv" style="display:none;">
             <span class="form-status" id="backupStatus"></span>
           </div>
+          <label class="theme-toggle" style="margin-top:10px;">
+            <input type="checkbox" id="autoBackupToggle">
+            <span class="toggle-track"><span class="toggle-thumb"></span></span>
+            <span class="toggle-label">Auto-download a backup every</span>
+          </label>
+          <div class="auto-panel-row" style="margin-top:4px;align-items:center;">
+            <input type="number" id="autoBackupInterval" class="modal-input" min="5" step="5" value="30" style="max-width:110px;">
+            <span class="obs-panel-label" style="margin:0;">minutes</span>
+          </div>
+          <div class="obs-panel-label" style="margin-top:6px;" id="autoBackupStatus">Auto-backup is off.</div>
         </div>
       </details>
     </div>
@@ -1070,6 +1201,22 @@
   // (see loadState/savePokedex/saveSettings) so the app works fully offline.
   const POKEDEX_KEY = 'shinyTally.pokedex';
   const SETTINGS_KEY = 'shinyTally.settings';
+  const DAILY_LOG_KEY = 'shinyTally.dailyLog';
+
+  // ---- Profiles (save slots) ----
+  // A profile is just a name plus a suffix used to namespace the three
+  // storage keys above. The original, un-suffixed keys are kept as the
+  // "default" profile's keys, so anyone upgrading from a single-profile
+  // save keeps working with zero migration step — their existing data
+  // simply becomes the Default profile.
+  const PROFILES_KEY = 'shinyTally.profiles';
+  const ACTIVE_PROFILE_KEY = 'shinyTally.activeProfile';
+  let profiles = [{ id: 'default', name: 'Default' }];
+  let activeProfileId = 'default';
+
+  function scopedKey(base){
+    return activeProfileId === 'default' ? base : `${base}::${activeProfileId}`;
+  }
 
   // Custom inline-SVG icons, used everywhere instead of emoji characters
   // so the app looks the same on every device rather than falling back
@@ -1086,18 +1233,32 @@
     gamepad: '<svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="20" height="11" rx="5"></rect><line x1="7" y1="10.5" x2="7" y2="14.5"></line><line x1="5" y1="12.5" x2="9" y2="12.5"></line><circle cx="16" cy="10.5" r="1"></circle><circle cx="18.5" cy="13" r="1"></circle></svg>',
     timer: '<svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="13" r="8"></circle><line x1="12" y1="13" x2="12" y2="9"></line><line x1="12" y1="13" x2="15" y2="14.5"></line><line x1="9" y1="2" x2="15" y2="2"></line><line x1="12" y1="2" x2="12" y2="5"></line></svg>',
     arrowRight: '<svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="4" y1="12" x2="18" y2="12"></line><polyline points="13 6 19 12 13 18"></polyline></svg>',
-    info: '<svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"></circle><line x1="12" y1="11" x2="12" y2="16.5"></line><circle cx="12" cy="7.4" r="0.9" fill="currentColor" stroke="none"></circle></svg>'
+    info: '<svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"></circle><line x1="12" y1="11" x2="12" y2="16.5"></line><circle cx="12" cy="7.4" r="0.9" fill="currentColor" stroke="none"></circle></svg>',
+    squareShiny: '<svg class="icon" viewBox="0 0 24 24" fill="currentColor"><rect x="6" y="6" width="12" height="12" rx="1.5" transform="rotate(45 12 12)"></rect></svg>'
   };
 
   let pokedex = [];
-  let settings = {
-    activeId: null,
-    keybind: { code: 'Space', label: 'Space' },
-    autoIntervalSeconds: 5,
-    autoStartKey: { code: 'KeyG', label: 'G' },
-    autoStopKey: { code: 'KeyH', label: 'H' },
-    obs: { url: 'ws://localhost:4455', spriteSourceName: null, nameSourceName: null, countSourceName: null, timerSourceName: null, autoUpdate: false, matchLcdFont: true }
-  };
+  // Daily hunting-activity log for the Stats tab's streak heatmap: maps an
+  // ISO date ("YYYY-MM-DD") to how many encounters were logged that day,
+  // across every hunt. Written to whenever changeCount() adds an
+  // encounter (see logDailyActivity()) — never for decrements or resets,
+  // so it reflects actual hunting activity, not just the net count.
+  let dailyLog = {};
+  // A factory rather than a shared literal — each profile needs its own
+  // fresh settings object with no chance of leaking a previous profile's
+  // values into a brand-new one via a stale reference.
+  function defaultSettings(){
+    return {
+      activeId: null,
+      keybind: { code: 'Space', label: 'Space' },
+      autoIntervalSeconds: 5,
+      autoStartKey: { code: 'KeyG', label: 'G' },
+      autoStopKey: { code: 'KeyH', label: 'H' },
+      obs: { url: 'ws://localhost:4455', spriteSourceName: null, nameSourceName: null, countSourceName: null, timerSourceName: null, combinedSourceName: null, compactMode: false, autoUpdate: false, matchLcdFont: true, milestoneEnabled: true, milestoneInterval: 100 },
+      autoBackup: { enabled: false, intervalMinutes: 30, lastRun: null }
+    };
+  }
+  let settings = defaultSettings();
   let awaitingKey = false;
   let awaitingAutoStartKey = false;
   let awaitingAutoStopKey = false;
@@ -1128,12 +1289,22 @@
   const formStatus = document.getElementById('formStatus');
   const oddsMethod = document.getElementById('oddsMethod');
   const oddsResult = document.getElementById('oddsResult');
+  const oddsEta = document.getElementById('oddsEta');
   const fileInput = document.getElementById('fileInput');
   const uploadPreview = document.getElementById('uploadPreview');
   const uploadText = document.getElementById('uploadText');
   const exportBtn = document.getElementById('exportBtn');
   const importInput = document.getElementById('importInput');
   const backupStatus = document.getElementById('backupStatus');
+  const autoBackupToggle = document.getElementById('autoBackupToggle');
+  const autoBackupInterval = document.getElementById('autoBackupInterval');
+  const autoBackupStatusEl = document.getElementById('autoBackupStatus');
+  const profileSelect = document.getElementById('profileSelect');
+  const profileNameInput = document.getElementById('profileNameInput');
+  const profileCreateBtn = document.getElementById('profileCreateBtn');
+  const profileRenameBtn = document.getElementById('profileRenameBtn');
+  const profileDeleteBtn = document.getElementById('profileDeleteBtn');
+  const profileStatusEl = document.getElementById('profileStatus');
   const darkModeToggle = document.getElementById('darkModeToggle');
   const autoIntervalInput = document.getElementById('autoIntervalInput');
   const autoGoBtn = document.getElementById('autoGoBtn');
@@ -1338,6 +1509,20 @@
     timeLabel.textContent = `Time hunted so far: ${formatHuntTime(entry.huntSeconds)}`;
     box.appendChild(timeLabel);
 
+    const shinyTypeLabel = document.createElement('div');
+    shinyTypeLabel.className = 'modal-field-label';
+    shinyTypeLabel.textContent = 'Shiny type (Gen 8+ only — ignore otherwise)';
+    box.appendChild(shinyTypeLabel);
+    const shinyTypeSelect = document.createElement('select');
+    shinyTypeSelect.className = 'themed-select modal-input';
+    shinyTypeSelect.style.paddingRight = '26px';
+    shinyTypeSelect.innerHTML = `
+      <option value="">Star (normal)</option>
+      <option value="square">Square</option>
+    `;
+    shinyTypeSelect.value = entry.square ? 'square' : '';
+    box.appendChild(shinyTypeSelect);
+
     // ---- Phases: add/remove ----
     // Works on a local copy so Cancel doesn't touch the real entry —
     // only committed to entry.phaseLog/phaseCount when Save is pressed.
@@ -1392,6 +1577,18 @@
     addPhaseRow.appendChild(addPhaseBtn);
     box.appendChild(addPhaseRow);
 
+    const notesLabel = document.createElement('div');
+    notesLabel.className = 'modal-field-label';
+    notesLabel.textContent = 'Notes';
+    box.appendChild(notesLabel);
+    const notesInput = document.createElement('textarea');
+    notesInput.className = 'modal-input';
+    notesInput.rows = 3;
+    notesInput.style.cssText = 'resize:vertical;font-family:inherit;';
+    notesInput.placeholder = 'Soft-reset quirks, starting level, anything worth remembering about this hunt…';
+    notesInput.value = entry.notes || '';
+    box.appendChild(notesInput);
+
     const actions = document.createElement('div');
     actions.className = 'modal-actions';
     const cancelBtn = document.createElement('button');
@@ -1409,6 +1606,8 @@
       entry.foundDate = foundInput.value || null;
       entry.phaseLog = workingPhaseLog;
       entry.phaseCount = workingPhaseLog.length;
+      entry.square = shinyTypeSelect.value === 'square';
+      entry.notes = notesInput.value.trim() || null;
 
       const chosenForm = formSelect.value || null;
       if(chosenForm !== (entry.form || null)){
@@ -1793,6 +1992,435 @@
   // dexNumberFallback: used instead when entry is null (a Living Dex
   // tile with no tracked entry) — fetches game data by Dex number and
   // fills in the title once the species name resolves.
+  // ---- Shareable hunt card ----
+  // Renders a small "trading card" PNG for a completed hunt (sprite,
+  // name, encounters, time hunted) that downloads straight to the
+  // user's computer — meant for posting a shiny catch to socials/
+  // Discord without a screenshot.
+  //
+  // Sprite images are loaded via fetch()->blob()->object URL rather than
+  // assigned to an <img> directly. That means the canvas only ever draws
+  // a same-origin blob: URL, so a cross-origin sprite (PokeAPI's raw
+  // sprites always send the right CORS header) never taints the canvas
+  // and blocks the PNG export. If the fetch itself fails — a sprite
+  // pasted from a site with no CORS headers at all — the card still
+  // generates, just without the image, rather than failing outright.
+  async function loadImageForCanvas(url){
+    if(!url) return null;
+    try{
+      const res = await fetch(url, { mode: 'cors' });
+      if(!res.ok) throw new Error('sprite fetch failed');
+      const blob = await res.blob();
+      const objectUrl = URL.createObjectURL(blob);
+      try{
+        return await new Promise((resolve, reject) => {
+          const image = new Image();
+          image.onload = () => resolve(image);
+          image.onerror = reject;
+          image.src = objectUrl;
+        });
+      }finally{
+        // The image has decoded into the <img> by now; safe to free the blob.
+        setTimeout(() => URL.revokeObjectURL(objectUrl), 1000);
+      }
+    }catch(e){
+      return null;
+    }
+  }
+
+  function roundRectPath(ctx, x, y, w, h, r){
+    ctx.beginPath();
+    ctx.moveTo(x + r, y);
+    ctx.arcTo(x + w, y, x + w, y + h, r);
+    ctx.arcTo(x + w, y + h, x, y + h, r);
+    ctx.arcTo(x, y + h, x, y, r);
+    ctx.arcTo(x, y, x + w, y, r);
+    ctx.closePath();
+  }
+
+  // Type colors for tinting the trading card's frame. Fetched per card
+  // from PokeAPI (see fetchTypesForCard); falls back to a neutral gold.
+  const CARD_TYPE_COLORS = {
+    normal:'#A8A77A', fire:'#EE8130', water:'#6390F0', electric:'#F7D02C', grass:'#7AC74C',
+    ice:'#96D9D6', fighting:'#C22E28', poison:'#A33EA1', ground:'#E2BF65', flying:'#A98FF3',
+    psychic:'#F95587', bug:'#A6B91A', rock:'#B6A136', ghost:'#735797', dragon:'#6F35FC',
+    dark:'#705746', steel:'#B7B7CE', fairy:'#D685AD'
+  };
+
+  async function fetchTypesForCard(entry){
+    const id = entry.formDexNumber || entry.dexNumber || (entry.name || '').toLowerCase().trim();
+    if(!id) return [];
+    try{
+      const ctrl = new AbortController();
+      const t = setTimeout(() => ctrl.abort(), 5000);
+      const res = await fetch(`https://pokeapi.co/api/v2/pokemon/${id}`, { signal: ctrl.signal });
+      clearTimeout(t);
+      if(!res.ok) return [];
+      const data = await res.json();
+      return (data.types || []).sort((a, b) => a.slot - b.slot).map(t => t.type.name);
+    }catch(e){ return []; }
+  }
+
+  // Mixes a hex color toward white (amt > 0) or black (amt < 0).
+  function shadeHex(hex, amt){
+    const n = parseInt(hex.slice(1), 16);
+    let r = n >> 16, g = (n >> 8) & 255, b = n & 255;
+    const target = amt > 0 ? 255 : 0, k = Math.abs(amt);
+    r = Math.round(r + (target - r) * k); g = Math.round(g + (target - g) * k); b = Math.round(b + (target - b) * k);
+    return `rgb(${r},${g},${b})`;
+  }
+
+  // Four-point sparkle, used for the holo glints in the art window.
+  function drawSparkle(ctx, x, y, r, color){
+    ctx.save();
+    ctx.fillStyle = color;
+    ctx.beginPath();
+    ctx.moveTo(x, y - r);
+    ctx.quadraticCurveTo(x, y, x + r, y);
+    ctx.quadraticCurveTo(x, y, x, y + r);
+    ctx.quadraticCurveTo(x, y, x - r, y);
+    ctx.quadraticCurveTo(x, y, x, y - r);
+    ctx.fill();
+    ctx.restore();
+  }
+
+  function drawStar(ctx, cx, cy, outer, inner){
+    ctx.beginPath();
+    for(let i = 0; i < 10; i++){
+      const r = i % 2 === 0 ? outer : inner;
+      const a = -Math.PI / 2 + i * Math.PI / 5;
+      ctx.lineTo(cx + r * Math.cos(a), cy + r * Math.sin(a));
+    }
+    ctx.closePath();
+  }
+
+  // Shrinks a font size until the text fits the given width.
+  function fitFont(ctx, text, weight, family, startSize, maxWidth, minSize){
+    let size = startSize;
+    ctx.font = `${weight} ${size}px ${family}`;
+    while(ctx.measureText(text).width > maxWidth && size > (minSize || 12)){
+      size -= 1;
+      ctx.font = `${weight} ${size}px ${family}`;
+    }
+    return size;
+  }
+
+  // Word-wraps text into at most maxLines lines, adding an ellipsis if cut.
+  function wrapLines(ctx, text, maxWidth, maxLines){
+    const words = String(text).replace(/\s+/g, ' ').trim().split(' ');
+    const lines = [];
+    let line = '';
+    for(let i = 0; i < words.length; i++){
+      const test = line ? line + ' ' + words[i] : words[i];
+      if(ctx.measureText(test).width > maxWidth && line){
+        lines.push(line);
+        line = words[i];
+        if(lines.length === maxLines){ line = null; break; }
+      } else {
+        line = test;
+      }
+    }
+    if(line) lines.push(line);
+    if(line === null || lines.length > maxLines){
+      lines.length = maxLines;
+      let last = lines[maxLines - 1];
+      while(ctx.measureText(last + '…').width > maxWidth && last.length) last = last.slice(0, -1);
+      lines[maxLines - 1] = last.trimEnd() + '…';
+    }
+    return lines;
+  }
+
+  // Finds the non-transparent bounds of a sprite so it can be scaled up to
+  // fill the art window (PokeAPI PNGs have a lot of empty padding). The
+  // image comes from a same-origin blob URL, so reading pixels is allowed.
+  function spriteBounds(img){
+    const full = { sx: 0, sy: 0, sw: img.width, sh: img.height };
+    try{
+      const c = document.createElement('canvas');
+      c.width = img.width; c.height = img.height;
+      const x = c.getContext('2d');
+      x.drawImage(img, 0, 0);
+      const d = x.getImageData(0, 0, c.width, c.height).data;
+      let minX = c.width, minY = c.height, maxX = -1, maxY = -1;
+      for(let y = 0; y < c.height; y++){
+        for(let xx = 0; xx < c.width; xx++){
+          if(d[(y * c.width + xx) * 4 + 3] > 10){
+            if(xx < minX) minX = xx; if(xx > maxX) maxX = xx;
+            if(y < minY) minY = y; if(y > maxY) maxY = y;
+          }
+        }
+      }
+      if(maxX < 0) return full;
+      return { sx: minX, sy: minY, sw: maxX - minX + 1, sh: maxY - minY + 1 };
+    }catch(e){ return full; }
+  }
+
+  // Renders a completed hunt as a collectible trading card (2.5 x 3.5
+  // proportions) and downloads it as a PNG: holo foil border, a frame
+  // tinted by the Pokemon's type, a framed art window with shimmer and
+  // sparkles, a stats panel, the hunt notes as flavor text, and a
+  // collector number counting this shiny among everything you've found.
+  async function generateHuntCardImage(entry, spriteSrc){
+    const W = 750, H = 1050;
+    const canvas = document.createElement('canvas');
+    canvas.width = W; canvas.height = H;
+    const ctx = canvas.getContext('2d');
+
+    const [ , , , , img, types] = await Promise.all([
+      document.fonts.load('800 44px "Baloo 2"').catch(() => {}),
+      document.fonts.load('700 20px "Baloo 2"').catch(() => {}),
+      document.fonts.load('italic 600 18px "Baloo 2"').catch(() => {}),
+      document.fonts.load('800 40px "JetBrains Mono"').catch(() => {}),
+      loadImageForCanvas(spriteSrc),
+      fetchTypesForCard(entry)
+    ]);
+
+    const ink = '#1B1B1B', cream = '#FBF7EA', muted = '#5E554E', gold = '#E4B422', goldDark = '#A67C0E';
+    const primary = CARD_TYPE_COLORS[types[0]] || '#E4B422';
+    const secondary = CARD_TYPE_COLORS[types[1]] || primary;
+
+    // ---- Outer frame + holo foil border ----
+    ctx.fillStyle = ink;
+    roundRectPath(ctx, 0, 0, W, H, 38);
+    ctx.fill();
+
+    const foil = ctx.createLinearGradient(0, 0, W, H);
+    ['#ffd9f2', '#d8e9ff', '#d4ffe8', '#fff6c8', '#ffd9d9', '#e6d9ff', '#d8fbff'].forEach((c, i, a) => foil.addColorStop(i / (a.length - 1), c));
+    ctx.fillStyle = foil;
+    roundRectPath(ctx, 14, 14, W - 28, H - 28, 28);
+    ctx.fill();
+    // Diagonal glare streaks across the foil.
+    ctx.save();
+    roundRectPath(ctx, 14, 14, W - 28, H - 28, 28);
+    ctx.clip();
+    ctx.globalAlpha = 0.35;
+    ctx.fillStyle = '#ffffff';
+    for(let i = -H; i < W + H; i += 120){
+      ctx.beginPath();
+      ctx.moveTo(i, 0); ctx.lineTo(i + 40, 0); ctx.lineTo(i + 40 - H, H); ctx.lineTo(i - H, H);
+      ctx.fill();
+    }
+    ctx.restore();
+
+    // ---- Card body, tinted by type ----
+    const bodyX = 30, bodyY = 30, bodyW = W - 60, bodyH = H - 60;
+    const body = ctx.createLinearGradient(0, bodyY, 0, bodyY + bodyH);
+    body.addColorStop(0, shadeHex(primary, 0.55));
+    body.addColorStop(0.5, shadeHex(primary, 0.25));
+    body.addColorStop(1, shadeHex(secondary, 0.05));
+    ctx.fillStyle = body;
+    roundRectPath(ctx, bodyX, bodyY, bodyW, bodyH, 22);
+    ctx.fill();
+    ctx.lineWidth = 3;
+    ctx.strokeStyle = ink;
+    ctx.stroke();
+
+    // ---- Name bar ----
+    const nameY = 90;
+    ctx.textBaseline = 'alphabetic';
+    ctx.textAlign = 'left';
+    ctx.fillStyle = ink;
+    const dexNo = entry.dexNumber ? '#' + String(entry.dexNumber).padStart(4, '0') : '';
+    ctx.font = '800 26px "JetBrains Mono"';
+    const dexW = dexNo ? ctx.measureText(dexNo).width : 0;
+    fitFont(ctx, capitalizeName(entry.name), 800, '"Baloo 2"', 46, bodyW - 60 - dexW - 30, 24);
+    ctx.fillText(capitalizeName(entry.name), 56, nameY);
+    if(dexNo){
+      ctx.textAlign = 'right';
+      ctx.font = '800 26px "JetBrains Mono"';
+      ctx.fillText(dexNo, W - 56, nameY);
+    }
+
+    // Subline: form + shiny type
+    ctx.textAlign = 'left';
+    ctx.font = '700 17px "Baloo 2"';
+    ctx.fillStyle = shadeHex(primary, -0.55);
+    const formLabel = entry.form ? (regionalFormLabel(entry.form) || '') + ' form  ·  ' : '';
+    ctx.fillText((formLabel + (entry.square ? 'SQUARE SHINY' : 'SHINY')).toUpperCase(), 58, nameY + 28);
+
+    // ---- Art window ----
+    // Layout is solved bottom-up so the art window absorbs any spare
+    // height and there's never a dead gap above the footer.
+    const footY = H - 52;
+    const flavorBottom = H - 84, flavorTop = flavorBottom - 72;
+    const panelH = 150, panelBottomY = flavorTop - 14, panelTopY = panelBottomY - panelH;
+    const pillsTopY = panelTopY - 44;
+    const ribbonTopY = types.length ? pillsTopY - 52 : panelTopY - 50;
+    const artX = 56, artY = 138, artW = W - 112, artH = ribbonTopY - 16 - artY;
+    ctx.fillStyle = ink;
+    roundRectPath(ctx, artX - 7, artY - 7, artW + 14, artH + 14, 18);
+    ctx.fill();
+    ctx.save();
+    roundRectPath(ctx, artX, artY, artW, artH, 12);
+    ctx.clip();
+    const artBg = ctx.createRadialGradient(W / 2, artY + artH / 2, 20, W / 2, artY + artH / 2, artW * 0.75);
+    artBg.addColorStop(0, '#ffffff');
+    artBg.addColorStop(0.45, shadeHex(primary, 0.6));
+    artBg.addColorStop(1, shadeHex(secondary, -0.1));
+    ctx.fillStyle = artBg;
+    ctx.fillRect(artX, artY, artW, artH);
+    // Radiating holo rays behind the sprite.
+    ctx.globalAlpha = 0.18;
+    ctx.fillStyle = '#ffffff';
+    const cx = W / 2, cy = artY + artH / 2;
+    for(let i = 0; i < 18; i++){
+      const a0 = (i / 18) * Math.PI * 2, a1 = a0 + Math.PI / 36;
+      ctx.beginPath();
+      ctx.moveTo(cx, cy);
+      ctx.lineTo(cx + Math.cos(a0) * 800, cy + Math.sin(a0) * 800);
+      ctx.lineTo(cx + Math.cos(a1) * 800, cy + Math.sin(a1) * 800);
+      ctx.fill();
+    }
+    ctx.globalAlpha = 1;
+    // Sprite
+    if(img){
+      ctx.imageSmoothingEnabled = false;
+      const b = spriteBounds(img);
+      const boxW = artW * 0.78, boxH = artH * 0.8;
+      let scale = Math.min(boxW / b.sw, boxH / b.sh);
+      if(scale >= 2) scale = Math.floor(scale); // whole-pixel scaling keeps pixel art crisp
+      const dw = b.sw * scale, dh = b.sh * scale;
+      // Soft drop shadow under the sprite
+      ctx.save();
+      ctx.globalAlpha = 0.18;
+      ctx.fillStyle = '#000';
+      ctx.beginPath();
+      ctx.ellipse(cx, cy + dh / 2 + 6, dw * 0.35, 12, 0, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.restore();
+      ctx.drawImage(img, b.sx, b.sy, b.sw, b.sh, cx - dw / 2, cy - dh / 2, dw, dh);
+      ctx.imageSmoothingEnabled = true;
+    } else {
+      ctx.fillStyle = muted;
+      ctx.textAlign = 'center';
+      ctx.font = '600 18px "Baloo 2"';
+      ctx.fillText('(sprite unavailable)', cx, cy);
+    }
+    // Sparkles
+    const glints = [[0.12,0.18,22],[0.86,0.14,16],[0.9,0.72,24],[0.08,0.8,14],[0.22,0.55,10],[0.76,0.4,11],[0.5,0.1,9]];
+    glints.forEach(([gx, gy, r]) => {
+      drawSparkle(ctx, artX + gx * artW, artY + gy * artH, r + 4, 'rgba(255,255,255,0.55)');
+      drawSparkle(ctx, artX + gx * artW, artY + gy * artH, r, '#ffffff');
+    });
+    ctx.restore();
+
+    // ---- Info ribbon under the art ----
+    const ribbonY = ribbonTopY;
+    ctx.fillStyle = shadeHex(primary, -0.45);
+    roundRectPath(ctx, artX + 30, ribbonY, artW - 60, 34, 17);
+    ctx.fill();
+    ctx.fillStyle = '#ffffff';
+    ctx.textAlign = 'center';
+    ctx.font = 'italic 600 16px "Baloo 2"';
+    const oddsText = entry.oddsMethod ? `Odds 1/${entry.oddsMethod}` : 'Shiny Hunt';
+    ctx.fillText(`${oddsText}  ·  Found ${entry.foundDate || '—'}`, W / 2, ribbonY + 23);
+
+    // ---- Type pills ----
+    let pillY = pillsTopY;
+    if(types.length){
+      ctx.font = '800 15px "Baloo 2"';
+      const pills = types.map(t => ({ t, w: ctx.measureText(t.toUpperCase()).width + 34 }));
+      const total = pills.reduce((s, p) => s + p.w, 0) + (pills.length - 1) * 10;
+      let px = W / 2 - total / 2;
+      pills.forEach(p => {
+        ctx.fillStyle = CARD_TYPE_COLORS[p.t] || gold;
+        roundRectPath(ctx, px, pillY, p.w, 28, 14);
+        ctx.fill();
+        ctx.lineWidth = 2; ctx.strokeStyle = ink; ctx.stroke();
+        ctx.fillStyle = '#ffffff';
+        ctx.fillText(p.t.toUpperCase(), px + p.w / 2, pillY + 20);
+        px += p.w + 10;
+      });
+    }
+
+    // ---- Stats panel ----
+    const panelX = artX, panelY = panelTopY, panelW = artW;
+    ctx.fillStyle = cream;
+    roundRectPath(ctx, panelX, panelY, panelW, panelH, 14);
+    ctx.fill();
+    ctx.lineWidth = 3; ctx.strokeStyle = ink; ctx.stroke();
+
+    const cols = [
+      { label: 'ENCOUNTERS', value: String(entry.count || 0).padStart(4, '0'), mono: true, color: '#B23A2E' },
+      { label: 'TIME HUNTED', value: formatHuntTime(entry.huntSeconds) },
+      { label: 'PHASES', value: String(entry.phaseCount || 0) }
+    ];
+    const colW = panelW / cols.length;
+    cols.forEach((c, i) => {
+      const colX = panelX + colW * i + colW / 2;
+      if(i > 0){
+        ctx.strokeStyle = 'rgba(0,0,0,0.15)'; ctx.lineWidth = 2;
+        ctx.beginPath(); ctx.moveTo(panelX + colW * i, panelY + 18); ctx.lineTo(panelX + colW * i, panelY + 92); ctx.stroke();
+      }
+      ctx.textAlign = 'center';
+      ctx.fillStyle = muted;
+      ctx.font = '800 14px "Baloo 2"';
+      ctx.fillText(c.label, colX, panelY + 36);
+      ctx.fillStyle = c.color || ink;
+      if(c.mono) fitFont(ctx, c.value, 800, '"JetBrains Mono"', 40, colW - 24, 18);
+      else fitFont(ctx, c.value, 800, '"Baloo 2"', 28, colW - 24, 14);
+      ctx.fillText(c.value, colX, panelY + 80);
+    });
+    ctx.strokeStyle = 'rgba(0,0,0,0.15)'; ctx.lineWidth = 2;
+    ctx.beginPath(); ctx.moveTo(panelX + 20, panelY + 106); ctx.lineTo(panelX + panelW - 20, panelY + 106); ctx.stroke();
+    ctx.fillStyle = muted;
+    ctx.font = '700 16px "Baloo 2"';
+    ctx.fillText(`Hunt: ${entry.startDate || '—'}  →  ${entry.foundDate || '—'}`, W / 2, panelY + 134);
+
+    // ---- Flavor text (the hunt's notes), or a default line ----
+    ctx.fillStyle = 'rgba(255,255,255,0.45)';
+    roundRectPath(ctx, artX, flavorTop, artW, flavorBottom - flavorTop, 12);
+    ctx.fill();
+    ctx.lineWidth = 2; ctx.strokeStyle = 'rgba(27,27,27,0.35)'; ctx.stroke();
+    ctx.fillStyle = shadeHex(primary, -0.65);
+    ctx.font = 'italic 600 18px "Baloo 2"';
+    const flavor = entry.notes
+      ? `“${entry.notes}”`
+      : `After ${(entry.count || 0).toLocaleString()} encounters, it finally sparkled.`;
+    const flavorLines = wrapLines(ctx, flavor, artW - 48, 2);
+    const flavorMid = (flavorTop + flavorBottom) / 2;
+    flavorLines.forEach((line, i) => ctx.fillText(line, W / 2, flavorMid + 6 + (i - (flavorLines.length - 1) / 2) * 24));
+
+    // ---- Footer: set name, rarity mark, collector number ----
+    const foundList = pokedex.filter(p => p.found).sort((a, b) => {
+      const da = a.foundDate || '', db = b.foundDate || '';
+      if(da !== db) return da < db ? -1 : 1;
+      return String(a.id).localeCompare(String(b.id));
+    });
+    const idx = foundList.findIndex(p => p.id === entry.id);
+    const pad3 = n => String(n).padStart(3, '0');
+    const collector = `${pad3(idx >= 0 ? idx + 1 : foundList.length)}/${pad3(foundList.length)}`;
+
+    ctx.fillStyle = ink;
+    ctx.textAlign = 'left';
+    ctx.font = '800 15px "Baloo 2"';
+    ctx.fillText('SHINY HUNT COUNTER', 56, footY);
+    ctx.textAlign = 'right';
+    ctx.font = '800 16px "JetBrains Mono"';
+    ctx.fillText(collector, W - 56, footY);
+
+    // Rarity mark: a gold star, or a gold square for square shinies.
+    ctx.fillStyle = ink;
+    ctx.beginPath();
+    ctx.arc(W / 2, footY - 7, 19, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.fillStyle = gold;
+    if(entry.square){
+      roundRectPath(ctx, W / 2 - 9, footY - 16, 18, 18, 2);
+    } else {
+      drawStar(ctx, W / 2, footY - 6, 12, 5);
+    }
+    ctx.fill();
+
+    const dataUrl = canvas.toDataURL('image/png');
+    const a = document.createElement('a');
+    a.href = dataUrl;
+    a.download = `${(entry.name || 'shiny').toLowerCase()}-shiny-card.png`;
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+  }
+
   function openInfoModal(entry, dexNumberFallback){
     const overlay = document.createElement('div');
     overlay.className = 'modal-overlay';
@@ -1801,7 +2429,7 @@
 
     const spriteBase = 'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon';
     const spriteSrc = entry
-      ? (entry.gifUrl || (entry.dexNumber ? `${spriteBase}/shiny/${entry.dexNumber}.png` : ''))
+      ? (entry.gifUrl || ((entry.formDexNumber || entry.dexNumber) ? `${spriteBase}/shiny/${entry.formDexNumber || entry.dexNumber}.png` : ''))
       : `${spriteBase}/shiny/${dexNumberFallback}.png`;
     if(spriteSrc){
       const spriteWrap = document.createElement('div');
@@ -1830,6 +2458,7 @@
       statsSection.innerHTML = `
         <div class="info-heading">Your hunt</div>
         <div class="info-row"><span>Status</span><span>${statusText}</span></div>
+        ${entry.found ? `<div class="info-row"><span>Shiny type</span><span>${entry.square ? 'Square' : 'Star'}</span></div>` : ''}
         <div class="info-row"><span>Added to Pokedex</span><span>${entry.addedDate || '—'}</span></div>
         <div class="info-row"><span>Encounters / Resets</span><span>${entry.count || 0}</span></div>
         <div class="info-row"><span>Time hunting</span><span>${formatHuntTime(entry.huntSeconds)}</span></div>
@@ -1838,6 +2467,16 @@
         <div class="info-row"><span>Phases</span><span>${entry.phaseCount || 0}</span></div>
       `;
       box.appendChild(statsSection);
+
+      if(entry.notes){
+        const notesSection = document.createElement('div');
+        notesSection.className = 'info-section';
+        notesSection.innerHTML = `
+          <div class="info-heading">Notes</div>
+          <div class="info-loading" style="white-space:pre-wrap;color:var(--text-dark);font-weight:600;">${entry.notes.replace(/&/g, '&amp;').replace(/</g, '&lt;')}</div>
+        `;
+        box.appendChild(notesSection);
+      }
 
       if(entry.phaseLog && entry.phaseLog.length){
         const phaseSection = document.createElement('div');
@@ -1869,6 +2508,25 @@
 
     const actions = document.createElement('div');
     actions.className = 'modal-actions';
+    if(entry && entry.found){
+      const shareBtn = document.createElement('button');
+      shareBtn.type = 'button';
+      shareBtn.className = 'ghost';
+      shareBtn.innerHTML = `${ICONS.trophy} Share card`;
+      shareBtn.addEventListener('click', async () => {
+        shareBtn.disabled = true;
+        const originalHtml = shareBtn.innerHTML;
+        shareBtn.textContent = 'Generating…';
+        try{
+          await generateHuntCardImage(entry, spriteSrc);
+        }catch(e){
+          openModal('Could not generate the card image — this can happen if the sprite comes from a site that blocks cross-origin image use. Try switching to a fetched or uploaded sprite for this hunt.', [{ label: 'OK', className: 'primary' }]);
+        }
+        shareBtn.disabled = false;
+        shareBtn.innerHTML = originalHtml;
+      });
+      actions.appendChild(shareBtn);
+    }
     const closeBtn = document.createElement('button');
     closeBtn.textContent = 'Close';
     closeBtn.className = 'primary';
@@ -2028,12 +2686,105 @@
     saveSettings();
   });
 
+  // ---- Profiles (save slots) ----
+  function escapeHtml(str){
+    return String(str == null ? '' : str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+  }
+
+  function setProfileStatus(msg, isErr){
+    profileStatusEl.textContent = msg || '';
+    profileStatusEl.className = 'form-status' + (isErr ? ' err' : '');
+  }
+
+  function loadProfiles(){
+    try{
+      const raw = localStorage.getItem(PROFILES_KEY);
+      profiles = raw ? JSON.parse(raw) : [{ id: 'default', name: 'Default' }];
+      if(!Array.isArray(profiles) || profiles.length === 0) profiles = [{ id: 'default', name: 'Default' }];
+    }catch(e){ profiles = [{ id: 'default', name: 'Default' }]; }
+    activeProfileId = localStorage.getItem(ACTIVE_PROFILE_KEY) || 'default';
+    if(!profiles.some(p => p.id === activeProfileId)) activeProfileId = profiles[0].id;
+  }
+
+  function saveProfiles(){
+    try{ localStorage.setItem(PROFILES_KEY, JSON.stringify(profiles)); }
+    catch(e){ /* non-fatal */ }
+    try{ localStorage.setItem(ACTIVE_PROFILE_KEY, activeProfileId); }
+    catch(e){ /* non-fatal */ }
+  }
+
+  function renderProfileSelect(){
+    profileSelect.innerHTML = profiles.map(p =>
+      `<option value="${escapeHtml(p.id)}"${p.id === activeProfileId ? ' selected' : ''}>${escapeHtml(p.name)}</option>`
+    ).join('');
+    profileDeleteBtn.disabled = profiles.length <= 1;
+  }
+
+  // Fully swaps the active save slot: flushes any in-flight hunt timer to
+  // the outgoing profile, points every storage key at the new profile via
+  // scopedKey(), then re-runs loadState() (which resets in-memory state
+  // from scratch and re-renders) so nothing from the old profile lingers.
+  function switchProfile(id){
+    if(id === activeProfileId) return;
+    if(typeof flushHuntTime === 'function') flushHuntTime();
+    activeProfileId = id;
+    saveProfiles();
+    obsLastPushed.sprite = obsLastPushed.name = obsLastPushed.count = obsLastPushed.timer = obsLastPushed.combined = undefined;
+    for(const k in obsFiredMilestones) delete obsFiredMilestones[k];
+    loadState();
+    renderProfileSelect();
+    setProfileStatus(`Switched to "${profiles.find(p => p.id === id)?.name || id}".`, false);
+  }
+
+  profileSelect.addEventListener('change', () => switchProfile(profileSelect.value));
+
+  profileCreateBtn.addEventListener('click', () => {
+    const name = profileNameInput.value.trim();
+    if(!name){ setProfileStatus('Enter a name for the new profile first.', true); return; }
+    const id = 'p' + Date.now().toString(36) + Math.random().toString(36).slice(2, 6);
+    profiles.push({ id, name });
+    profileNameInput.value = '';
+    switchProfile(id);
+    renderProfileSelect();
+    setProfileStatus(`Created and switched to "${name}".`, false);
+  });
+
+  profileRenameBtn.addEventListener('click', () => {
+    const name = profileNameInput.value.trim();
+    const current = profiles.find(p => p.id === activeProfileId);
+    if(!current) return;
+    if(!name){ setProfileStatus('Enter a new name in the field first, then Rename.', true); return; }
+    current.name = name;
+    saveProfiles();
+    renderProfileSelect();
+    profileNameInput.value = '';
+    setProfileStatus(`Renamed to "${name}".`, false);
+  });
+
+  profileDeleteBtn.addEventListener('click', () => {
+    if(profiles.length <= 1) return;
+    const current = profiles.find(p => p.id === activeProfileId);
+    if(!current) return;
+    if(!confirm(`Delete the profile "${current.name}" and all of its hunt data? This can't be undone.`)) return;
+    try{
+      localStorage.removeItem(scopedKey(POKEDEX_KEY));
+      localStorage.removeItem(scopedKey(SETTINGS_KEY));
+      localStorage.removeItem(scopedKey(DAILY_LOG_KEY));
+    }catch(e){ /* non-fatal */ }
+    profiles = profiles.filter(p => p.id !== current.id);
+    const fallback = profiles[0].id;
+    // activeProfileId still points at the just-deleted id here, so
+    // switchProfile(fallback) below sees a real change and runs normally.
+    switchProfile(fallback);
+    setProfileStatus(`Deleted "${current.name}".`, false);
+  });
+
   // ---- Load / save ----
   // Reads both localStorage entries, falls back to defaults if missing,
   // applies the saved theme, and does the first render.
   function loadState(){
     try{
-      const raw = localStorage.getItem(POKEDEX_KEY);
+      const raw = localStorage.getItem(scopedKey(POKEDEX_KEY));
       pokedex = raw ? JSON.parse(raw) : [];
     }catch(e){ pokedex = []; }
 
@@ -2047,22 +2798,39 @@
       if(p.huntSeconds === undefined) p.huntSeconds = 0;
       if(p.form === undefined) p.form = null;
       if(p.formDexNumber === undefined) p.formDexNumber = null;
+      if(p.square === undefined) p.square = false;
+      if(p.oddsMethod === undefined) p.oddsMethod = null;
+      if(p.notes === undefined) p.notes = null;
       if(p.foundDate === undefined) p.foundDate = null;
       if(p.phaseCount === undefined) p.phaseCount = 0;
       if(!Array.isArray(p.phaseLog)) p.phaseLog = [];
     });
 
+    settings = defaultSettings();
     try{
-      const raw = localStorage.getItem(SETTINGS_KEY);
+      const raw = localStorage.getItem(scopedKey(SETTINGS_KEY));
       if(raw) settings = JSON.parse(raw);
     }catch(e){ /* keep defaults */ }
 
+    try{
+      const raw = localStorage.getItem(scopedKey(DAILY_LOG_KEY));
+      dailyLog = raw ? JSON.parse(raw) : {};
+    }catch(e){ dailyLog = {}; }
+
     if(!settings.keybind) settings.keybind = { code: 'Space', label: 'Space' };
     if(settings.hideUncaught === undefined) settings.hideUncaught = false;
+    if(!settings.dexRegion) settings.dexRegion = 'national';
     if(!settings.autoIntervalSeconds) settings.autoIntervalSeconds = 5;
     if(!settings.autoStartKey) settings.autoStartKey = { code: 'KeyG', label: 'G' };
     if(!settings.autoStopKey) settings.autoStopKey = { code: 'KeyH', label: 'H' };
-    if(!settings.obs) settings.obs = { url: 'ws://localhost:4455', spriteSourceName: null, nameSourceName: null, countSourceName: null, timerSourceName: null, autoUpdate: false, matchLcdFont: true };
+    if(!settings.obs) settings.obs = { url: 'ws://localhost:4455', spriteSourceName: null, nameSourceName: null, countSourceName: null, timerSourceName: null, combinedSourceName: null, compactMode: false, autoUpdate: false, matchLcdFont: true, milestoneEnabled: true, milestoneInterval: 100 };
+    if(settings.obs.milestoneEnabled === undefined) settings.obs.milestoneEnabled = true;
+    if(!settings.obs.milestoneInterval) settings.obs.milestoneInterval = 100;
+    if(settings.obs.compactMode === undefined) settings.obs.compactMode = false;
+    if(settings.obs.combinedSourceName === undefined) settings.obs.combinedSourceName = null;
+    if(!settings.autoBackup) settings.autoBackup = { enabled: false, intervalMinutes: 30, lastRun: null };
+    if(settings.autoBackup.intervalMinutes === undefined) settings.autoBackup.intervalMinutes = 30;
+    if(settings.autoBackup.lastRun === undefined) settings.autoBackup.lastRun = null;
     // Migrate from the older single-text-source layout, which only ever
     // pushed a combined "name: count" string into one chosen source.
     if(settings.obs.textSourceName !== undefined){
@@ -2079,6 +2847,10 @@
     autoStartKeycap.textContent = settings.autoStartKey.label;
     autoStopKeycap.textContent = settings.autoStopKey.label;
     obsUrlInput.value = settings.obs.url || 'ws://localhost:4455';
+    autoBackupToggle.checked = !!settings.autoBackup.enabled;
+    autoBackupInterval.value = settings.autoBackup.intervalMinutes;
+    updateAutoBackupStatus();
+    scheduleAutoBackup();
     // Start with the "add a pokemon" section expanded only when there's
     // nothing in the Pokedex yet — otherwise keep it (and the other
     // collapsible sections) tucked away so the page isn't a mile long.
@@ -2089,12 +2861,24 @@
   // Persists the whole pokedex array as one JSON blob. Called after any
   // change to an entry (count, found status, add/remove, sort doesn't call this).
   function savePokedex(){
-    try{ localStorage.setItem(POKEDEX_KEY, JSON.stringify(pokedex)); }
+    try{ localStorage.setItem(scopedKey(POKEDEX_KEY), JSON.stringify(pokedex)); }
     catch(e){ setStatus('Could not save — your browser storage may be full.', true); }
   }
   function saveSettings(){
-    try{ localStorage.setItem(SETTINGS_KEY, JSON.stringify(settings)); }
+    try{ localStorage.setItem(scopedKey(SETTINGS_KEY), JSON.stringify(settings)); }
     catch(e){ /* non-fatal */ }
+  }
+  function saveDailyLog(){
+    try{ localStorage.setItem(scopedKey(DAILY_LOG_KEY), JSON.stringify(dailyLog)); }
+    catch(e){ /* non-fatal — the streak heatmap just won't have today's entry yet */ }
+  }
+  // Records one encounter against today's date, for the Stats tab's
+  // hunting-streak heatmap. Only called for +1s (see changeCount()) so
+  // the log reflects actual hunting activity, not net progress.
+  function logDailyActivity(){
+    const today = todayISO();
+    dailyLog[today] = (dailyLog[today] || 0) + 1;
+    saveDailyLog();
   }
 
   // The pokemon currently shown in the display/counter panel (or null).
@@ -2174,6 +2958,7 @@
         <button class="edit-btn" data-id="${p.id}" title="Edit generation / Dex # / status">${ICONS.pencil}</button>
         <button class="phase-btn" data-id="${p.id}" title="Phase — found a different shiny?">${ICONS.swap}</button>
         ${p.found ? `<span class="found-badge">${ICONS.check}</span>` : ''}
+        ${p.found && p.square ? `<span class="square-badge" title="Square shiny">${ICONS.squareShiny}</span>` : ''}
         <div class="thumb"><img src="${p.gifUrl}" alt="${p.name}" onerror="this.style.opacity=0.1"></div>
         <div class="mon-name">${p.name}</div>
         <div class="mon-count-row">
@@ -2254,6 +3039,14 @@
       foundBtn.innerHTML = active.found ? 'Unmark shiny found' : `${ICONS.check} Mark shiny found!`;
       foundBanner.style.display = active.found ? 'block' : 'none';
       huntTimeDisplay.innerHTML = `${ICONS.timer} ${formatHuntTime(active.huntSeconds)} hunting`;
+      // Restore this hunt's own remembered method, falling back to the
+      // last one used for this species elsewhere in the Pokedex — see
+      // getLastMethodForSpecies() — so switching hunts shows the right
+      // odds instead of whatever was left over from the last hunt shown.
+      if(!active.oddsMethod) active.oddsMethod = getLastMethodForSpecies(active.name, active.id);
+      if(active.oddsMethod && oddsMethod.querySelector(`option[value="${active.oddsMethod}"]`)){
+        oddsMethod.value = active.oddsMethod;
+      }
     } else {
       screenEl.innerHTML = `<div class="empty">Add a pokemon below, then pick it to start tracking.</div>`;
       activeNameEl.textContent = 'No pokemon selected';
@@ -2310,10 +3103,12 @@
   function updateOdds(){
     autoUpdateOddsTier();
     const active = getActive();
-    const p = 1 / Number(oddsMethod.value);
+    const denom = Number(oddsMethod.value);
+    const p = 1 / denom;
     if(!active){
       activeOddsEl.textContent = '';
       oddsResult.textContent = '';
+      oddsEta.textContent = '';
       return;
     }
     const n = active.count || 0;
@@ -2321,6 +3116,20 @@
     const pct = (cumulative * 100).toFixed(1);
     activeOddsEl.textContent = `${n} Encounters/Resets Logged`;
     oddsResult.textContent = `~${pct}% cumulative`;
+
+    // Rough ETA. Each encounter is an independent shiny roll, so the
+    // expected number of ADDITIONAL encounters from right now is always
+    // ~denom (the odds denominator) — not denom minus what's already
+    // logged — thanks to the memoryless property of a fixed-odds roll.
+    // That figure gets turned into a time estimate using this hunt's own
+    // average pace so far (time hunted / encounters logged), once there's
+    // enough of that to not be too noisy.
+    let etaText = `~${denom.toLocaleString()} encounters on average`;
+    if(n >= 5 && active.huntSeconds > 0){
+      const secondsPerEncounter = active.huntSeconds / n;
+      etaText += ` · ~${formatHuntTime(secondsPerEncounter * denom)} at your pace`;
+    }
+    oddsEta.textContent = etaText;
   }
 
   // ---- Pokedex tabs: Active / Paused / Completed hunts, plus the
@@ -2335,17 +3144,22 @@
   let activeTab = 'active';
 
   const settingsView = document.getElementById('settingsView');
+  const statsView = document.getElementById('statsView');
 
   function switchTab(tab){
     activeTab = tab;
     const isDex = tab === 'dex';
     const isSettings = tab === 'settings';
-    rosterView.style.display = (isDex || isSettings) ? 'none' : 'block';
+    const isStats = tab === 'stats';
+    const isSideView = isDex || isSettings || isStats;
+    rosterView.style.display = isSideView ? 'none' : 'block';
     dexView.style.display = isDex ? 'block' : 'none';
     settingsView.style.display = isSettings ? 'block' : 'none';
-    rosterControls.style.display = (isDex || isSettings) ? 'none' : 'flex';
+    statsView.style.display = isStats ? 'block' : 'none';
+    rosterControls.style.display = isSideView ? 'none' : 'flex';
     tabButtons.forEach(btn => btn.classList.toggle('active', btn.dataset.tab === tab));
     if(isDex) renderLivingDex();
+    else if(isStats) renderStats();
     else if(!isSettings) render();
   }
   tabButtons.forEach(btn => btn.addEventListener('click', () => switchTab(btn.dataset.tab)));
@@ -2379,6 +3193,34 @@
   // tile is clickable (see the delegated listener above); when "Hide
   // uncaught" is on, not-yet-found tiles (and any generation section left
   // with nothing to show) are skipped entirely.
+  // ---- Regional Living Dex ----
+  // The Living Dex normally tracks completion against the National dex
+  // (1-1025). This lets it track a specific game's own regional dex
+  // instead — Paldea, Galar, etc — using PokeAPI's `pokedex` endpoint for
+  // that region's own entry numbers and species list. Each region is
+  // fetched once and cached in memory (regionalDexCache) for the rest of
+  // the session, keyed by national dex number so it lines up with
+  // `entry.dexNumber` everywhere else in the app.
+  const REGIONAL_DEXES = { national: null, paldea: 'paldea', galar: 'galar', alola: 'updated-alola', hisui: 'hisui' };
+  const regionalDexCache = {};
+  const dexRegionSelect = document.getElementById('dexRegionSelect');
+
+  async function fetchRegionalDex(id){
+    if(regionalDexCache[id]) return regionalDexCache[id];
+    const slug = REGIONAL_DEXES[id];
+    if(!slug) return null;
+    const res = await fetch(`https://pokeapi.co/api/v2/pokedex/${slug}`);
+    if(!res.ok) throw new Error('regional dex fetch failed');
+    const data = await res.json();
+    const order = (data.pokemon_entries || []).map(e => {
+      const match = e.pokemon_species.url.match(/\/pokemon-species\/(\d+)\//);
+      return { national: match ? Number(match[1]) : null, entryNumber: e.entry_number };
+    }).filter(e => e.national).sort((a, b) => a.entryNumber - b.entryNumber);
+    const result = { order, total: order.length };
+    regionalDexCache[id] = result;
+    return result;
+  }
+
   function renderLivingDex(){
     hideUncaughtToggle.checked = !!settings.hideUncaught;
     const hideUncaught = !!settings.hideUncaught;
@@ -2386,9 +3228,59 @@
     pokedex.forEach(p => {
       if(p.found && p.dexNumber) foundByNumber[p.dexNumber] = p;
     });
-    const totalFound = Object.keys(foundByNumber).length;
     const spriteBase = 'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon';
+    const region = settings.dexRegion || 'national';
+    dexRegionSelect.value = region;
 
+    if(region === 'national'){
+      renderNationalDex(foundByNumber, spriteBase, hideUncaught);
+      return;
+    }
+
+    const cached = regionalDexCache[region];
+    if(!cached){
+      dexSummaryEl.innerHTML = '';
+      dexGridWrapEl.innerHTML = `<p class="dex-note">Loading the ${capitalizeName(region)} dex…</p>`;
+      fetchRegionalDex(region).then(() => {
+        // Only re-render if the user is still looking at this region —
+        // they may have switched away while the fetch was in flight.
+        if((settings.dexRegion || 'national') === region) renderLivingDex();
+      }).catch(() => {
+        dexGridWrapEl.innerHTML = '<p class="dex-note">Couldn\'t load that regional dex — check your connection and try again.</p>';
+      });
+      return;
+    }
+
+    let totalFound = 0;
+    let tilesHtml = '';
+    cached.order.forEach(({ national, entryNumber }) => {
+      const entry = foundByNumber[national];
+      const isFound = !!entry;
+      if(isFound) totalFound++;
+      if(hideUncaught && !isFound) return;
+      const src = isFound
+        ? (entry.gifUrl || `${spriteBase}/shiny/${national}.png`)
+        : `${spriteBase}/${national}.png`;
+      const numLabel = String(entryNumber).padStart(3, '0');
+      const label = isFound ? capitalizeName(entry.name) : ('#' + numLabel);
+      tilesHtml += `
+        <div class="dex-tile${isFound ? ' found' : ''}" title="${label}" data-num="${national}">
+          <img src="${src}" loading="lazy" alt="${label}"
+               onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+          <span class="dex-num-fallback" style="display:none;">#${numLabel}</span>
+        </div>
+      `;
+    });
+
+    dexSummaryEl.innerHTML = `<div class="dex-total">${ICONS.trophy} ${totalFound} / ${cached.total} Shinies Found</div>`;
+    dexGridWrapEl.innerHTML = tilesHtml
+      ? `<div class="dex-tile-grid">${tilesHtml}</div>`
+      : '<p class="dex-note">No shinies found yet in this dex — catch one to see it here!</p>';
+  }
+
+  // National dex view: the original grouped-by-generation grid, 1-1025.
+  function renderNationalDex(foundByNumber, spriteBase, hideUncaught){
+    const totalFound = Object.keys(foundByNumber).length;
     dexSummaryEl.innerHTML = `<div class="dex-total">${ICONS.trophy} ${totalFound} / ${DEX_TOTAL} Shinies Found</div>`;
 
     let html = '';
@@ -2436,6 +3328,225 @@
     dexGridWrapEl.innerHTML = html || '<p class="dex-note">No shinies found yet — catch one to see it here!</p>';
   }
 
+  dexRegionSelect.addEventListener('change', () => {
+    settings.dexRegion = dexRegionSelect.value;
+    saveSettings();
+    renderLivingDex();
+  });
+
+  // ---- Stats tab ----
+  // A read-only overview of everything the tracker already knows: totals
+  // and averages across the whole Pokedex, a few personal-record
+  // callouts, and a GitHub-style streak heatmap built from dailyLog (see
+  // logDailyActivity()). Nothing here is stored separately — it's all
+  // derived fresh from `pokedex` and `dailyLog` each time the tab opens.
+  const statsContentEl = document.getElementById('statsContent');
+
+  function renderStats(){
+    if(pokedex.length === 0){
+      statsContentEl.innerHTML = '<p class="stats-empty">Add a Pokemon to start tracking stats.</p>';
+      return;
+    }
+
+    const found = pokedex.filter(p => p.found);
+    const notFound = pokedex.filter(p => !p.found);
+    const totalEncounters = pokedex.reduce((sum, p) => sum + (p.count || 0), 0);
+    const withTime = pokedex.filter(p => (p.huntSeconds || 0) > 0);
+
+    const longestHunt = withTime.length
+      ? withTime.reduce((a, b) => (a.huntSeconds > b.huntSeconds ? a : b)) : null;
+    const foundWithTime = found.filter(p => (p.huntSeconds || 0) > 0);
+    const shortestHunt = foundWithTime.length
+      ? foundWithTime.reduce((a, b) => (a.huntSeconds < b.huntSeconds ? a : b)) : null;
+    const avgEncounters = found.length
+      ? Math.round(found.reduce((sum, p) => sum + (p.count || 0), 0) / found.length) : null;
+
+    const fastestShiny = foundWithTime.length
+      ? foundWithTime.reduce((a, b) => (a.huntSeconds < b.huntSeconds ? a : b)) : null;
+    const mostEncounters = found.length
+      ? found.reduce((a, b) => ((a.count || 0) > (b.count || 0) ? a : b)) : null;
+    const activeNotFound = notFound.filter(p => (p.huntSeconds || 0) > 0);
+    const longestActiveHunt = activeNotFound.length
+      ? activeNotFound.reduce((a, b) => (a.huntSeconds > b.huntSeconds ? a : b)) : null;
+
+    const summaryTiles = [
+      { label: 'Total encounters', value: totalEncounters.toLocaleString() },
+      { label: 'Shinies found', value: found.length },
+      { label: 'Currently hunting', value: notFound.length },
+      { label: 'Avg. encounters / shiny', value: avgEncounters === null ? '—' : avgEncounters.toLocaleString() },
+      { label: 'Longest hunt (time)', value: longestHunt ? formatHuntTime(longestHunt.huntSeconds) : '—', sub: longestHunt ? capitalizeName(longestHunt.name) : '' },
+      { label: 'Shortest hunt (time)', value: shortestHunt ? formatHuntTime(shortestHunt.huntSeconds) : '—', sub: shortestHunt ? capitalizeName(shortestHunt.name) : '' }
+    ];
+
+    const spriteBase = 'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny';
+    const spriteFor = p => p.gifUrl || (p.formDexNumber || p.dexNumber ? `${spriteBase}/${p.formDexNumber || p.dexNumber}.png` : '');
+    function recordRow(label, entry, detail){
+      if(!entry) return `<div class="record-row"><span class="record-label">${label}</span><span class="record-detail">—</span></div>`;
+      const src = spriteFor(entry);
+      return `
+        <div class="record-row">
+          ${src ? `<img src="${src}" alt="" onerror="this.style.display='none'">` : ''}
+          <div>
+            <div class="record-label">${label}</div>
+            <div class="record-main">${capitalizeName(entry.name)}</div>
+          </div>
+          <span class="record-detail">${detail}</span>
+        </div>
+      `;
+    }
+
+    const recordsHtml = `
+      <div class="record-list">
+        ${recordRow('Fastest shiny', fastestShiny, fastestShiny ? formatHuntTime(fastestShiny.huntSeconds) : '')}
+        ${recordRow('Most encounters before a shiny', mostEncounters, mostEncounters ? (mostEncounters.count || 0).toLocaleString() : '')}
+        ${recordRow('Longest active hunt', longestActiveHunt, longestActiveHunt ? formatHuntTime(longestActiveHunt.huntSeconds) : '')}
+      </div>
+    `;
+
+    statsContentEl.innerHTML = `
+      <div class="stats-section">
+        <div class="stats-section-title">Overview</div>
+        <div class="stats-grid">
+          ${summaryTiles.map(t => `
+            <div class="stat-tile">
+              <span class="stat-label">${t.label}</span>
+              <span class="stat-value">${t.value}</span>
+              ${t.sub ? `<span class="stat-sub">${t.sub}</span>` : ''}
+            </div>
+          `).join('')}
+        </div>
+      </div>
+      <div class="stats-section">
+        <div class="stats-section-title">Personal records</div>
+        ${recordsHtml}
+      </div>
+      <div class="stats-section">
+        <div class="stats-section-title">Hunting activity</div>
+        ${renderStreakHeatmap()}
+      </div>
+      <div class="stats-section">
+        <div class="stats-section-title">Completed hunts timeline</div>
+        ${renderHistoryTimeline(found, spriteFor)}
+      </div>
+    `;
+  }
+
+  // A chronological, newest-first timeline of every shiny that's been
+  // marked found (including phased completions, which are their own
+  // pokedex entries with their own foundDate) — separate from the
+  // Completed tab's card grid, for an at-a-glance "when did I get these"
+  // view rather than a browsable roster.
+  function renderHistoryTimeline(found, spriteFor){
+    if(!found.length) return '<p class="stats-empty">No completed hunts yet — they\'ll show up here once you mark one found.</p>';
+
+    const sorted = [...found].sort((a, b) => {
+      const da = a.foundDate || '';
+      const db = b.foundDate || '';
+      if(da !== db) return da < db ? 1 : -1;
+      return (b.id || 0) - (a.id || 0);
+    });
+
+    let lastMonth = null;
+    const rowsHtml = sorted.map(p => {
+      const src = spriteFor(p);
+      const dateLabel = p.foundDate
+        ? new Date(p.foundDate + 'T00:00:00').toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' })
+        : 'Date unknown';
+      const monthKey = p.foundDate ? p.foundDate.slice(0, 7) : '?';
+      const monthHeader = monthKey !== lastMonth
+        ? `<div class="timeline-month">${p.foundDate ? new Date(p.foundDate + 'T00:00:00').toLocaleDateString(undefined, { month: 'long', year: 'numeric' }) : 'Date unknown'}</div>`
+        : '';
+      lastMonth = monthKey;
+      return `
+        ${monthHeader}
+        <div class="timeline-row">
+          <div class="timeline-dot"></div>
+          <div class="timeline-card">
+            ${src ? `<img src="${src}" alt="" onerror="this.style.display='none'">` : ''}
+            <div class="timeline-info">
+              <div class="timeline-name">${capitalizeName(p.name)}${p.square ? ` ${ICONS.squareShiny}` : ''}</div>
+              <div class="timeline-meta">${(p.count || 0).toLocaleString()} encounters${p.huntSeconds ? ` · ${formatHuntTime(p.huntSeconds)}` : ''}${p.phaseCount ? ` · Phase ${p.phaseCount}` : ''}</div>
+            </div>
+            <div class="timeline-date">${dateLabel}</div>
+          </div>
+        </div>
+      `;
+    }).join('');
+
+    return `<div class="timeline-wrap">${rowsHtml}</div>`;
+  }
+
+  // Builds a GitHub-contributions-style heatmap of the last 14 weeks of
+  // dailyLog activity, plus a current-streak readout. Weeks run Sun-Sat,
+  // newest week on the right, matching the familiar layout.
+  function renderStreakHeatmap(){
+    const WEEKS = 14;
+    const days = WEEKS * 7;
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    // Grid always covers full Sun-Sat weeks, ending on the Saturday of
+    // the current week — days after today are rendered but hidden, so
+    // the column alignment stays consistent no matter what day it is.
+    const gridEnd = new Date(today);
+    gridEnd.setDate(gridEnd.getDate() + (6 - today.getDay()));
+    const start = new Date(gridEnd);
+    start.setDate(start.getDate() - (days - 1));
+
+    let cellsHtml = '';
+    let maxCount = 0;
+    const counts = [];
+    for(let i = 0; i < days; i++){
+      const d = new Date(start);
+      d.setDate(d.getDate() + i);
+      const iso = d.toISOString().slice(0, 10);
+      const count = dailyLog[iso] || 0;
+      counts.push(count);
+      if(count > maxCount) maxCount = count;
+    }
+    counts.forEach((count, i) => {
+      const d = new Date(start);
+      d.setDate(d.getDate() + i);
+      const iso = d.toISOString().slice(0, 10);
+      let level = 0;
+      if(count > 0 && maxCount > 0){
+        const ratio = count / maxCount;
+        level = ratio > 0.75 ? 4 : ratio > 0.5 ? 3 : ratio > 0.25 ? 2 : 1;
+      }
+      const future = d > today;
+      cellsHtml += `<div class="heatmap-cell${level ? ' l' + level : ''}" title="${future ? '' : `${iso}: ${count} encounter${count === 1 ? '' : 's'}`}" style="${future ? 'visibility:hidden;' : ''}"></div>`;
+    });
+
+    // Current streak: consecutive days with activity, counting back from
+    // today (or from yesterday, if nothing's been logged yet today).
+    let streak = 0;
+    let cursor = new Date(today);
+    if(!dailyLog[todayISO()]) cursor.setDate(cursor.getDate() - 1);
+    while(true){
+      const iso = cursor.toISOString().slice(0, 10);
+      if(dailyLog[iso] > 0){ streak++; cursor.setDate(cursor.getDate() - 1); }
+      else break;
+    }
+
+    return `
+      <div class="heatmap-wrap">
+        <div class="heatmap-grid">${cellsHtml}</div>
+        <div class="heatmap-legend">
+          <span>Less</span>
+          <span class="heatmap-cell"></span>
+          <span class="heatmap-cell l1"></span>
+          <span class="heatmap-cell l2"></span>
+          <span class="heatmap-cell l3"></span>
+          <span class="heatmap-cell l4"></span>
+          <span>More</span>
+        </div>
+      </div>
+      <div class="stat-tile" style="margin-top:10px;max-width:220px;">
+        <span class="stat-label">Current streak</span>
+        <span class="stat-value">${streak} day${streak === 1 ? '' : 's'}</span>
+      </div>
+    `;
+  }
+
   // ---- Counter actions ----
   // Adjusts a pokemon's count (never below 0), saves, re-renders, and
   // plays the matching chime. Defaults to the active hunt (for the main
@@ -2448,7 +3559,7 @@
     target.count = Math.max(0, (target.count || 0) + delta);
     savePokedex();
     render();
-    if(delta > 0) playIncrementChime();
+    if(delta > 0){ playIncrementChime(); logDailyActivity(); }
     else if(delta < 0) playDecrementChime();
   }
 
@@ -2548,7 +3659,29 @@
     rebindBtn.textContent = 'Press a key…';
   });
 
-  oddsMethod.addEventListener('change', updateOdds);
+  // Remembers whichever method was picked, against the active hunt AND
+  // against its species (see getLastMethodForSpecies()), so re-adding the
+  // same Pokemon later — or switching back to it — starts on the method
+  // you actually used last time instead of resetting to Full Odds.
+  oddsMethod.addEventListener('change', () => {
+    const active = getActive();
+    if(active){ active.oddsMethod = oddsMethod.value; savePokedex(); }
+    updateOdds();
+  });
+
+  // Looks across the whole Pokedex for the most recently added entry of
+  // this species (case-insensitive, excluding `excludeId`) that has a
+  // remembered method, so a freshly re-added hunt — or one that's never
+  // had its own method chosen — can start on it too.
+  function getLastMethodForSpecies(name, excludeId){
+    if(!name) return null;
+    const lower = name.toLowerCase();
+    for(let i = pokedex.length - 1; i >= 0; i--){
+      const p = pokedex[i];
+      if(p.id !== excludeId && p.name && p.name.toLowerCase() === lower && p.oddsMethod) return p.oddsMethod;
+    }
+    return null;
+  }
 
   // ---- Auto-increment ----
   // Ticks the counter up on its own at a fixed interval, so you can set
@@ -2691,7 +3824,7 @@
   }
 
   function cycleTab(direction){
-    const tabs = ['active', 'paused', 'completed', 'dex', 'settings'];
+    const tabs = ['active', 'paused', 'completed', 'dex', 'stats', 'settings'];
     const currentIndex = tabs.indexOf(activeTab);
     const nextIndex = (currentIndex + direction + tabs.length) % tabs.length;
     switchTab(tabs[nextIndex]);
@@ -2759,15 +3892,27 @@
   const obsTimerSourceSelect = document.getElementById('obsTimerSourceSelect');
   const obsAutoUpdateToggle = document.getElementById('obsAutoUpdateToggle');
   const obsMatchFontToggle = document.getElementById('obsMatchFontToggle');
+  const obsMilestoneToggle = document.getElementById('obsMilestoneToggle');
+  const obsMilestoneInterval = document.getElementById('obsMilestoneInterval');
+  const obsCompactModeToggle = document.getElementById('obsCompactModeToggle');
+  const obsCombinedSourceWrap = document.getElementById('obsCombinedSourceWrap');
+  const obsIndividualSourcesWrap = document.getElementById('obsIndividualSourcesWrap');
+  const obsCombinedSourceSelect = document.getElementById('obsCombinedSourceSelect');
 
   let obsSocket = null;
   let obsIdentified = false;
   let obsRequestId = 0;
   const obsPendingRequests = new Map();
+  // Remembers, per hunt id, the last milestone count that already fired an
+  // alert this session — so a milestone doesn't re-flash on every render
+  // while the count sits on (or is nudged back to) the same multiple, and
+  // so a page reload with an already-hit milestone doesn't refire it.
+  const obsFiredMilestones = {};
+  let obsMilestoneTimer = null;
   // Tracks the last value actually sent for each field, so a fast series
   // of renders (or the once-a-second hunt-timer tick) doesn't spam OBS
   // with a request for a field whose text hasn't changed.
-  const obsLastPushed = { sprite: undefined, name: undefined, count: undefined, timer: undefined };
+  const obsLastPushed = { sprite: undefined, name: undefined, count: undefined, timer: undefined, combined: undefined };
 
   // Fallback static shiny sprite base — PokeAPI's raw sprites repo — used
   // only for the rare entry that has no sprite of its own on file yet.
@@ -2810,6 +3955,51 @@
   function obsSpriteWrapperUrl(imgUrl){
     const html = `<body style='margin:0;background:transparent;overflow:hidden'><img src='${imgUrl}' style='width:100%;height:100%;object-fit:contain;image-rendering:pixelated'></body>`;
     return `data:text/html,${encodeURIComponent(html)}`;
+  }
+
+  // Builds a self-contained, transparent celebration page for milestone
+  // encounters (every Nth, per settings.obs.milestoneInterval) — swapped
+  // into the sprite Browser Source briefly in place of the normal sprite,
+  // then swapped back. Same transparent-page trick as obsSpriteWrapperUrl,
+  // so it composites cleanly with no border in OBS.
+  // Sized entirely in vmin/vw (relative to whatever the Browser Source's
+  // actual pixel dimensions in OBS are) rather than fixed px, so it scales
+  // to fit a small sprite source instead of overflowing it — a 72px icon
+  // and 44px text only looked right by coincidence on a large source.
+  function obsMilestoneUrl(count){
+    const html = `<body style='margin:0;background:transparent;overflow:hidden;display:flex;align-items:center;justify-content:center;height:100vh;width:100vw;box-sizing:border-box;padding:0.5vmin;font-family:"Baloo 2",sans-serif'>` +
+      `<div style="text-align:center;max-width:100%;animation:obsPop 0.5s ease-out;">` +
+      `<svg style="width:40vmin;height:40vmin;" viewBox="0 0 24 24" fill="#FFD23F" stroke="#3a2c1f" stroke-width="1"><path d="M12 2l2.6 6.6L22 9l-5.2 4.6L18.2 21 12 17.1 5.8 21l1.4-7.4L2 9l7.4-.4z"></path></svg>` +
+      `<div style="font-size:26vmin;line-height:1;font-weight:800;color:#FFD23F;text-shadow:0 0.6vmin 0 #3a2c1f,0 0 5vmin rgba(0,0,0,0.6);margin-top:1vmin;">${count}</div>` +
+      `<div style="font-size:10vmin;line-height:1.2;font-weight:800;color:#FFD23F;text-shadow:0 0.5vmin 0 #3a2c1f,0 0 3vmin rgba(0,0,0,0.6);letter-spacing:0.04em;">ENCOUNTERS</div>` +
+      `</div>` +
+      `<style>@keyframes obsPop{0%{transform:scale(0.4);opacity:0}60%{transform:scale(1.15);opacity:1}100%{transform:scale(1);opacity:1}}</style>` +
+      `</body>`;
+    return `data:text/html,${encodeURIComponent(html)}`;
+  }
+
+  // Checks whether the active hunt's current count just crossed a
+  // milestone (a positive multiple of the configured interval) and, if
+  // so, briefly swaps the sprite source over to a celebration graphic
+  // before restoring the normal sprite. Guards against re-firing for a
+  // count that's already been celebrated this session.
+  function obsMaybeFireMilestone(active){
+    if(!active || !settings.obs.milestoneEnabled || !settings.obs.spriteSourceName) return;
+    const interval = Math.max(10, Number(settings.obs.milestoneInterval) || 100);
+    const count = active.count || 0;
+    if(count <= 0 || count % interval !== 0) return;
+    if(obsFiredMilestones[active.id] === count) return;
+    obsFiredMilestones[active.id] = count;
+    if(obsMilestoneTimer) clearTimeout(obsMilestoneTimer);
+    obsSend('SetInputSettings', { inputName: settings.obs.spriteSourceName, inputSettings: { url: obsMilestoneUrl(count) } })
+      .then(() => {
+        obsMilestoneTimer = setTimeout(() => {
+          obsMilestoneTimer = null;
+          obsLastPushed.sprite = undefined; // force the normal sprite to be re-sent
+          obsPushActiveText();
+        }, 4000);
+      })
+      .catch(() => {});
   }
 
   // The LCD-chip look from the tracker's own count display and the
@@ -2940,12 +4130,18 @@
       settings.obs.nameSourceName = obsFillSelect(obsNameSourceSelect, inputs, textKinds, settings.obs.nameSourceName, 'No text sources found in OBS');
       settings.obs.countSourceName = obsFillSelect(obsCountSourceSelect, inputs, textKinds, settings.obs.countSourceName, 'No text sources found in OBS');
       settings.obs.timerSourceName = obsFillSelect(obsTimerSourceSelect, inputs, textKinds, settings.obs.timerSourceName, 'No text sources found in OBS');
+      settings.obs.combinedSourceName = obsFillSelect(obsCombinedSourceSelect, inputs, textKinds, settings.obs.combinedSourceName, 'No text sources found in OBS');
 
       obsAutoUpdateToggle.checked = !!settings.obs.autoUpdate;
       obsMatchFontToggle.checked = !!settings.obs.matchLcdFont;
+      obsMilestoneToggle.checked = !!settings.obs.milestoneEnabled;
+      obsMilestoneInterval.value = settings.obs.milestoneInterval || 100;
+      obsCompactModeToggle.checked = !!settings.obs.compactMode;
+      obsCombinedSourceWrap.style.display = settings.obs.compactMode ? 'block' : 'none';
+      obsIndividualSourcesWrap.style.display = settings.obs.compactMode ? 'none' : 'block';
       obsTextSourceRow.style.display = 'block';
       saveSettings();
-      obsLastPushed.sprite = obsLastPushed.name = obsLastPushed.count = obsLastPushed.timer = undefined;
+      obsLastPushed.sprite = obsLastPushed.name = obsLastPushed.count = obsLastPushed.timer = obsLastPushed.combined = undefined;
       obsPushActiveText();
       obsApplyLcdFont();
     }catch(e){
@@ -2994,24 +4190,35 @@
         await obsSend('SetInputSettings', { inputName: settings.obs.spriteSourceName, inputSettings: { url: sprite } });
       }catch(e){ /* source may have been renamed or removed in OBS */ }
     }
-    if(settings.obs.nameSourceName && name !== obsLastPushed.name){
-      obsLastPushed.name = name;
-      try{
-        await obsSend('SetInputSettings', { inputName: settings.obs.nameSourceName, inputSettings: { text: name } });
-      }catch(e){ /* source may have been renamed or removed in OBS */ }
+    if(settings.obs.compactMode){
+      const combined = `${name}  ·  ${count}  ·  ${timer}`;
+      if(settings.obs.combinedSourceName && combined !== obsLastPushed.combined){
+        obsLastPushed.combined = combined;
+        try{
+          await obsSend('SetInputSettings', { inputName: settings.obs.combinedSourceName, inputSettings: { text: combined } });
+        }catch(e){ /* source may have been renamed or removed in OBS */ }
+      }
+    }else{
+      if(settings.obs.nameSourceName && name !== obsLastPushed.name){
+        obsLastPushed.name = name;
+        try{
+          await obsSend('SetInputSettings', { inputName: settings.obs.nameSourceName, inputSettings: { text: name } });
+        }catch(e){ /* source may have been renamed or removed in OBS */ }
+      }
+      if(settings.obs.countSourceName && count !== obsLastPushed.count){
+        obsLastPushed.count = count;
+        try{
+          await obsSend('SetInputSettings', { inputName: settings.obs.countSourceName, inputSettings: { text: count } });
+        }catch(e){ /* source may have been renamed or removed in OBS */ }
+      }
+      if(settings.obs.timerSourceName && timer !== obsLastPushed.timer){
+        obsLastPushed.timer = timer;
+        try{
+          await obsSend('SetInputSettings', { inputName: settings.obs.timerSourceName, inputSettings: { text: timer } });
+        }catch(e){ /* source may have been renamed or removed in OBS */ }
+      }
     }
-    if(settings.obs.countSourceName && count !== obsLastPushed.count){
-      obsLastPushed.count = count;
-      try{
-        await obsSend('SetInputSettings', { inputName: settings.obs.countSourceName, inputSettings: { text: count } });
-      }catch(e){ /* source may have been renamed or removed in OBS */ }
-    }
-    if(settings.obs.timerSourceName && timer !== obsLastPushed.timer){
-      obsLastPushed.timer = timer;
-      try{
-        await obsSend('SetInputSettings', { inputName: settings.obs.timerSourceName, inputSettings: { text: timer } });
-      }catch(e){ /* source may have been renamed or removed in OBS */ }
-    }
+    if(!obsMilestoneTimer) obsMaybeFireMilestone(active);
   }
 
   obsConnectBtn.addEventListener('click', () => {
@@ -3055,6 +4262,30 @@
     settings.obs.matchLcdFont = obsMatchFontToggle.checked;
     saveSettings();
     if(settings.obs.matchLcdFont) obsApplyLcdFont();
+  });
+  obsMilestoneToggle.addEventListener('change', () => {
+    settings.obs.milestoneEnabled = obsMilestoneToggle.checked;
+    saveSettings();
+  });
+  obsMilestoneInterval.addEventListener('change', () => {
+    const val = Math.max(10, Math.round(Number(obsMilestoneInterval.value) || 100));
+    obsMilestoneInterval.value = val;
+    settings.obs.milestoneInterval = val;
+    saveSettings();
+  });
+  obsCompactModeToggle.addEventListener('change', () => {
+    settings.obs.compactMode = obsCompactModeToggle.checked;
+    saveSettings();
+    obsCombinedSourceWrap.style.display = settings.obs.compactMode ? 'block' : 'none';
+    obsIndividualSourcesWrap.style.display = settings.obs.compactMode ? 'none' : 'block';
+    obsLastPushed.sprite = obsLastPushed.name = obsLastPushed.count = obsLastPushed.timer = obsLastPushed.combined = undefined;
+    obsPushActiveText();
+  });
+  obsCombinedSourceSelect.addEventListener('change', () => {
+    settings.obs.combinedSourceName = obsCombinedSourceSelect.value || null;
+    saveSettings();
+    obsLastPushed.combined = undefined;
+    obsPushActiveText();
   });
 
   // ---- Sprite upload ----
@@ -3132,6 +4363,9 @@
       id, name, gifUrl, count: 0, generation, dexNumber,
       form: null,                              // regional form (PokeAPI variety name), if any
       formDexNumber: null,                     // that form's own PokeAPI id, if any — see obsSpriteUrlFor()
+      square: false,                           // square shiny (Gen 8+), set in the edit modal
+      oddsMethod: getLastMethodForSpecies(name, null), // remembered from a past hunt of this species, if any
+      notes: null,                              // free-text notes, editable in the edit modal
       status: 'active',                        // 'active' | 'paused' — Completed is derived from `found`
       addedDate: todayISO(),                   // immutable — when this entry was first added
       startDate: todayISO(),                   // editable in the edit modal
@@ -3160,7 +4394,7 @@
   // don't round-trip through CSV — only Pokedex entries do. A phase log
   // (which can have any number of phases) is packed into one cell as
   // "name|date;name2|date2" rather than spread across extra columns.
-  const CSV_COLUMNS = ['id','name','count','generation','dexNumber','form','formDexNumber','status','found','addedDate','startDate','foundDate','huntSeconds','phaseCount','phaseLog','gifUrl'];
+  const CSV_COLUMNS = ['id','name','count','generation','dexNumber','form','formDexNumber','square','oddsMethod','status','found','addedDate','startDate','foundDate','huntSeconds','phaseCount','phaseLog','gifUrl','notes'];
 
   function csvEscape(value){
     const str = value === null || value === undefined ? '' : String(value);
@@ -3181,10 +4415,10 @@
     const rows = [CSV_COLUMNS.join(',')];
     list.forEach(p => {
       const row = [
-        p.id, p.name, p.count || 0, p.generation || '', p.dexNumber || '', p.form || '', p.formDexNumber || '',
+        p.id, p.name, p.count || 0, p.generation || '', p.dexNumber || '', p.form || '', p.formDexNumber || '', p.square ? 'true' : 'false', p.oddsMethod || '',
         p.status || 'active', p.found ? 'true' : 'false', p.addedDate || '', p.startDate || '',
         p.foundDate || '', Math.round(p.huntSeconds || 0), p.phaseCount || 0,
-        phaseLogToCell(p.phaseLog), p.gifUrl || ''
+        phaseLogToCell(p.phaseLog), p.gifUrl || '', p.notes || ''
       ].map(csvEscape);
       rows.push(row.join(','));
     });
@@ -3235,6 +4469,8 @@
         dexNumber: get('dexNumber') ? Number(get('dexNumber')) : null,
         form: get('form') || null,
         formDexNumber: get('formDexNumber') ? Number(get('formDexNumber')) : null,
+        square: get('square').trim().toLowerCase() === 'true',
+        oddsMethod: get('oddsMethod') || null,
         status: get('status') || 'active',
         found: get('found').trim().toLowerCase() === 'true',
         addedDate: get('addedDate') || null,
@@ -3242,7 +4478,8 @@
         foundDate: get('foundDate') || null,
         huntSeconds: Number(get('huntSeconds')) || 0,
         phaseCount: Number(get('phaseCount')) || 0,
-        phaseLog: phaseLogFromCell(get('phaseLog'))
+        phaseLog: phaseLogFromCell(get('phaseLog')),
+        notes: get('notes') || null
       };
     }).filter(p => p.name);
   }
@@ -3250,24 +4487,86 @@
   // ---- Backup: export ----
   // Downloads the Pokedex as a timestamped CSV spreadsheet the user can
   // open in Excel/Sheets, edit, or move to another browser/computer.
-  exportBtn.addEventListener('click', () => {
+  // Shared by the manual "Export backup" button and the auto-backup timer
+  // below — builds the CSV and triggers a browser download. `auto` swaps
+  // the filename tag and status line so it's clear which kind produced it.
+  function downloadCsvBackup(auto){
     try{
       const csv = pokedexToCSV(pokedex);
       const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
       const url = URL.createObjectURL(blob);
       const a = document.createElement('a');
-      const stamp = new Date().toISOString().slice(0,10);
+      const stamp = new Date().toISOString().slice(0,19).replace(/[:T]/g,'-');
       a.href = url;
-      a.download = `shiny-tally-backup-${stamp}.csv`;
+      a.download = auto ? `shiny-tally-autobackup-${stamp}.csv` : `shiny-tally-backup-${stamp.slice(0,10)}.csv`;
       document.body.appendChild(a);
       a.click();
       a.remove();
       URL.revokeObjectURL(url);
-      setBackupStatus('Backup downloaded.', false);
+      if(auto){
+        settings.autoBackup.lastRun = new Date().toISOString();
+        saveSettings();
+        updateAutoBackupStatus();
+      }else{
+        setBackupStatus('Backup downloaded.', false);
+      }
+      return true;
     }catch(e){
-      setBackupStatus('Could not create backup file.', true);
+      if(auto){
+        autoBackupStatusEl.textContent = 'Last auto-backup attempt failed.';
+      }else{
+        setBackupStatus('Could not create backup file.', true);
+      }
+      return false;
     }
+  }
+
+  exportBtn.addEventListener('click', () => downloadCsvBackup(false));
+
+  autoBackupToggle.addEventListener('change', () => {
+    settings.autoBackup.enabled = autoBackupToggle.checked;
+    saveSettings();
+    updateAutoBackupStatus();
+    scheduleAutoBackup();
   });
+  autoBackupInterval.addEventListener('change', () => {
+    const val = Math.max(5, Math.round(Number(autoBackupInterval.value) || 30));
+    autoBackupInterval.value = val;
+    settings.autoBackup.intervalMinutes = val;
+    saveSettings();
+    updateAutoBackupStatus();
+    scheduleAutoBackup();
+  });
+
+  // ---- Backup: auto ----
+  // Periodically re-runs the same CSV export, unattended, so a long hunt
+  // isn't only ever one cleared cache away from being lost. The interval
+  // is re-armed whenever the toggle or the interval value changes.
+  let autoBackupTimer = null;
+
+  function formatAutoBackupWhen(iso){
+    if(!iso) return 'never';
+    const d = new Date(iso);
+    if(isNaN(d.getTime())) return 'never';
+    return d.toLocaleString(undefined, { month:'short', day:'numeric', hour:'numeric', minute:'2-digit' });
+  }
+
+  function updateAutoBackupStatus(){
+    if(!settings.autoBackup.enabled){
+      autoBackupStatusEl.textContent = 'Auto-backup is off.';
+      return;
+    }
+    autoBackupStatusEl.textContent = `Auto-backup on, every ${settings.autoBackup.intervalMinutes} min — last: ${formatAutoBackupWhen(settings.autoBackup.lastRun)}.`;
+  }
+
+  function scheduleAutoBackup(){
+    if(autoBackupTimer){ clearInterval(autoBackupTimer); autoBackupTimer = null; }
+    if(!settings.autoBackup.enabled) return;
+    const ms = Math.max(5, Number(settings.autoBackup.intervalMinutes) || 30) * 60 * 1000;
+    autoBackupTimer = setInterval(() => {
+      if(pokedex.length > 0) downloadCsvBackup(true);
+    }, ms);
+  }
 
   // ---- Backup: import ----
   // Reads a previously exported CSV (or a spreadsheet edited by hand,
@@ -3513,6 +4812,8 @@
   window.addEventListener('beforeunload', flushHuntTime);
 
   // ---- Go ----
+  loadProfiles();
+  renderProfileSelect();
   loadState();
 })();
 </script>
