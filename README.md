@@ -4,29 +4,39 @@ This is a Pokémon shiny hunt counter.
 
 It's an all-in-one web app solution to keeping track of all your hunts across every game and Pokémon generation, with 0 downloads required.
 
-## Features
+## Features:
 
 - A Pokédex that stores a sorted, visual, and animated collection of all Pokémon you choose to hunt.
 - A Living Dex to fill out and overview all shiny Pokémon across every generation — tap any tile for that Pokémon's info, and toggle "Hide uncaught" to see only what you've found.
+  - Switch between the National Dex and regional Pokédexes (Paldea, Galar, Alola, Hisui) to track a single game's dex.
 - Separate tabs for Active, Paused, and Completed hunts, so your roster stays organized as hunts wrap up.
+- A Stats tab with your hunting totals, personal records (fastest shiny, most encounters, longest hunt), a hunting-streak heatmap, and a timeline of every completed hunt, grouped by month.
 - A visual odds estimate that displays your cumulative chance at obtaining a shiny, which updates in real time as you add to the counter — including method-specific tiers for chain-based hunting (SOS chaining, Poké Radar, Dynamax Adventures, and more).
+  - A hunt ETA showing how many encounters a shiny takes on average at your odds, plus a time estimate based on your current pace.
+  - Your hunting method is remembered for each Pokémon, so switching between hunts keeps the right odds.
 - The ability to manually set the counter to a starting number of your choosing.
 - The ability to upload your own custom sprite/3D model in a .gif format, for any Pokémon you add to your Living Dex collection/hunt — including a picker for regional forms (Alolan, Galarian, Hisuian, Paldean) where one applies.
 - Can automatically fetch sprites from an online database through one button click using just the Pokémon's name, should you not choose to upload your own.
 - A detailed Pokémon info popup showing your own hunt stats (encounters, time spent hunting, start/end dates) alongside in-game data pulled live — abilities, evolution requirements, level-up moveset with PP, and wild encounter locations/rates.
 - An automatic session timer that tracks total time actively spent hunting each Pokémon, accumulating across sessions — with editable start/end dates for picking up a hunt already in progress.
+- Free-text notes for each hunt — jot down your location, method, or the story behind the find.
 - Phase tracking: log a "Phase 1," "Phase 2," etc. whenever a different shiny shows up while you're hunting, without losing or interrupting your original hunt's progress — with the option to also add the phased Pokémon to your Completed dex, carrying over the hunt's encounter count and time.
 - A customizable counter key, so you can increment your encounter count with a single keypress instead of clicking.
 - Controller support — increment, decrement, and navigate the whole app with a gamepad (see [Controller Controls](#controller-controls) below).
 - Live OBS integration — push your active hunt's sprite, name, encounter count, and hunt timer straight onto your stream in real time (see [OBS Integration](#obs-integration) below).
 - A "Mark shiny found" button that celebrates with confetti and a jingle, and marks the Pokémon in your Pokédex as caught.
+  - Tag a find as a square shiny or a star shiny.
+- Shareable trading cards: turn any completed hunt into a downloadable trading-card image, with a holo foil border, a frame colored by the Pokémon's type, your hunt stats, your notes as flavor text, and a collector number.
+- Profiles (save slots): keep a separate Pokédex, Living Dex, stats, and settings for each game or save file, and switch between them instantly.
 - Data export/import to a CSV spreadsheet file for backups — opens right up in Excel, Google Sheets, or Numbers.
+  - Optional auto-backup that downloads a fresh backup file on a timer you choose.
   - Data is also stored locally, in case you forget to export to a file.
 - Short, but sweet, sound effects.
 - A light and dark mode.
+- Custom icons that look the same on every device, instead of your phone's or computer's emoji.
 - Mobile support coming soon.
 
-## How to Use
+## How to Use:
 
 1. Visit: https://moonflowah.github.io/Shiny_Counter/
 2. Click to open the program.
@@ -40,7 +50,7 @@ It's an all-in-one web app solution to keeping track of all your hunts across ev
 5. After a link is fetched from the database, or your custom sprite is uploaded, click the yellow "Add Pokémon" button at the bottom.
 6. The counter at the top should display the newly added Pokémon of your choosing when selected from the Pokédex, and the counter will be free to use.
 
-## OBS Integration
+## OBS Integration:
 
 The Settings tab has an OBS Integration panel that connects directly to OBS's built-in WebSocket server and keeps your active hunt's sprite, name, encounter count, and hunt timer updated live on stream — no plugins required.
 
@@ -55,9 +65,15 @@ The Settings tab has an OBS Integration panel that connects directly to OBS's bu
 5. Pick which OBS source each field should update from the dropdowns (Sprite / Name / Count / Timer).
 6. Turn on **"Keep all of the above updated live"** to have the tracker push updates automatically as you hunt.
 
-Once connected, the sprite is pushed as the animated shiny GIF (regional forms included) with a clean, transparent background, so it composites over your overlay.
+Once connected, the sprite is pushed as the animated shiny GIF (regional forms included) with a clean, transparent background, so it composites over your overlay with no black or white box behind it.
 
-## Controller Controls
+**Extra options:**
+
+- **Compact mode** — sends a single "Name · Count · Timer" line to one text source instead of using three separate sources, for a smaller overlay.
+- **Milestone alerts** — every set number of encounters (100 by default), the sprite source briefly switches to a celebration graphic before going back to your Pokémon. This needs a sprite source picked.
+- **LCD count style** — styles the count source in the same bold, digital-screen font as the tracker.
+
+## Controller Controls:
 
 Connect any standard gamepad and it's picked up automatically — a "Controller connected" message appears once it's detected.
 
@@ -66,5 +82,4 @@ Connect any standard gamepad and it's picked up automatically — a "Controller 
 - **X** — toggle "Mark shiny found"
 - **Y** — open the info popup for your active hunt
 - **D-pad Up / Down** — move the active-hunt selection through your current tab's roster
-- **D-pad Left / Right** — switch between the Active / Paused / Completed / Living Dex tabs
-
+- **D-pad Left / Right** — switch between the Active / Paused / Completed / Living Dex / Stats / Settings tabs
