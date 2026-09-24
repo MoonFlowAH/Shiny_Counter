@@ -1,12 +1,12 @@
 <!--
-  Shiny Hunt Counter
+  Moon's Shiny Counter
   Made by MoonFlower
 -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>Shiny Hunt Counter</title>
+<title>Moon&#39;s Shiny Counter</title>
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, viewport-fit=cover">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
@@ -89,6 +89,13 @@
 
   /* Dark mode switch: a checkbox hidden and replaced with a pill/thumb. */
   .theme-toggle-wrap{display:flex;flex-direction:column;align-items:flex-end;gap:4px;flex:0 0 auto;}
+  /* Phone widths: the Dark toggle and credit drop to their own row under
+     the title, so "Moon's Shiny Counter" gets the full width. */
+  @media (max-width: 540px){
+    header{flex-wrap:wrap;row-gap:10px;}
+    .header-text{flex:1 1 0;min-width:0;}
+    .theme-toggle-wrap{flex:1 0 100%;flex-direction:row;justify-content:space-between;align-items:center;}
+  }
   .theme-toggle{display:flex;align-items:center;gap:8px;cursor:pointer;flex:0 0 auto;}
   .theme-toggle input{ position:absolute; opacity:0; width:0; height:0; }
   .toggle-track{
@@ -128,7 +135,9 @@
     background:var(--shell-text);border:2px solid var(--trim-black);
   }
   header h1{
-    font-size:1.6rem;
+    font-size:clamp(1.3rem, 6vw, 1.6rem);
+    text-wrap:balance;
+    line-height:1.15;
     margin:0;
     font-weight:800;
     letter-spacing:-0.01em;
@@ -233,8 +242,40 @@
   button:hover{filter:brightness(1.04);}
   button:active{transform:translateY(2px);box-shadow:0 1px 0 var(--trim-black);}
   button.primary{background:var(--yellow);}
+  /* Dark mode: the light text on yellow buttons and the selected tab gets
+     a thin dark outline so it doesn't glare against the yellow. */
+  body.dark-mode button.primary,
+  body.dark-mode .tab-btn.active{
+    text-shadow:
+      -1px -1px 0 #1B1B1B, 1px -1px 0 #1B1B1B, -1px 1px 0 #1B1B1B, 1px 1px 0 #1B1B1B,
+      0 -1px 0 #1B1B1B, 0 1px 0 #1B1B1B, -1px 0 0 #1B1B1B, 1px 0 0 #1B1B1B;
+  }
+  body.dark-mode button.primary .icon,
+  body.dark-mode .tab-btn.active .icon{filter:drop-shadow(0 0 0.7px #1B1B1B) drop-shadow(0 0 0.7px #1B1B1B);}
   button.ghost{background:var(--cream);}
   button.danger-outline{background:#F1D9D6;color:var(--danger);}
+  .time-dropdown > summary{list-style:none;cursor:pointer;user-select:none;display:flex;align-items:center;justify-content:space-between;}
+  .time-dropdown > summary::after{
+    content:'';width:0;height:0;margin-left:10px;
+    border-left:6px solid transparent;border-right:6px solid transparent;border-top:7px solid currentColor;
+    transition:transform .15s;
+  }
+  .time-dropdown[open] > summary::after{transform:rotate(180deg);}
+  .time-dropdown > summary::-webkit-details-marker{display:none;}
+  .time-dropdown[open] > summary{margin-bottom:8px;}
+  /* Days / hours on the first row, minutes / seconds on the second;
+     spinner arrows hidden so the numbers have room. */
+  .hunt-time-edit{display:grid;grid-template-columns:1fr 1fr;gap:8px 14px;margin-bottom:12px;}
+  .hunt-time-part{display:flex;align-items:center;gap:5px;min-width:0;}
+  .hunt-time-part .modal-input{flex:1;min-width:0;margin:0;padding-left:6px;padding-right:6px;text-align:center;-moz-appearance:textfield;appearance:textfield;}
+  .hunt-time-part .modal-input::-webkit-outer-spin-button,
+  .hunt-time-part .modal-input::-webkit-inner-spin-button{-webkit-appearance:none;margin:0;}
+  .hunt-time-part span{font-size:0.74rem;font-weight:700;color:var(--muted);width:30px;flex:0 0 30px;}
+  .delete-confirm-check{
+    display:flex;align-items:center;gap:10px;margin:14px 0 16px;
+    font-weight:700;font-size:0.85rem;cursor:pointer;
+  }
+  .delete-confirm-check input{width:18px;height:18px;accent-color:var(--danger);cursor:pointer;flex:0 0 18px;}
   button.success{background:#5CB85C;color:#0F380F;border-color:var(--trim-black);}
   button:disabled{opacity:0.45;cursor:not-allowed;box-shadow:none;transform:none;}
 
@@ -703,8 +744,18 @@
     max-width:340px;
     width:100%;
     box-shadow:0 10px 0 rgba(0,0,0,0.15);
+    /* Tall popups (like the edit menu) scroll inside themselves instead of
+       running off the top and bottom of the screen. */
+    max-height:calc(100vh - 40px);
+    max-height:calc(100dvh - 40px);
+    overflow-y:auto;
+    overscroll-behavior:contain;
   }
   .modal-box p{margin:0 0 16px;font-weight:700;font-size:0.95rem;}
+  .info-title-row{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:16px;}
+  .info-title-row p{margin:0;min-width:0;}
+  .info-add-hunt{margin-top:10px;font-size:0.85rem;padding:7px 14px;}
+  .info-share-btn{flex-shrink:0;padding:6px 12px;font-size:0.82rem;display:inline-flex;align-items:center;gap:6px;white-space:nowrap;}
   .modal-input{
     width:100%;
     background:var(--card-bg);
@@ -719,6 +770,73 @@
   }
   .modal-actions{display:flex;gap:8px;flex-wrap:wrap;justify-content:flex-end;}
 
+  /* Trading-card viewer with a pointer-reactive rainbow foil */
+  .card-viewer-overlay{background:rgba(12,10,18,0.82);}
+  .card-viewer{display:flex;flex-direction:column;align-items:center;gap:12px;max-width:100%;}
+  .holo-card{
+    --mx:50%;--my:50%;--rx:0deg;--ry:0deg;--o:0;--sx:0px;--sy:0px;
+    position:relative;width:min(360px, 84vw, calc((100vh - 170px) * 0.7143));aspect-ratio:750/1050;
+    border-radius:5.07% / 3.62%;overflow:hidden;
+    transform:perspective(1000px) rotateX(var(--rx)) rotateY(var(--ry));
+    transition:transform .6s cubic-bezier(.2,.8,.2,1), box-shadow .6s;
+    box-shadow:0 18px 40px rgba(0,0,0,0.5);
+    touch-action:none;user-select:none;-webkit-user-select:none;cursor:grab;
+  }
+  .holo-card.active{transition:transform .08s linear, box-shadow .3s;}
+  .holo-card img{display:block;width:100%;height:100%;pointer-events:none;-webkit-user-drag:none;}
+  .holo-live-sprite{position:absolute;overflow:hidden;pointer-events:none;border-radius:1.6% / 1.14%;}
+  .holo-live-sprite img{position:absolute;display:block;image-rendering:pixelated;}
+  .holo-layer{
+    position:absolute;pointer-events:none;mix-blend-mode:color-dodge;
+    background-image:repeating-linear-gradient(115deg,
+      #ff5f6d 0%, #ffc371 5%, #fff95b 10%, #7cff6b 15%, #5ff5ff 20%, #6b8bff 25%, #d66bff 30%, #ff5f6d 35%);
+    background-size:400% 400%;
+    background-position:var(--mx) var(--my);
+    opacity:calc(0.16 + var(--o) * 0.6);
+    filter:saturate(1.3) brightness(.85);
+    transition:opacity .4s;
+  }
+  .holo-border{
+    top:1.333%;bottom:1.333%;left:1.867%;right:1.867%;
+    border-radius:4% / 2.8%;padding:2.133%;
+    -webkit-mask:linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+    -webkit-mask-composite:xor;
+    mask:linear-gradient(#000 0 0) content-box exclude, linear-gradient(#000 0 0);
+  }
+  /* The art is already bright, so its foil is gentler and darker —
+     otherwise color-dodge bleaches the sprite's own colors. */
+  .holo-art{border-radius:1.6% / 1.14%;opacity:calc(0.08 + var(--o) * 0.32);filter:saturate(1.4) brightness(.6);}
+  .holo-full{inset:0;opacity:calc(0.04 + var(--o) * 0.18);}
+  /* Glitter only shows in a pool of light around the pointer, like a
+     real foil catching the light, instead of covering the whole card. */
+  .holo-sparkle{
+    position:absolute;inset:0;pointer-events:none;mix-blend-mode:screen;
+    opacity:var(--o);transition:opacity .4s;
+    background-image:
+      radial-gradient(circle, rgba(255,255,255,0.95) 0 1px, transparent 1.7px),
+      radial-gradient(circle, rgba(255,236,190,0.85) 0 1.2px, transparent 2px);
+    background-size:29px 29px, 53px 53px;
+    background-position:var(--sx) var(--sy), calc(var(--sx) * -1.6) calc(var(--sy) * -1.6);
+    -webkit-mask-image:radial-gradient(circle at var(--mx) var(--my), #000 0%, rgba(0,0,0,0.5) 18%, transparent 40%);
+    mask-image:radial-gradient(circle at var(--mx) var(--my), #000 0%, rgba(0,0,0,0.5) 18%, transparent 40%);
+  }
+  .holo-glare{
+    position:absolute;inset:0;pointer-events:none;mix-blend-mode:overlay;
+    opacity:var(--o);transition:opacity .4s;
+    background:radial-gradient(farthest-corner circle at var(--mx) var(--my),
+      rgba(255,255,255,0.75) 0%, rgba(255,255,255,0.15) 30%, rgba(0,0,0,0.3) 90%);
+  }
+  .holo-card.legendary{box-shadow:0 0 34px rgba(255,214,90,0.6), 0 18px 40px rgba(0,0,0,0.55);}
+  .holo-card.mythical{box-shadow:0 0 34px rgba(233,138,224,0.6), 0 18px 40px rgba(0,0,0,0.55);}
+  .holo-card.premium:not(.active) .holo-layer{animation:holoIdle 7s ease-in-out infinite alternate;}
+  @keyframes holoIdle{from{background-position:0% 25%;}to{background-position:100% 75%;}}
+  .card-viewer-hint{font-size:0.8rem;font-weight:600;color:#fff;opacity:0.8;text-align:center;}
+  .card-viewer-actions{justify-content:center;}
+  @media (prefers-reduced-motion: reduce){
+    .holo-card{transform:none !important;}
+    .holo-card .holo-layer{animation:none !important;}
+  }
+
   /* Pokemon info popup — taller and scrollable, since game data can run long */
   .modal-box.info-modal-box{max-width:440px;max-height:82vh;overflow-y:auto;}
   /* Pokétch-style frame around the info-modal sprite: a wristband behind
@@ -729,6 +847,24 @@
     margin:2px 0 18px;
     padding:14px 0 10px;
   }
+  /* Form and sprite-style switchers under the Pokétch (see
+     setupInfoSpriteBrowser) — each row shows only when there's a choice. */
+  .info-switches{display:flex;flex-direction:column;align-items:center;gap:6px;margin:-6px 0 12px;}
+  .info-switches:not(:has(.info-switch.show)){display:none;}
+  .info-switch{display:none;align-items:center;justify-content:center;gap:8px;}
+  .info-switch.show{display:flex;}
+  .info-switch-nav{
+    width:24px;height:24px;padding:0;border-radius:50%;
+    display:inline-flex;align-items:center;justify-content:center;
+    background:var(--card-bg);color:var(--trim-black);
+    border:2px solid var(--trim-black);box-shadow:0 1px 0 rgba(0,0,0,0.35);cursor:pointer;
+  }
+  .info-switch-nav svg{width:13px;height:13px;}
+  .info-switch-label{
+    width:210px;box-sizing:border-box;text-align:center;font-size:0.76rem;font-weight:800;line-height:1.3;
+    padding:3px 10px;border-radius:999px;background:rgba(0,0,0,0.8);color:#fff;
+  }
+  .info-sprite{transition:opacity .15s;}
   .info-sprite-band{
     position:absolute;left:50%;transform:translateX(-50%);
     width:64px;height:26px;background:var(--shell);
@@ -773,24 +909,132 @@
     margin:10px 0 4px;
     padding:4px 12px;
     border-radius:999px;
-    background:rgba(0,0,0,0.62);
+    background:rgba(0,0,0,0.8);
     letter-spacing:0.02em;
   }
   .info-subheading.subhead-abilities{color:#F4C430;}
+  /* Each game-data heading gets its own small effect. */
+  /* Abilities: a gold gleam sweeps across the text, then rests. */
+  .fx-gleam{
+    background-image:linear-gradient(100deg, #F4C430 0%, #F4C430 36%, #fff3b8 44%, #ffffff 50%, #fff3b8 56%, #F4C430 64%, #F4C430 100%);
+    background-size:300% 100%;
+    background-position:100% 0;
+    -webkit-background-clip:text;background-clip:text;color:transparent;-webkit-text-fill-color:transparent;
+    animation:fxGleam 3.4s ease-in-out infinite;
+  }
+  @keyframes fxGleam{0%{background-position:100% 0;}60%, 100%{background-position:0% 0;}}
+  /* Level-up moveset: a little arrow hops upward. */
+  .info-subheading.subhead-moveset{display:inline-flex;align-items:center;gap:5px;}
+  .fx-levelup{width:11px;height:11px;flex:0 0 11px;animation:fxLevelUp 1.5s ease-in-out infinite;}
+  @keyframes fxLevelUp{
+    0%, 100%{transform:translateY(2px);opacity:0.55;}
+    45%{transform:translateY(-3px);opacity:1;}
+    60%{transform:translateY(-2px);opacity:1;}
+  }
+  /* Encounter locations: a map-pin dot sends out a ping ring. */
+  .info-subheading.subhead-encounters{display:inline-flex;align-items:center;gap:7px;}
+  .fx-ping{position:relative;width:7px;height:7px;flex:0 0 7px;border-radius:50%;background:#5fd4ff;}
+  .fx-ping::after{
+    content:'';position:absolute;inset:0;border-radius:50%;
+    border:2px solid #5fd4ff;
+    animation:fxPing 1.8s ease-out infinite;
+  }
+  @keyframes fxPing{0%{transform:scale(1);opacity:0.9;}100%{transform:scale(3.2);opacity:0;}}
+  @media (prefers-reduced-motion: reduce){
+    .fx-gleam, .fx-levelup, .fx-ping::after, .info-subheading.subhead-evolution .grad-text{animation:none;}
+  }
   .info-subheading.subhead-moveset{color:#FF4D4D;}
   .info-subheading.subhead-encounters{color:#FFFFFF;}
+  /* Brighter rainbow so the blue/purple end stays readable on the bubble. */
+  /* Evolution: the rainbow text flashes bright white every few seconds,
+     like the glow when a Pokemon evolves. */
+  @keyframes fxEvolve{
+    0%, 70%, 100%{filter:none;}
+    80%{filter:brightness(1.9) drop-shadow(0 0 4px rgba(255,255,255,0.9));}
+    88%{filter:brightness(1.25) drop-shadow(0 0 2px rgba(255,255,255,0.5));}
+  }
   .info-subheading.subhead-evolution .grad-text{
-    background-image:linear-gradient(90deg, #ff3b30, #ff9500, #ffcc00, #34c759, #2f8fff, #5856d6, #c04df9);
+    animation:fxEvolve 4s ease-in-out infinite;
+    background-image:linear-gradient(90deg, #ff5a4f, #ffa53a, #ffd84a, #4fdc72, #5aa8ff, #8f8cff, #dd8bff);
     -webkit-background-clip:text;
     background-clip:text;
     color:transparent;
     -webkit-text-fill-color:transparent;
   }
+  /* Mega Evolution: same bubble as Evolution, but the rainbow flows
+     across the text and border and the bubble glows through the colors. */
+  .info-subheading.subhead-mega{
+    border:2px solid transparent;
+    background:
+      linear-gradient(rgba(0,0,0,0.8), rgba(0,0,0,0.8)) padding-box,
+      linear-gradient(90deg, #ff3b30, #ff9500, #ffcc00, #34c759, #2f8fff, #5856d6, #c04df9, #ff3b30) border-box;
+    background-size:100% 100%, 200% 100%;
+    animation:megaBorderFlow 2.6s linear infinite, megaGlow 3.9s linear infinite;
+  }
+  .info-subheading.subhead-mega .grad-text{
+    background-image:linear-gradient(90deg, #ff3b30, #ff9500, #ffcc00, #34c759, #2f8fff, #5856d6, #c04df9, #ff3b30);
+    background-size:200% 100%;
+    -webkit-background-clip:text;
+    background-clip:text;
+    color:transparent;
+    -webkit-text-fill-color:transparent;
+    filter:drop-shadow(0 0 1.5px rgba(255,255,255,0.2));
+    animation:megaTextFlow 2.6s linear infinite;
+  }
+  @keyframes megaTextFlow{from{background-position:0% 0;}to{background-position:200% 0;}}
+  @keyframes megaBorderFlow{from{background-position:0 0, 0% 0;}to{background-position:0 0, 200% 0;}}
+  @keyframes megaGlow{
+    0%, 100%{box-shadow:0 0 10px 1px rgba(255,59,48,0.65);}
+    17%{box-shadow:0 0 10px 1px rgba(255,149,0,0.65);}
+    33%{box-shadow:0 0 10px 1px rgba(255,204,0,0.65);}
+    50%{box-shadow:0 0 10px 1px rgba(52,199,89,0.65);}
+    67%{box-shadow:0 0 10px 1px rgba(47,143,255,0.65);}
+    83%{box-shadow:0 0 10px 1px rgba(192,77,249,0.65);}
+  }
+  @media (prefers-reduced-motion: reduce){
+    .info-subheading.subhead-mega, .info-subheading.subhead-mega .grad-text{animation:none;}
+  }
+  /* Gigantamax: same pill as Mega Evolution, in the Gigantamax logo's
+     magenta, with a pulsing glow and a shimmer flowing through the text. */
+  .info-subheading.subhead-gmax{
+    display:inline-flex;align-items:center;gap:6px;padding-left:6px;
+    border:2px solid transparent;
+    background:
+      linear-gradient(rgba(0,0,0,0.8), rgba(0,0,0,0.8)) padding-box,
+      linear-gradient(90deg, #d4206a, #ff5fa8, #ffd3e8, #ff5fa8, #d4206a) border-box;
+    background-size:100% 100%, 200% 100%;
+    animation:megaBorderFlow 2.6s linear infinite, gmaxGlow 2.2s ease-in-out infinite;
+  }
+  .subhead-gmax .gmax-text{
+    background-image:linear-gradient(90deg, #ff4f9a, #ffc2dc, #ffffff, #ffc2dc, #ff4f9a);
+    background-size:200% 100%;
+    -webkit-background-clip:text;background-clip:text;color:transparent;-webkit-text-fill-color:transparent;
+    filter:drop-shadow(0 0 1.5px rgba(255,80,160,0.3));
+    animation:megaTextFlow 2.6s linear infinite;
+  }
+  .gmax-symbol{width:18px;height:18px;flex:0 0 18px;display:block;filter:drop-shadow(0 0 3px rgba(255,60,150,0.8));}
+  @keyframes gmaxGlow{
+    0%, 100%{box-shadow:0 0 6px 1px rgba(230,40,120,0.45);}
+    50%{box-shadow:0 0 14px 3px rgba(255,70,160,0.85);}
+  }
+  @media (prefers-reduced-motion: reduce){
+    .info-subheading.subhead-gmax, .subhead-gmax .gmax-text{animation:none;}
+  }
+  .mega-list{list-style:none;padding-left:0;}
+  .mega-list li{display:flex;align-items:center;gap:12px;text-transform:none;margin-bottom:8px;}
+  .mega-list img{width:76px;height:76px;object-fit:contain;image-rendering:pixelated;flex:0 0 76px;}
+  .info-subheading.subhead-mega{display:inline-flex;align-items:center;gap:6px;padding-left:6px;}
+  .mega-symbol{width:18px;height:18px;flex:0 0 18px;display:block;}
+  .mega-list .mega-name{font-weight:800;font-size:0.82rem;}
+  .mega-list .mega-meta{font-size:0.74rem;color:var(--muted);font-weight:600;}
   .info-row{display:flex;justify-content:space-between;gap:10px;font-size:0.82rem;padding:3px 0;}
   .info-row span:first-child{color:var(--muted);font-weight:600;}
   .info-row span:last-child{font-weight:700;text-align:right;}
   .info-list{margin:0;padding-left:18px;font-size:0.78rem;font-weight:600;}
   .info-list li{margin-bottom:2px;text-transform:capitalize;}
+  .evo-link{color:var(--blue);font-weight:800;text-decoration:underline;text-decoration-style:dotted;text-underline-offset:2px;cursor:pointer;}
+  .evo-link:hover{text-decoration-style:solid;}
+  .evo-link.evo-current{color:inherit;text-decoration:none;cursor:default;}
   .info-loading{font-size:0.8rem;color:var(--muted);font-weight:600;}
   .info-version-group{margin-bottom:8px;}
   .info-version-group strong{font-size:0.78rem;text-transform:capitalize;}
@@ -852,7 +1096,7 @@
   <header>
     <div class="ball-mark"></div>
     <div class="header-text">
-      <h1>Shiny Hunt Counter</h1>
+      <h1>Moon&#39;s Shiny Counter</h1>
       <p>Track the amount of encounters or resets it takes to find a shiny.</p>
     </div>
     <div class="theme-toggle-wrap">
@@ -872,7 +1116,7 @@
     <div class="closed-pokedex" id="closedPokedex">
       <div class="closed-lens"></div>
       <div class="closed-label">TAP TO OPEN</div>
-      <div class="closed-sub">Shiny Hunt Counter</div>
+      <div class="closed-sub">Moon&#39;s Shiny Counter</div>
     </div>
 
     <div class="app-body" id="appBody" style="display:none;">
@@ -1444,31 +1688,104 @@
     dexInput.value = entry.dexNumber || '';
     box.appendChild(dexInput);
 
-    // Starts disabled while it loads, then fills in with any
-    // Alolan/Galarian/Hisuian/Paldean varieties, or says there are none.
+    // Starts disabled while it loads, then fills in with the species'
+    // regional and alternate forms, or says there are none.
     const formFieldLabel = document.createElement('div');
     formFieldLabel.className = 'modal-field-label';
-    formFieldLabel.textContent = 'Regional form';
+    formFieldLabel.textContent = 'Form (regional & alternate)';
     box.appendChild(formFieldLabel);
 
     const formSelect = document.createElement('select');
     formSelect.className = 'themed-select modal-input';
     formSelect.style.paddingRight = '26px';
     formSelect.disabled = true;
-    formSelect.innerHTML = `<option value="">Checking for regional forms…</option>`;
+    formSelect.innerHTML = `<option value="">Checking for forms…</option>`;
     box.appendChild(formSelect);
 
-    fetchRegionalForms(entry.name).then(forms => {
+    fetchAlternateForms(entry.name).then(({ forms, defaultLabel }) => {
       if(forms.length === 0){
-        formSelect.innerHTML = `<option value="">No regional forms found</option>`;
+        formSelect.innerHTML = `<option value="">No alternate forms found</option>`;
         return;
       }
-      let html = `<option value="">Base form (no region)</option>`;
-      forms.forEach(f => { html += `<option value="${f.apiName}">${f.label}</option>`; });
+      let html = `<option value="">Base form${defaultLabel ? ` (${escapeHtml(defaultLabel)})` : ''}</option>`;
+      forms.forEach(f => { html += `<option value="${f.apiName}">${escapeHtml(f.label)}</option>`; });
       formSelect.innerHTML = html;
       formSelect.value = entry.form || '';
       formSelect.disabled = false;
     });
+
+    // Mega Evolution picker — same pattern as the regional form one.
+    // A Pokemon is shown as either a regional form or a Mega, so picking
+    // one resets the other.
+    const megaFieldLabel = document.createElement('div');
+    megaFieldLabel.className = 'modal-field-label';
+    megaFieldLabel.textContent = 'Mega Evolution';
+    box.appendChild(megaFieldLabel);
+
+    const megaSelect = document.createElement('select');
+    megaSelect.className = 'themed-select modal-input';
+    megaSelect.style.paddingRight = '26px';
+    megaSelect.disabled = true;
+    megaSelect.innerHTML = `<option value="">Checking for Mega Evolutions…</option>`;
+    box.appendChild(megaSelect);
+
+    fetchMegaForms(entry.name).then(megas => {
+      if(megas.length === 0){
+        megaSelect.innerHTML = `<option value="">No Mega Evolution found</option>`;
+        return;
+      }
+      let html = `<option value="">No Mega (normal form)</option>`;
+      megas.forEach(m => { html += `<option value="${m.apiName}">${m.label}</option>`; });
+      megaSelect.innerHTML = html;
+      megaSelect.value = entry.mega || '';
+      megaSelect.disabled = false;
+    });
+    megaSelect.addEventListener('change', () => { if(megaSelect.value && !formSelect.disabled) formSelect.value = ''; });
+
+    // Sprite style: Animated 2D, Static 2D or 3D model (plus "Your own
+    // sprite" when the hunt has one). Styles this Pokemon/form doesn't
+    // have are greyed out once its sprite list loads.
+    const styleFieldLabel = document.createElement('div');
+    styleFieldLabel.className = 'modal-field-label';
+    styleFieldLabel.textContent = 'Sprite style';
+    box.appendChild(styleFieldLabel);
+    const styleSelect = document.createElement('select');
+    styleSelect.className = 'themed-select modal-input';
+    styleSelect.style.paddingRight = '26px';
+    const currentStyle = spriteStyleOf(entry);
+    styleSelect.innerHTML = ['animated', 'pixel', '3d'].map(v => `<option value="${v}">${SPRITE_STYLE_LABELS[v]}</option>`).join('')
+      + (currentStyle === 'custom' || entry.customSprite ? `<option value="custom">${SPRITE_STYLE_LABELS.custom}</option>` : '');
+    styleSelect.value = currentStyle;
+    box.appendChild(styleSelect);
+    formSelect.addEventListener('change', () => { if(formSelect.value && !megaSelect.disabled) megaSelect.value = ''; });
+
+    let availToken = 0;
+    function refreshStyleAvailability(){
+      const apiName = (megaSelect.disabled ? entry.mega : megaSelect.value)
+        || (formSelect.disabled ? entry.form : formSelect.value)
+        || entry.name;
+      const myToken = ++availToken;
+      if(!spriteAvailabilityCache.has(apiName)){
+        spriteAvailabilityCache.set(apiName, fetchShinySpriteFromPokeAPI(apiName).then(r => r.available).catch(() => null));
+      }
+      spriteAvailabilityCache.get(apiName).then(avail => {
+        if(myToken !== availToken || !avail) return;
+        ['animated', 'pixel', '3d'].forEach(v => {
+          const opt = styleSelect.querySelector(`option[value="${v}"]`);
+          if(!opt) return;
+          opt.disabled = !avail[v];
+          opt.textContent = SPRITE_STYLE_LABELS[v] + (avail[v] ? '' : ' — not available');
+        });
+        const sel = styleSelect.selectedOptions[0];
+        if(sel && sel.disabled){
+          const firstOk = [...styleSelect.options].find(o => !o.disabled);
+          if(firstOk) styleSelect.value = firstOk.value;
+        }
+      });
+    }
+    refreshStyleAvailability();
+    formSelect.addEventListener('change', refreshStyleAvailability);
+    megaSelect.addEventListener('change', refreshStyleAvailability);
 
     const statusLabel = document.createElement('div');
     statusLabel.className = 'modal-field-label';
@@ -1504,10 +1821,60 @@
     foundInput.value = entry.foundDate || '';
     box.appendChild(foundInput);
 
+    // Editable hunt time (days / hours / minutes / seconds). Only applied on Save
+    // if one of the boxes was actually changed, so the live timer's time
+    // while this menu is open isn't thrown away otherwise.
     const timeLabel = document.createElement('div');
     timeLabel.className = 'modal-field-label';
-    timeLabel.textContent = `Time hunted so far: ${formatHuntTime(entry.huntSeconds)}`;
+    timeLabel.textContent = 'Time hunted';
     box.appendChild(timeLabel);
+    const startSecs = Math.floor(entry.huntSeconds || 0);
+    const timeRow = document.createElement('div');
+    timeRow.className = 'hunt-time-edit';
+    const timeParts = [
+      { key: 'd', label: 'days', value: Math.floor(startSecs / 86400) },
+      { key: 'h', label: 'hr', value: Math.floor((startSecs % 86400) / 3600) },
+      { key: 'm', label: 'min', value: Math.floor((startSecs % 3600) / 60) },
+      { key: 's', label: 'sec', value: startSecs % 60 }
+    ];
+    const timeInputs = {};
+    timeParts.forEach(part => {
+      const wrap = document.createElement('label');
+      wrap.className = 'hunt-time-part';
+      const input = document.createElement('input');
+      input.type = 'number';
+      input.min = '0';
+      if(part.key === 'h') input.max = '23';
+      else if(part.key !== 'd') input.max = '59';
+      input.step = '1';
+      input.inputMode = 'numeric';
+      input.className = 'modal-input';
+      input.value = String(part.value);
+      input.dataset.original = String(part.value);
+      const unit = document.createElement('span');
+      unit.textContent = part.label;
+      wrap.appendChild(input);
+      wrap.appendChild(unit);
+      timeRow.appendChild(wrap);
+      timeInputs[part.key] = input;
+    });
+    // Shown as a dropdown: a closed box reading e.g. "2d 5h 10m 30s"
+    // that opens to the four boxes, and updates as you type.
+    const timeDropdown = document.createElement('details');
+    timeDropdown.className = 'time-dropdown';
+    const timeSummary = document.createElement('summary');
+    timeSummary.className = 'themed-select modal-input';
+    const describeTime = () => {
+      const n = k => Math.max(0, Math.floor(Number(timeInputs[k].value) || 0));
+      const parts = [['d', n('d')], ['h', n('h')], ['m', n('m')], ['s', n('s')]];
+      const first = parts.findIndex(([, v]) => v > 0);
+      return first === -1 ? '0s' : parts.slice(first).map(([u, v]) => `${v}${u}`).join(' ');
+    };
+    timeSummary.textContent = describeTime();
+    Object.values(timeInputs).forEach(i => i.addEventListener('input', () => { timeSummary.textContent = describeTime(); }));
+    timeDropdown.appendChild(timeSummary);
+    timeDropdown.appendChild(timeRow);
+    box.appendChild(timeDropdown);
 
     const shinyTypeLabel = document.createElement('div');
     shinyTypeLabel.className = 'modal-field-label';
@@ -1609,15 +1976,43 @@
       entry.square = shinyTypeSelect.value === 'square';
       entry.notes = notesInput.value.trim() || null;
 
-      const chosenForm = formSelect.value || null;
-      if(chosenForm !== (entry.form || null)){
-        // The regional form changed — fetch that variety's shiny sprite.
+      const timeChanged = Object.values(timeInputs).some(i => i.value !== i.dataset.original);
+      if(timeChanged){
+        const num = i => Math.max(0, Math.floor(Number(i.value) || 0));
+        entry.huntSeconds = num(timeInputs.d) * 86400 + num(timeInputs.h) * 3600 + num(timeInputs.m) * 60 + num(timeInputs.s);
+      }
+
+      // While a picker is still loading its value is "", which would read
+      // as "cleared" — so keep the saved value until the list has loaded.
+      const chosenForm = formSelect.disabled ? (entry.form || null) : (formSelect.value || null);
+      const chosenMega = megaSelect.disabled ? (entry.mega || null) : (megaSelect.value || null);
+      const formChanged = chosenForm !== (entry.form || null) || chosenMega !== (entry.mega || null);
+      let chosenStyle = ['animated', 'pixel', '3d', 'custom'].includes(styleSelect.value) ? styleSelect.value : 'animated';
+      // Picking a new form or Mega while on your own sprite shows that
+      // form's sprite — your sprite is kept to switch back to.
+      if(formChanged && chosenStyle === 'custom') chosenStyle = 'animated';
+      const styleChanged = chosenStyle !== currentStyle;
+      if(!formChanged && styleChanged && chosenStyle === 'custom'){
+        // Back to your own sprite: no download needed.
+        if(entry.customSprite){ entry.gifUrl = entry.customSprite; entry.customSprite = null; }
+        entry.spriteStyle = 'custom';
+      } else if(formChanged || styleChanged){
+        // The form, Mega or sprite style changed — fetch that variety's
+        // shiny sprite. A Mega takes priority over a regional form.
         saveBtn.disabled = true;
         saveBtn.textContent = 'Fetching sprite…';
         try{
-          const apiName = chosenForm || entry.name.toLowerCase();
-          const result = await fetchShinySpriteFromPokeAPI(apiName);
-          if(result.sprite) entry.gifUrl = result.sprite;
+          const apiName = chosenMega || chosenForm || entry.name.toLowerCase();
+          const result = await fetchShinySpriteFromPokeAPI(apiName, chosenStyle);
+          if(result.sprite){
+            // Keep your own sprite aside before replacing it.
+            if(currentStyle === 'custom' && entry.gifUrl) entry.customSprite = entry.gifUrl;
+            entry.gifUrl = result.sprite;
+            entry.spriteStyle = result.style || chosenStyle;
+          }
+          // Megas also have their own PokeAPI id, used for OBS's static
+          // fallback sprite and the trading card's types.
+          entry.megaDexNumber = chosenMega ? (result.dexNumber || null) : null;
           // A regional form is a distinct Pokemon entry in PokeAPI, with
           // its own id separate from the base species' National Dex
           // number (entry.dexNumber, which stays e.g. 571 for any
@@ -1626,9 +2021,10 @@
           // it's kept separately here — see obsSpriteUrlFor(), which
           // prefers it over entry.dexNumber for OBS sync. Cleared back to
           // null when switching back to the base form.
-          entry.formDexNumber = chosenForm ? (result.dexNumber || null) : null;
+          entry.formDexNumber = (chosenForm && !chosenMega) ? (result.dexNumber || null) : null;
         }catch(e){ /* keep the existing sprite if the lookup fails */ }
         entry.form = chosenForm;
+        entry.mega = chosenMega;
       }
 
       overlay.remove();
@@ -1753,7 +2149,7 @@
         phaseUploadPreview.style.display = 'block';
         phaseUploadText.textContent = 'Fetched from PokeAPI';
         try{
-          const speciesRes = await fetch(`https://pokeapi.co/api/v2/pokemon-species/${name}`);
+          const speciesRes = await fetch(`https://pokeapi.co/api/v2/pokemon-species/${pokeApiSlug(name)}`);
           if(speciesRes.ok){
             const speciesData = await speciesRes.json();
             const genNumber = speciesData.generation && GEN_NAME_TO_NUMBER[speciesData.generation.name];
@@ -1844,13 +2240,20 @@
   // Walks a PokeAPI evolution chain into a flat list of "A → B (how)"
   // lines — flatter than the tree PokeAPI returns, but reads cleanly and
   // handles branching evolutions (like Eevee) without extra work.
+  // Each Pokemon name is a link (by National Dex number) that opens that
+  // Pokemon's own info popup — see the click handling in openInfoModal().
+  function evolutionSpeciesLink(species){
+    const m = (species.url || '').match(/\/pokemon-species\/(\d+)\//);
+    const name = escapeHtml(speciesDisplayName(species.name));
+    return m ? `<a href="#" class="evo-link" data-species-id="${m[1]}">${name}</a>` : name;
+  }
   function describeEvolutionChain(node){
     const lines = [];
     function walk(n){
       (n.evolves_to || []).forEach(child => {
         const details = (child.evolution_details || []).map(describeEvolutionDetail).filter(Boolean);
         const detailText = details.length ? details.join(' or ') : 'special condition';
-        lines.push(`${capitalizeName(n.species.name.replace(/-/g,' '))} ${ICONS.arrowRight} ${capitalizeName(child.species.name.replace(/-/g,' '))} (${detailText})`);
+        lines.push(`${evolutionSpeciesLink(n.species)} ${ICONS.arrowRight} ${evolutionSpeciesLink(child.species)} (${detailText})`);
         walk(child);
       });
     }
@@ -1878,10 +2281,7 @@
   // wild encounter locations/rates per game. Each piece is wrapped in
   // its own try/catch so one failed request doesn't blank the others.
   async function fetchPokemonGameData(name){
-    const lower = name.toLowerCase();
-    const res = await fetch(`https://pokeapi.co/api/v2/pokemon/${lower}`);
-    if(!res.ok) throw new Error('not found');
-    const data = await res.json();
+    const data = await fetchPokemonData(name);
 
     const abilities = (data.abilities || []).map(a => ({
       name: a.ability.name.replace(/-/g,' '),
@@ -1915,11 +2315,16 @@
     }));
 
     let evolution = [];
+    let megaNames = [], gmaxNames = [], speciesName = data.name, speciesId = null;
     try{
       if(data.species && data.species.url){
         const specRes = await fetch(data.species.url);
         if(specRes.ok){
           const specData = await specRes.json();
+          speciesName = specData.name || speciesName;
+          speciesId = specData.id || null;
+          megaNames = (specData.varieties || []).map(v => v.pokemon.name).filter(isMegaName);
+          gmaxNames = (specData.varieties || []).map(v => v.pokemon.name).filter(isGmaxName);
           if(specData.evolution_chain && specData.evolution_chain.url){
             const chainRes = await fetch(specData.evolution_chain.url);
             if(chainRes.ok){
@@ -1931,6 +2336,16 @@
       }
     }catch(e){ /* leave evolution empty */ }
 
+    let megas = [];
+    try{
+      megas = await Promise.all(megaNames.map(n => fetchMegaDetails(n, speciesName)));
+    }catch(e){ /* leave megas empty */ }
+
+    let gmax = [];
+    try{
+      gmax = await Promise.all(gmaxNames.map(n => fetchGmaxDetails(n, speciesName)));
+    }catch(e){ /* leave gmax empty */ }
+
     let encounters = {};
     try{
       if(data.location_area_encounters){
@@ -1939,7 +2354,7 @@
       }
     }catch(e){ /* leave encounters empty */ }
 
-    return { abilities, moves, evolution, encounters, resolvedName: data.name, dexNumber: data.id };
+    return { abilities, moves, evolution, megas, gmax, encounters, resolvedName: data.name, dexNumber: data.id, speciesName, speciesId };
   }
 
   // Renders the (async-loaded) game-data section's inner HTML once
@@ -1947,7 +2362,7 @@
   function renderGameDataHTML(gameData){
     let html = '<div class="info-heading">Game data</div>';
 
-    html += '<div class="info-subheading subhead-abilities">Abilities</div>';
+    html += '<div class="info-subheading subhead-abilities"><span class="fx-gleam">Abilities</span></div>';
     html += gameData.abilities.length
       ? '<ul class="info-list">' + gameData.abilities.map(a =>
           `<li>${a.name}${a.hidden ? ' (Hidden)' : ''}</li>`
@@ -1959,14 +2374,40 @@
       ? '<ul class="info-list">' + gameData.evolution.map(line => `<li>${line}</li>`).join('') + '</ul>'
       : '<div class="info-loading">Does not evolve.</div>';
 
-    html += '<div class="info-subheading subhead-moveset">Level-up moveset (PP)</div>';
+    // Only shown for species that actually have a Mega Evolution.
+    if(gameData.megas && gameData.megas.length){
+      html += `<div class="info-subheading subhead-mega"><img class="mega-symbol" src="${MEGA_SYMBOL_SRC}" alt=""><span class="grad-text">Mega Evolution</span></div>`;
+      html += '<ul class="info-list mega-list">' + gameData.megas.map(m => `
+        <li>
+          ${m.sprite ? `<img src="${m.sprite}" alt="" onerror="this.style.display='none'">` : ''}
+          <div>
+            <div class="mega-name">${escapeHtml(m.label)}</div>
+            <div class="mega-meta">${[m.types.map(capitalizeName).join(' / '), m.trigger].filter(Boolean).map(escapeHtml).join(' · ')}</div>
+          </div>
+        </li>`).join('') + '</ul>';
+    }
+
+    // Only shown for species that can Gigantamax.
+    if(gameData.gmax && gameData.gmax.length){
+      html += `<div class="info-subheading subhead-gmax"><img class="gmax-symbol" src="${GMAX_SYMBOL_SRC}" alt=""><span class="gmax-text">Gigantamax</span></div>`;
+      html += '<ul class="info-list mega-list">' + gameData.gmax.map(g => `
+        <li>
+          ${g.sprite ? `<img src="${g.sprite}" alt="" onerror="this.style.display='none'">` : ''}
+          <div>
+            <div class="mega-name">${escapeHtml(g.label)}</div>
+            <div class="mega-meta">${escapeHtml(g.types.map(capitalizeName).join(' / '))}</div>
+          </div>
+        </li>`).join('') + '</ul>';
+    }
+
+    html += '<div class="info-subheading subhead-moveset"><svg class="fx-levelup" viewBox="0 0 12 12" aria-hidden="true"><path d="M6 1.5 L10.5 7 H7.6 V10.5 H4.4 V7 H1.5 Z" fill="currentColor"/></svg>Level-up moveset (PP)</div>';
     html += gameData.moves.length
       ? '<ul class="info-list">' + gameData.moves.map(m =>
           `<li>Lv. ${m.level} — ${m.name.replace(/-/g,' ')}${m.pp != null ? ` (PP ${m.pp})` : ''}</li>`
         ).join('') + '</ul>'
       : '<div class="info-loading">No level-up moves found.</div>';
 
-    html += '<div class="info-subheading subhead-encounters">Encounter locations</div>';
+    html += '<div class="info-subheading subhead-encounters"><span class="fx-ping" aria-hidden="true"></span>Encounter locations</div>';
     const versions = Object.keys(gameData.encounters || {});
     html += versions.length
       ? versions.map(ver => {
@@ -2039,7 +2480,7 @@
   }
 
   // Type colors for tinting the trading card's frame. Fetched per card
-  // from PokeAPI (see fetchTypesForCard); falls back to a neutral gold.
+  // from PokeAPI (see fetchCardMeta); falls back to a neutral gold.
   const CARD_TYPE_COLORS = {
     normal:'#A8A77A', fire:'#EE8130', water:'#6390F0', electric:'#F7D02C', grass:'#7AC74C',
     ice:'#96D9D6', fighting:'#C22E28', poison:'#A33EA1', ground:'#E2BF65', flying:'#A98FF3',
@@ -2047,19 +2488,54 @@
     dark:'#705746', steel:'#B7B7CE', fairy:'#D685AD'
   };
 
-  async function fetchTypesForCard(entry){
-    const id = entry.formDexNumber || entry.dexNumber || (entry.name || '').toLowerCase().trim();
-    if(!id) return [];
+  async function fetchJsonWithTimeout(url, ms){
+    const ctrl = new AbortController();
+    const t = setTimeout(() => ctrl.abort(), ms || 5000);
     try{
-      const ctrl = new AbortController();
-      const t = setTimeout(() => ctrl.abort(), 5000);
-      const res = await fetch(`https://pokeapi.co/api/v2/pokemon/${id}`, { signal: ctrl.signal });
-      clearTimeout(t);
-      if(!res.ok) return [];
-      const data = await res.json();
-      return (data.types || []).sort((a, b) => a.slot - b.slot).map(t => t.type.name);
-    }catch(e){ return []; }
+      const res = await fetch(url, { signal: ctrl.signal });
+      if(!res.ok) return null;
+      return await res.json();
+    }catch(e){ return null; }
+    finally{ clearTimeout(t); }
   }
+
+  // Looks up what the trading card needs from PokeAPI: the Pokemon's
+  // types (for the frame color) and whether its species is legendary or
+  // mythical (for the premium card treatment). Both lookups fail soft.
+  const cardMetaCache = new Map();
+  function fetchCardMeta(entry){
+    const name = (entry.name || '').toLowerCase().trim();
+    const key = `${entry.megaDexNumber || ''}|${entry.formDexNumber || ''}|${entry.dexNumber || ''}|${name}`;
+    if(!cardMetaCache.has(key)){
+      const p = fetchCardMetaUncached(entry);
+      cardMetaCache.set(key, p);
+      // Don't keep a failed lookup around forever.
+      p.then(m => { if(!m.types.length && !m.tier) cardMetaCache.delete(key); });
+    }
+    return cardMetaCache.get(key);
+  }
+  async function fetchCardMetaUncached(entry){
+    const name = pokeApiSlug(entry.name);
+    const formId = entry.megaDexNumber || entry.formDexNumber || entry.dexNumber || name;
+    const speciesId = entry.dexNumber || name;
+    const [mon, species] = await Promise.all([
+      (entry.megaDexNumber || entry.formDexNumber || entry.dexNumber)
+        ? fetchJsonWithTimeout(`https://pokeapi.co/api/v2/pokemon/${formId}`)
+        : (name ? fetchPokemonData(name).catch(() => null) : null),
+      speciesId ? fetchJsonWithTimeout(`https://pokeapi.co/api/v2/pokemon-species/${speciesId}`) : null
+    ]);
+    const types = mon && mon.types ? mon.types.slice().sort((a, b) => a.slot - b.slot).map(t => t.type.name) : [];
+    const tier = species ? (species.is_mythical ? 'mythical' : species.is_legendary ? 'legendary' : null) : null;
+    return { types, tier };
+  }
+
+  // Premium card styling for legendary and mythical Pokemon.
+  const CARD_TIERS = {
+    legendary: { label: 'LEGENDARY', accent: '#F7CB4D', glow: '255,214,90',
+      metal: ['#fff6cf', '#f5c542', '#a8780a', '#ffe98a', '#c9951a', '#fff2b3', '#d9a521'] },
+    mythical: { label: 'MYTHICAL', accent: '#F2B3F7', glow: '233,138,224',
+      metal: ['#ffe3fa', '#e98ae0', '#8a5cf6', '#f9c9ff', '#b36ae0', '#dff3ff', '#c78af0'] }
+  };
 
   // Mixes a hex color toward white (amt > 0) or black (amt < 0).
   function shadeHex(hex, amt){
@@ -2156,87 +2632,185 @@
   }
 
   // Renders a completed hunt as a collectible trading card (2.5 x 3.5
-  // proportions) and downloads it as a PNG: holo foil border, a frame
-  // tinted by the Pokemon's type, a framed art window with shimmer and
-  // sparkles, a stats panel, the hunt notes as flavor text, and a
-  // collector number counting this shiny among everything you've found.
-  async function generateHuntCardImage(entry, spriteSrc){
+  // proportions) onto a canvas: holo foil border, a frame tinted by the
+  // Pokemon's type, a framed art window with shimmer and sparkles, a
+  // stats panel, the hunt notes as flavor text, and a collector number.
+  // Legendary and mythical Pokemon get a premium version: metallic
+  // border, a dark starfield body, a rainbow art window and a tier badge.
+  // Returns the canvas plus the layout, so the interactive viewer can
+  // line its moving foil layers up with the border and art window.
+  //
+  // opts.drawSprite = false leaves the sprite itself off (its shadow and
+  // position are still worked out), so the viewer can lay the live,
+  // animated GIF over that exact spot instead of a frozen first frame.
+  async function renderHuntCardCanvas(entry, spriteSrc, opts){
+    const drawSprite = !(opts && opts.drawSprite === false);
     const W = 750, H = 1050;
     const canvas = document.createElement('canvas');
     canvas.width = W; canvas.height = H;
     const ctx = canvas.getContext('2d');
 
-    const [ , , , , img, types] = await Promise.all([
+    const [ , , , , img, meta] = await Promise.all([
       document.fonts.load('800 44px "Baloo 2"').catch(() => {}),
       document.fonts.load('700 20px "Baloo 2"').catch(() => {}),
       document.fonts.load('italic 600 18px "Baloo 2"').catch(() => {}),
       document.fonts.load('800 40px "JetBrains Mono"').catch(() => {}),
       loadImageForCanvas(spriteSrc),
-      fetchTypesForCard(entry)
+      fetchCardMeta(entry)
     ]);
+    const types = meta.types;
+    const tier = meta.tier;
+    const T = tier ? CARD_TIERS[tier] : null;
 
     const ink = '#1B1B1B', cream = '#FBF7EA', muted = '#5E554E', gold = '#E4B422', goldDark = '#A67C0E';
     const primary = CARD_TYPE_COLORS[types[0]] || '#E4B422';
     const secondary = CARD_TYPE_COLORS[types[1]] || primary;
+
+    // Seeded random numbers so the same card always gets the same stars.
+    let seed = 7;
+    for(const ch of String(entry.id || entry.name || 'card')) seed = (seed * 31 + ch.charCodeAt(0)) >>> 0;
+    const rand = () => (seed = (seed * 1664525 + 1013904223) >>> 0) / 4294967296;
+
+    const metalGradient = (x0, y0, x1, y1) => {
+      const g = ctx.createLinearGradient(x0, y0, x1, y1);
+      T.metal.forEach((c, i, a) => g.addColorStop(i / (a.length - 1), c));
+      return g;
+    };
 
     // ---- Outer frame + holo foil border ----
     ctx.fillStyle = ink;
     roundRectPath(ctx, 0, 0, W, H, 38);
     ctx.fill();
 
-    const foil = ctx.createLinearGradient(0, 0, W, H);
-    ['#ffd9f2', '#d8e9ff', '#d4ffe8', '#fff6c8', '#ffd9d9', '#e6d9ff', '#d8fbff'].forEach((c, i, a) => foil.addColorStop(i / (a.length - 1), c));
+    let foil;
+    if(T){
+      foil = metalGradient(0, 0, W, H);
+    } else {
+      foil = ctx.createLinearGradient(0, 0, W, H);
+      ['#ffd9f2', '#d8e9ff', '#d4ffe8', '#fff6c8', '#ffd9d9', '#e6d9ff', '#d8fbff'].forEach((c, i, a) => foil.addColorStop(i / (a.length - 1), c));
+    }
     ctx.fillStyle = foil;
     roundRectPath(ctx, 14, 14, W - 28, H - 28, 28);
     ctx.fill();
-    // Diagonal glare streaks across the foil.
+    // Diagonal glare streaks across the foil (plus a fine etched
+    // crosshatch on premium cards).
     ctx.save();
     roundRectPath(ctx, 14, 14, W - 28, H - 28, 28);
     ctx.clip();
-    ctx.globalAlpha = 0.35;
+    ctx.globalAlpha = T ? 0.45 : 0.35;
     ctx.fillStyle = '#ffffff';
     for(let i = -H; i < W + H; i += 120){
       ctx.beginPath();
       ctx.moveTo(i, 0); ctx.lineTo(i + 40, 0); ctx.lineTo(i + 40 - H, H); ctx.lineTo(i - H, H);
       ctx.fill();
     }
+    if(T){
+      ctx.globalAlpha = 0.14;
+      ctx.strokeStyle = '#ffffff';
+      ctx.lineWidth = 1;
+      for(let i = -H; i < W + H; i += 9){
+        ctx.beginPath(); ctx.moveTo(i, 0); ctx.lineTo(i + H, H); ctx.stroke();
+        ctx.beginPath(); ctx.moveTo(i, 0); ctx.lineTo(i - H, H); ctx.stroke();
+      }
+    }
     ctx.restore();
 
     // ---- Card body, tinted by type ----
     const bodyX = 30, bodyY = 30, bodyW = W - 60, bodyH = H - 60;
     const body = ctx.createLinearGradient(0, bodyY, 0, bodyY + bodyH);
-    body.addColorStop(0, shadeHex(primary, 0.55));
-    body.addColorStop(0.5, shadeHex(primary, 0.25));
-    body.addColorStop(1, shadeHex(secondary, 0.05));
+    if(T){
+      body.addColorStop(0, shadeHex(primary, -0.6));
+      body.addColorStop(0.5, '#0e0a1c');
+      body.addColorStop(1, shadeHex(secondary, -0.72));
+    } else {
+      body.addColorStop(0, shadeHex(primary, 0.55));
+      body.addColorStop(0.5, shadeHex(primary, 0.25));
+      body.addColorStop(1, shadeHex(secondary, 0.05));
+    }
     ctx.fillStyle = body;
     roundRectPath(ctx, bodyX, bodyY, bodyW, bodyH, 22);
     ctx.fill();
+    if(T){
+      // Starfield and soft nebula clouds across the dark body.
+      ctx.save();
+      roundRectPath(ctx, bodyX, bodyY, bodyW, bodyH, 22);
+      ctx.clip();
+      [[0.2, 0.25, shadeHex(primary, 0.1)], [0.85, 0.6, shadeHex(secondary, 0.1)], [0.3, 0.9, `rgb(${T.glow})`]].forEach(([nx, ny, col]) => {
+        const g = ctx.createRadialGradient(bodyX + nx * bodyW, bodyY + ny * bodyH, 0, bodyX + nx * bodyW, bodyY + ny * bodyH, 320);
+        g.addColorStop(0, col);
+        g.addColorStop(1, 'rgba(0,0,0,0)');
+        ctx.globalAlpha = 0.28;
+        ctx.fillStyle = g;
+        ctx.fillRect(bodyX, bodyY, bodyW, bodyH);
+      });
+      ctx.globalAlpha = 1;
+      for(let i = 0; i < 170; i++){
+        const x = bodyX + rand() * bodyW, y = bodyY + rand() * bodyH;
+        const r = rand() < 0.9 ? 0.6 + rand() * 1.1 : 1.8 + rand() * 1.2;
+        ctx.fillStyle = `rgba(255,255,255,${0.35 + rand() * 0.6})`;
+        ctx.beginPath(); ctx.arc(x, y, r, 0, Math.PI * 2); ctx.fill();
+      }
+      for(let i = 0; i < 10; i++){
+        drawSparkle(ctx, bodyX + rand() * bodyW, bodyY + rand() * bodyH, 5 + rand() * 6, 'rgba(255,255,255,0.8)');
+      }
+      ctx.restore();
+    }
     ctx.lineWidth = 3;
-    ctx.strokeStyle = ink;
+    ctx.strokeStyle = T ? T.accent : ink;
+    roundRectPath(ctx, bodyX, bodyY, bodyW, bodyH, 22);
     ctx.stroke();
 
     // ---- Name bar ----
     const nameY = 90;
     ctx.textBaseline = 'alphabetic';
     ctx.textAlign = 'left';
-    ctx.fillStyle = ink;
     const dexNo = entry.dexNumber ? '#' + String(entry.dexNumber).padStart(4, '0') : '';
     ctx.font = '800 26px "JetBrains Mono"';
     const dexW = dexNo ? ctx.measureText(dexNo).width : 0;
     fitFont(ctx, capitalizeName(entry.name), 800, '"Baloo 2"', 46, bodyW - 60 - dexW - 30, 24);
+    if(T){
+      // Metallic name with a dark outline, so it pops off the starfield.
+      ctx.lineJoin = 'round';
+      ctx.lineWidth = 7;
+      ctx.strokeStyle = ink;
+      ctx.strokeText(capitalizeName(entry.name), 56, nameY);
+      ctx.fillStyle = metalGradient(56, nameY - 40, 56, nameY + 4);
+    } else {
+      ctx.fillStyle = ink;
+    }
     ctx.fillText(capitalizeName(entry.name), 56, nameY);
     if(dexNo){
       ctx.textAlign = 'right';
       ctx.font = '800 26px "JetBrains Mono"';
+      ctx.fillStyle = T ? T.accent : ink;
       ctx.fillText(dexNo, W - 56, nameY);
     }
 
     // Subline: form + shiny type
     ctx.textAlign = 'left';
     ctx.font = '700 17px "Baloo 2"';
-    ctx.fillStyle = shadeHex(primary, -0.55);
-    const formLabel = entry.form ? (regionalFormLabel(entry.form) || '') + ' form  ·  ' : '';
+    ctx.fillStyle = T ? 'rgba(255,255,255,0.85)' : shadeHex(primary, -0.55);
+    const formLabel = entry.mega
+      ? (megaShortLabel(entry.mega) || 'Mega') + '  ·  '
+      : entry.form ? (formDisplayLabel(entry.form, pokeApiSlug(entry.name)) || '') + ' form  ·  ' : '';
     ctx.fillText((formLabel + (entry.square ? 'SQUARE SHINY' : 'SHINY')).toUpperCase(), 58, nameY + 28);
+
+    // Tier badge (legendary / mythical), right-aligned under the dex number.
+    if(T){
+      ctx.font = '800 15px "Baloo 2"';
+      const bw = ctx.measureText(T.label).width + 50, bh = 26;
+      const bx = W - 56 - bw, by = nameY + 9;
+      ctx.fillStyle = metalGradient(bx, by, bx + bw, by + bh);
+      roundRectPath(ctx, bx, by, bw, bh, 13);
+      ctx.fill();
+      ctx.lineWidth = 2; ctx.strokeStyle = ink; ctx.stroke();
+      ctx.fillStyle = ink;
+      drawStar(ctx, bx + 16, by + bh / 2, 8, 3.4);
+      ctx.fill();
+      ctx.textAlign = 'center';
+      ctx.fillText(T.label, bx + bw / 2 + 9, by + 19);
+      ctx.textAlign = 'left';
+    }
 
     // ---- Art window ----
     // Layout is solved bottom-up so the art window absorbs any spare
@@ -2250,19 +2824,42 @@
     ctx.fillStyle = ink;
     roundRectPath(ctx, artX - 7, artY - 7, artW + 14, artH + 14, 18);
     ctx.fill();
+    if(T){
+      // Metallic inner rim around the art on premium cards.
+      ctx.fillStyle = metalGradient(artX, artY, artX + artW, artY + artH);
+      roundRectPath(ctx, artX - 4, artY - 4, artW + 8, artH + 8, 15);
+      ctx.fill();
+    }
     ctx.save();
     roundRectPath(ctx, artX, artY, artW, artH, 12);
     ctx.clip();
+    const cx = W / 2, cy = artY + artH / 2;
     const artBg = ctx.createRadialGradient(W / 2, artY + artH / 2, 20, W / 2, artY + artH / 2, artW * 0.75);
     artBg.addColorStop(0, '#ffffff');
     artBg.addColorStop(0.45, shadeHex(primary, 0.6));
     artBg.addColorStop(1, shadeHex(secondary, -0.1));
     ctx.fillStyle = artBg;
     ctx.fillRect(artX, artY, artW, artH);
+    if(T){
+      // Rainbow swirl behind premium art.
+      if(ctx.createConicGradient){
+        const cg = ctx.createConicGradient(-Math.PI / 2, cx, cy);
+        ['#ff6b8b', '#ffb86b', '#fff36b', '#7dff8a', '#6bf3ff', '#7d8bff', '#d77dff', '#ff6b8b'].forEach((c, i, a) => cg.addColorStop(i / (a.length - 1), c));
+        ctx.globalAlpha = 0.5;
+        ctx.fillStyle = cg;
+        ctx.fillRect(artX, artY, artW, artH);
+      }
+      const halo = ctx.createRadialGradient(cx, cy, 0, cx, cy, Math.min(artW, artH) * 0.55);
+      halo.addColorStop(0, 'rgba(255,255,255,0.95)');
+      halo.addColorStop(0.45, `rgba(${T.glow},0.55)`);
+      halo.addColorStop(1, 'rgba(255,255,255,0)');
+      ctx.globalAlpha = 1;
+      ctx.fillStyle = halo;
+      ctx.fillRect(artX, artY, artW, artH);
+    }
     // Radiating holo rays behind the sprite.
-    ctx.globalAlpha = 0.18;
+    ctx.globalAlpha = T ? 0.26 : 0.18;
     ctx.fillStyle = '#ffffff';
-    const cx = W / 2, cy = artY + artH / 2;
     for(let i = 0; i < 18; i++){
       const a0 = (i / 18) * Math.PI * 2, a1 = a0 + Math.PI / 36;
       ctx.beginPath();
@@ -2273,6 +2870,7 @@
     }
     ctx.globalAlpha = 1;
     // Sprite
+    let spriteRect = null;
     if(img){
       ctx.imageSmoothingEnabled = false;
       const b = spriteBounds(img);
@@ -2288,9 +2886,10 @@
       ctx.ellipse(cx, cy + dh / 2 + 6, dw * 0.35, 12, 0, 0, Math.PI * 2);
       ctx.fill();
       ctx.restore();
-      ctx.drawImage(img, b.sx, b.sy, b.sw, b.sh, cx - dw / 2, cy - dh / 2, dw, dh);
+      if(drawSprite) ctx.drawImage(img, b.sx, b.sy, b.sw, b.sh, cx - dw / 2, cy - dh / 2, dw, dh);
       ctx.imageSmoothingEnabled = true;
-    } else {
+      spriteRect = { x: cx - dw / 2, y: cy - dh / 2, scale, cropX: b.sx, cropY: b.sy, imgW: img.width, imgH: img.height };
+    } else if(drawSprite){
       ctx.fillStyle = muted;
       ctx.textAlign = 'center';
       ctx.font = '600 18px "Baloo 2"';
@@ -2298,6 +2897,9 @@
     }
     // Sparkles
     const glints = [[0.12,0.18,22],[0.86,0.14,16],[0.9,0.72,24],[0.08,0.8,14],[0.22,0.55,10],[0.76,0.4,11],[0.5,0.1,9]];
+    if(T){
+      for(let i = 0; i < 12; i++) glints.push([0.04 + rand() * 0.92, 0.04 + rand() * 0.92, 6 + rand() * 12]);
+    }
     glints.forEach(([gx, gy, r]) => {
       drawSparkle(ctx, artX + gx * artW, artY + gy * artH, r + 4, 'rgba(255,255,255,0.55)');
       drawSparkle(ctx, artX + gx * artW, artY + gy * artH, r, '#ffffff');
@@ -2306,10 +2908,11 @@
 
     // ---- Info ribbon under the art ----
     const ribbonY = ribbonTopY;
-    ctx.fillStyle = shadeHex(primary, -0.45);
+    ctx.fillStyle = T ? 'rgba(0,0,0,0.55)' : shadeHex(primary, -0.45);
     roundRectPath(ctx, artX + 30, ribbonY, artW - 60, 34, 17);
     ctx.fill();
-    ctx.fillStyle = '#ffffff';
+    if(T){ ctx.lineWidth = 2; ctx.strokeStyle = T.accent; ctx.stroke(); }
+    ctx.fillStyle = T ? T.accent : '#ffffff';
     ctx.textAlign = 'center';
     ctx.font = 'italic 600 16px "Baloo 2"';
     const oddsText = entry.oddsMethod ? `Odds 1/${entry.oddsMethod}` : 'Shiny Hunt';
@@ -2338,7 +2941,7 @@
     ctx.fillStyle = cream;
     roundRectPath(ctx, panelX, panelY, panelW, panelH, 14);
     ctx.fill();
-    ctx.lineWidth = 3; ctx.strokeStyle = ink; ctx.stroke();
+    ctx.lineWidth = 3; ctx.strokeStyle = T ? T.accent : ink; ctx.stroke();
 
     const cols = [
       { label: 'ENCOUNTERS', value: String(entry.count || 0).padStart(4, '0'), mono: true, color: '#B23A2E' },
@@ -2368,11 +2971,11 @@
     ctx.fillText(`Hunt: ${entry.startDate || '—'}  →  ${entry.foundDate || '—'}`, W / 2, panelY + 134);
 
     // ---- Flavor text (the hunt's notes), or a default line ----
-    ctx.fillStyle = 'rgba(255,255,255,0.45)';
+    ctx.fillStyle = T ? 'rgba(255,255,255,0.1)' : 'rgba(255,255,255,0.45)';
     roundRectPath(ctx, artX, flavorTop, artW, flavorBottom - flavorTop, 12);
     ctx.fill();
-    ctx.lineWidth = 2; ctx.strokeStyle = 'rgba(27,27,27,0.35)'; ctx.stroke();
-    ctx.fillStyle = shadeHex(primary, -0.65);
+    ctx.lineWidth = 2; ctx.strokeStyle = T ? `rgba(${T.glow},0.6)` : 'rgba(27,27,27,0.35)'; ctx.stroke();
+    ctx.fillStyle = T ? 'rgba(255,255,255,0.92)' : shadeHex(primary, -0.65);
     ctx.font = 'italic 600 18px "Baloo 2"';
     const flavor = entry.notes
       ? `“${entry.notes}”`
@@ -2391,10 +2994,10 @@
     const pad3 = n => String(n).padStart(3, '0');
     const collector = `${pad3(idx >= 0 ? idx + 1 : foundList.length)}/${pad3(foundList.length)}`;
 
-    ctx.fillStyle = ink;
+    ctx.fillStyle = T ? '#ffffff' : ink;
     ctx.textAlign = 'left';
     ctx.font = '800 15px "Baloo 2"';
-    ctx.fillText('SHINY HUNT COUNTER', 56, footY);
+    ctx.fillText("MOON'S SHINY COUNTER", 56, footY);
     ctx.textAlign = 'right';
     ctx.font = '800 16px "JetBrains Mono"';
     ctx.fillText(collector, W - 56, footY);
@@ -2404,7 +3007,12 @@
     ctx.beginPath();
     ctx.arc(W / 2, footY - 7, 19, 0, Math.PI * 2);
     ctx.fill();
-    ctx.fillStyle = gold;
+    if(T){
+      ctx.lineWidth = 3;
+      ctx.strokeStyle = metalGradient(W / 2 - 20, footY - 27, W / 2 + 20, footY + 13);
+      ctx.stroke();
+    }
+    ctx.fillStyle = T ? T.accent : gold;
     if(entry.square){
       roundRectPath(ctx, W / 2 - 9, footY - 16, 18, 18, 2);
     } else {
@@ -2412,13 +3020,731 @@
     }
     ctx.fill();
 
-    const dataUrl = canvas.toDataURL('image/png');
+    return {
+      canvas,
+      tier,
+      layout: { W, H, art: { x: artX, y: artY, w: artW, h: artH }, sprite: spriteRect }
+    };
+  }
+
+  // ---- Animated card GIF ----
+  // Browsers can decode GIFs for display but can't hand back their
+  // frames or write new GIFs, so this is a small self-contained GIF
+  // decoder + encoder. It reads the sprite's own frames, places each one
+  // on the card exactly where the viewer shows it, and writes a looping
+  // GIF. Only the sprite area changes between frames (unchanged pixels
+  // are left transparent), which keeps the file size down.
+
+  function gifInterlaceRows(h){
+    const rows = [];
+    [[0, 8], [4, 8], [2, 4], [1, 2]].forEach(([start, step]) => {
+      for(let r = start; r < h; r += step) rows.push(r);
+    });
+    return rows;
+  }
+
+  function gifLzwDecode(minCodeSize, data, pixelCount){
+    const out = new Uint8Array(pixelCount);
+    const clear = 1 << minCodeSize, eoi = clear + 1;
+    const prefix = new Int16Array(4096), suffix = new Uint8Array(4096), stack = new Uint8Array(4097);
+    for(let c = 0; c < clear; c++){ prefix[c] = -1; suffix[c] = c; }
+    let codeSize = minCodeSize + 1, codeMask = (1 << codeSize) - 1;
+    let next = eoi + 1, old = -1, first = 0, outPos = 0, datum = 0, bits = 0, i = 0;
+    while(outPos < pixelCount){
+      while(bits < codeSize){
+        if(i >= data.length) return out;
+        datum |= data[i++] << bits;
+        bits += 8;
+      }
+      let code = datum & codeMask;
+      datum >>>= codeSize;
+      bits -= codeSize;
+      if(code === clear){
+        codeSize = minCodeSize + 1; codeMask = (1 << codeSize) - 1;
+        next = eoi + 1; old = -1;
+        continue;
+      }
+      if(code === eoi) break;
+      if(old === -1){
+        out[outPos++] = suffix[code];
+        old = code; first = suffix[code];
+        continue;
+      }
+      const inCode = code;
+      let sp = 0;
+      if(code >= next){ stack[sp++] = first; code = old; }
+      while(code >= clear){ stack[sp++] = suffix[code]; code = prefix[code]; }
+      first = suffix[code];
+      stack[sp++] = first;
+      if(next < 4096){
+        prefix[next] = old; suffix[next] = first; next++;
+        if(next > codeMask && codeSize < 12){ codeSize++; codeMask = (1 << codeSize) - 1; }
+      }
+      while(sp > 0 && outPos < pixelCount) out[outPos++] = stack[--sp];
+      old = inCode;
+    }
+    return out;
+  }
+
+  // Returns { width, height, frames: [{ pixels: RGBA Uint8ClampedArray, delay }] }
+  // with every frame fully composited (disposal methods applied).
+  function decodeGif(buffer){
+    const u8 = new Uint8Array(buffer);
+    const sig = String.fromCharCode(...u8.subarray(0, 6));
+    if(sig !== 'GIF87a' && sig !== 'GIF89a') throw new Error('not a GIF');
+    let pos = 6;
+    const byte = () => u8[pos++];
+    const u16 = () => { const v = u8[pos] | (u8[pos + 1] << 8); pos += 2; return v; };
+    const width = u16(), height = u16();
+    const packed = byte(); byte(); byte();
+    let globalCT = null;
+    if(packed & 0x80){ const size = 3 * (1 << ((packed & 7) + 1)); globalCT = u8.subarray(pos, pos + size); pos += size; }
+    const readSubBlocks = () => {
+      const chunks = []; let total = 0;
+      for(;;){ const n = byte(); if(!n || pos > u8.length) break; chunks.push(u8.subarray(pos, pos + n)); total += n; pos += n; }
+      const out = new Uint8Array(total); let o = 0;
+      chunks.forEach(c => { out.set(c, o); o += c.length; });
+      return out;
+    };
+    const canvasPx = new Uint8ClampedArray(width * height * 4);
+    const frames = [];
+    let gce = { delay: 10, disposal: 0, trans: -1 };
+    while(pos < u8.length){
+      const block = byte();
+      if(block === 0x3B) break;
+      if(block === 0x21){
+        const label = byte();
+        if(label === 0xF9){
+          byte();
+          const p = byte(), delay = u16(), ti = byte();
+          byte();
+          gce = { delay, disposal: (p >> 2) & 7, trans: (p & 1) ? ti : -1 };
+        } else {
+          readSubBlocks();
+        }
+      } else if(block === 0x2C){
+        const fx = u16(), fy = u16(), fw = u16(), fh = u16();
+        const ip = byte();
+        let ct = globalCT;
+        if(ip & 0x80){ const size = 3 * (1 << ((ip & 7) + 1)); ct = u8.subarray(pos, pos + size); pos += size; }
+        const minCode = byte();
+        const indices = gifLzwDecode(minCode, readSubBlocks(), fw * fh);
+        const saved = gce.disposal === 3 ? canvasPx.slice() : null;
+        const rows = (ip & 0x40) ? gifInterlaceRows(fh) : null;
+        if(ct){
+          for(let r = 0; r < fh; r++){
+            const y = fy + (rows ? rows[r] : r);
+            if(y >= height) continue;
+            for(let x = 0; x < fw; x++){
+              const px = fx + x;
+              if(px >= width) continue;
+              const idx = indices[r * fw + x];
+              if(idx === gce.trans) continue;
+              const o = (y * width + px) * 4, c = idx * 3;
+              canvasPx[o] = ct[c]; canvasPx[o + 1] = ct[c + 1]; canvasPx[o + 2] = ct[c + 2]; canvasPx[o + 3] = 255;
+            }
+          }
+        }
+        frames.push({ pixels: canvasPx.slice(), delay: gce.delay });
+        if(gce.disposal === 2){
+          for(let y = fy; y < Math.min(fy + fh, height); y++){
+            for(let x = fx; x < Math.min(fx + fw, width); x++){
+              const o = (y * width + x) * 4;
+              canvasPx[o] = canvasPx[o + 1] = canvasPx[o + 2] = canvasPx[o + 3] = 0;
+            }
+          }
+        } else if(saved){
+          canvasPx.set(saved);
+        }
+        gce = { delay: 10, disposal: 0, trans: -1 };
+      } else {
+        break;
+      }
+    }
+    if(!frames.length) throw new Error('GIF has no frames');
+    return { width, height, frames };
+  }
+
+  function makeByteWriter(){
+    let buf = new Uint8Array(1 << 20), len = 0;
+    const ensure = n => {
+      if(len + n <= buf.length) return;
+      const nb = new Uint8Array(Math.max(buf.length * 2, len + n));
+      nb.set(buf.subarray(0, len));
+      buf = nb;
+    };
+    return {
+      byte(v){ ensure(1); buf[len++] = v; },
+      u16(v){ ensure(2); buf[len++] = v & 255; buf[len++] = (v >> 8) & 255; },
+      bytes(a){ ensure(a.length); buf.set(a, len); len += a.length; },
+      str(t){ for(let i = 0; i < t.length; i++) this.byte(t.charCodeAt(i)); },
+      result(){ return buf.slice(0, len); }
+    };
+  }
+
+  function gifLzwEncode(w, indices, minCodeSize){
+    w.byte(minCodeSize);
+    const clear = 1 << minCodeSize, eoi = clear + 1;
+    let codeSize = minCodeSize + 1, next = eoi + 1;
+    let dict = new Map();
+    let cur = 0, curBits = 0;
+    const block = new Uint8Array(255);
+    let blockLen = 0;
+    const pushByte = v => {
+      block[blockLen++] = v;
+      if(blockLen === 255){ w.byte(255); w.bytes(block); blockLen = 0; }
+    };
+    const emit = code => {
+      cur |= code << curBits;
+      curBits += codeSize;
+      while(curBits >= 8){ pushByte(cur & 255); cur >>>= 8; curBits -= 8; }
+    };
+    emit(clear);
+    let prefix = indices[0];
+    for(let i = 1; i < indices.length; i++){
+      const k = indices[i];
+      const key = (prefix << 8) | k;
+      const found = dict.get(key);
+      if(found !== undefined){ prefix = found; continue; }
+      emit(prefix);
+      if(next === 4096){
+        emit(clear);
+        next = eoi + 1; codeSize = minCodeSize + 1; dict = new Map();
+      } else {
+        if(next >= (1 << codeSize)) codeSize++;
+        dict.set(key, next++);
+      }
+      prefix = k;
+    }
+    emit(prefix);
+    emit(eoi);
+    if(curBits > 0) pushByte(cur & 255);
+    if(blockLen){ w.byte(blockLen); w.bytes(block.subarray(0, blockLen)); }
+    w.byte(0);
+  }
+
+  // Median-cut color reduction over packed 0xRRGGBB samples.
+  function medianCutPalette(samples, count){
+    if(!samples.length || count <= 0) return [];
+    const describe = px => {
+      let rmin = 255, rmax = 0, gmin = 255, gmax = 0, bmin = 255, bmax = 0;
+      for(let i = 0; i < px.length; i++){
+        const c = px[i], r = (c >> 16) & 255, g = (c >> 8) & 255, b = c & 255;
+        if(r < rmin) rmin = r; if(r > rmax) rmax = r;
+        if(g < gmin) gmin = g; if(g > gmax) gmax = g;
+        if(b < bmin) bmin = b; if(b > bmax) bmax = b;
+      }
+      const rr = rmax - rmin, gr = gmax - gmin, br = bmax - bmin;
+      const span = Math.max(rr, gr, br);
+      return { px, span, shift: span === rr ? 16 : span === gr ? 8 : 0 };
+    };
+    const boxes = [describe(samples)];
+    while(boxes.length < count){
+      let best = -1, bestScore = 0;
+      boxes.forEach((b, i) => {
+        if(b.px.length < 2) return;
+        const score = b.span * Math.sqrt(b.px.length);
+        if(score > bestScore){ bestScore = score; best = i; }
+      });
+      if(best < 0) break;
+      const b = boxes[best], sh = b.shift;
+      const sorted = b.px.slice().sort((x, y) => ((x >> sh) & 255) - ((y >> sh) & 255));
+      const mid = sorted.length >> 1;
+      boxes.splice(best, 1, describe(sorted.subarray(0, mid)), describe(sorted.subarray(mid)));
+    }
+    return boxes.map(b => {
+      let r = 0, g = 0, bl = 0;
+      for(let i = 0; i < b.px.length; i++){ const c = b.px[i]; r += (c >> 16) & 255; g += (c >> 8) & 255; bl += c & 255; }
+      const n = b.px.length;
+      return [Math.round(r / n), Math.round(g / n), Math.round(bl / n)];
+    });
+  }
+
+  const GIF_BAYER = [0, 8, 2, 10, 12, 4, 14, 6, 3, 11, 1, 9, 15, 7, 13, 5].map(m => (m - 7.5) * 1.1);
+
+  // Builds the animated card: `bgCanvas` is the card rendered without its
+  // sprite, `sp`/`art` say where the sprite goes, `gifBuffer` is the
+  // sprite GIF's bytes. Returns a Blob. onProgress(0..1) is called as it
+  // works, and it yields between frames so the page stays responsive.
+  async function buildAnimatedCardGif(bgCanvas, sp, art, gifBuffer, onProgress){
+    const gif = decodeGif(gifBuffer);
+    const W = bgCanvas.width, H = bgCanvas.height;
+    const tick = () => new Promise(r => setTimeout(r, 0));
+
+    // Palette: exact sprite colors first (so the Pokemon keeps its real
+    // colors), then the rest from a median cut of the card background.
+    const freq = new Map();
+    gif.frames.forEach((f, fi) => {
+      if(fi % 2 && gif.frames.length > 20) return;
+      const px = f.pixels;
+      for(let i = 0; i < px.length; i += 4){
+        if(px[i + 3] < 128) continue;
+        const c = (px[i] << 16) | (px[i + 1] << 8) | px[i + 2];
+        freq.set(c, (freq.get(c) || 0) + 1);
+      }
+    });
+    const spriteColors = [...freq.entries()].sort((a, b) => b[1] - a[1]).slice(0, 96).map(e => e[0]);
+
+    const bgCtx = bgCanvas.getContext('2d');
+    const bgData = bgCtx.getImageData(0, 0, W, H).data;
+    const step = 5;
+    const samples = new Uint32Array(Math.ceil(bgData.length / 4 / step));
+    let si = 0;
+    for(let i = 0; i < bgData.length; i += 4 * step) samples[si++] = (bgData[i] << 16) | (bgData[i + 1] << 8) | bgData[i + 2];
+    const bgPalette = medianCutPalette(samples.subarray(0, si), 255 - spriteColors.length);
+
+    const palette = spriteColors.map(c => [(c >> 16) & 255, (c >> 8) & 255, c & 255]).concat(bgPalette);
+    while(palette.length < 255) palette.push([0, 0, 0]);
+    const TRANSPARENT = 255;
+    const pr = palette.map(c => c[0]), pg = palette.map(c => c[1]), pb = palette.map(c => c[2]);
+    const exact = new Map();
+    spriteColors.forEach((c, i) => exact.set(c, i));
+    const cache = new Int16Array(1 << 18).fill(-1);
+    const nearest = (r, g, b) => {
+      let best = 0, bestD = Infinity;
+      for(let i = 0; i < 255; i++){
+        const dr = r - pr[i], dg = g - pg[i], db = b - pb[i];
+        const d = 2 * dr * dr + 4 * dg * dg + 3 * db * db;
+        if(d < bestD){ bestD = d; best = i; }
+      }
+      return best;
+    };
+    const quantize = (data, w, h, ox, oy) => {
+      const out = new Uint8Array(w * h);
+      for(let y = 0; y < h; y++){
+        for(let x = 0; x < w; x++){
+          const i = y * w + x, o = i * 4;
+          let r = data[o], g = data[o + 1], b = data[o + 2];
+          const ex = exact.get((r << 16) | (g << 8) | b);
+          if(ex !== undefined){ out[i] = ex; continue; }
+          const d = GIF_BAYER[((oy + y) & 3) * 4 + ((ox + x) & 3)];
+          r = Math.min(255, Math.max(0, r + d)) | 0;
+          g = Math.min(255, Math.max(0, g + d)) | 0;
+          b = Math.min(255, Math.max(0, b + d)) | 0;
+          const key = ((r >> 2) << 12) | ((g >> 2) << 6) | (b >> 2);
+          let idx = cache[key];
+          if(idx < 0){ idx = nearest(r, g, b); cache[key] = idx; }
+          out[i] = idx;
+        }
+      }
+      return out;
+    };
+
+    // Where each frame lands on the card, clipped to the art window.
+    const dx = sp.x - sp.cropX * sp.scale, dy = sp.y - sp.cropY * sp.scale;
+    const dw = gif.width * sp.scale, dh = gif.height * sp.scale;
+    const rx = Math.max(Math.floor(dx), art.x), ry = Math.max(Math.floor(dy), art.y);
+    const rw = Math.min(Math.ceil(dx + dw), art.x + art.w) - rx;
+    const rh = Math.min(Math.ceil(dy + dh), art.y + art.h) - ry;
+    if(rw <= 0 || rh <= 0) throw new Error('sprite is outside the art window');
+
+    const work = document.createElement('canvas');
+    work.width = W; work.height = H;
+    const wctx = work.getContext('2d');
+    const frameCanvas = document.createElement('canvas');
+    frameCanvas.width = gif.width; frameCanvas.height = gif.height;
+    const fctx = frameCanvas.getContext('2d');
+    wctx.drawImage(bgCanvas, 0, 0);
+
+    const out = makeByteWriter();
+    out.str('GIF89a');
+    out.u16(W); out.u16(H);
+    out.byte(0xF7); out.byte(0); out.byte(0);
+    for(let i = 0; i < 256; i++){
+      const c = palette[i] || [255, 0, 255];
+      out.byte(c[0]); out.byte(c[1]); out.byte(c[2]);
+    }
+    out.byte(0x21); out.byte(0xFF); out.byte(11); out.str('NETSCAPE2.0');
+    out.byte(3); out.byte(1); out.u16(0); out.byte(0);
+
+    const prev = new Uint8Array(W * H);
+    for(let fi = 0; fi < gif.frames.length; fi++){
+      const f = gif.frames[fi];
+      fctx.putImageData(new ImageData(f.pixels, gif.width, gif.height), 0, 0);
+      wctx.drawImage(bgCanvas, rx, ry, rw, rh, rx, ry, rw, rh);
+      wctx.save();
+      roundRectPath(wctx, art.x, art.y, art.w, art.h, 12);
+      wctx.clip();
+      wctx.imageSmoothingEnabled = false;
+      wctx.drawImage(frameCanvas, 0, 0, gif.width, gif.height, dx, dy, dw, dh);
+      wctx.restore();
+
+      const delay = f.delay < 2 ? 10 : f.delay;
+      let fx, fy, fw, fh, indices, useTransparency;
+      if(fi === 0){
+        fx = 0; fy = 0; fw = W; fh = H;
+        indices = quantize(wctx.getImageData(0, 0, W, H).data, W, H, 0, 0);
+        prev.set(indices);
+        useTransparency = false;
+      } else {
+        fx = rx; fy = ry; fw = rw; fh = rh;
+        indices = quantize(wctx.getImageData(rx, ry, rw, rh).data, rw, rh, rx, ry);
+        for(let y = 0; y < rh; y++){
+          for(let x = 0; x < rw; x++){
+            const i = y * rw + x, pi = (ry + y) * W + rx + x;
+            if(indices[i] === prev[pi]) indices[i] = TRANSPARENT;
+            else prev[pi] = indices[i];
+          }
+        }
+        useTransparency = true;
+      }
+      out.byte(0x21); out.byte(0xF9); out.byte(4);
+      out.byte((1 << 2) | (useTransparency ? 1 : 0));
+      out.u16(delay);
+      out.byte(useTransparency ? TRANSPARENT : 0);
+      out.byte(0);
+      out.byte(0x2C); out.u16(fx); out.u16(fy); out.u16(fw); out.u16(fh); out.byte(0);
+      gifLzwEncode(out, indices, 8);
+
+      if(onProgress) onProgress((fi + 1) / gif.frames.length);
+      await tick();
+    }
+    out.byte(0x3B);
+    return new Blob([out.result()], { type: 'image/gif' });
+  }
+
+  function huntCardFileName(entry, ext){
+    return `${(entry.name || 'shiny').toLowerCase().replace(/[^a-z0-9-]+/g, '-')}-shiny-card.${ext || 'png'}`;
+  }
+
+  function downloadHuntCard(entry, dataUrl){
     const a = document.createElement('a');
     a.href = dataUrl;
-    a.download = `${(entry.name || 'shiny').toLowerCase()}-shiny-card.png`;
+    a.download = huntCardFileName(entry, 'png');
     document.body.appendChild(a);
     a.click();
     a.remove();
+  }
+
+  // Shows the finished card in a full-screen viewer with a rainbow foil
+  // that follows the mouse (or a dragging finger): the card tilts toward
+  // the pointer, and the rainbow and glare slide across the foil border
+  // and art window. Legendary and mythical cards also get foil over the
+  // whole card, a moving glitter layer and a colored glow. The PNG itself
+  // is a flat image; the moving foil only exists in this viewer.
+  //
+  // `live` (optional) is { result, src }: a render of the same card with
+  // the sprite left off, plus the sprite's own URL. When given, the card
+  // shows that render with the real animated GIF placed exactly where the
+  // still sprite sits in the PNG, so it keeps moving in the viewer. The
+  // download is always the full PNG with the still sprite.
+  function openCardViewer(entry, result, live){
+    const { canvas, tier, layout } = result;
+    const dataUrl = canvas.toDataURL('image/png');
+    const pct = (v, total) => (v / total * 100).toFixed(3) + '%';
+    const a = layout.art;
+
+    let displayUrl = dataUrl;
+    let liveSpriteHtml = '';
+    if(live && live.src && live.result){
+      displayUrl = live.result.canvas.toDataURL('image/png');
+      const sp = live.result.layout.sprite;
+      // Position the GIF inside a box matching the art window. With a
+      // known crop/scale, line it up pixel-for-pixel with the still
+      // sprite; otherwise (the canvas couldn't read the image) center it.
+      const imgStyle = sp
+        ? `left:${pct(sp.x - sp.cropX * sp.scale - a.x, a.w)};top:${pct(sp.y - sp.cropY * sp.scale - a.y, a.h)};` +
+          `width:${pct(sp.imgW * sp.scale, a.w)};height:${pct(sp.imgH * sp.scale, a.h)};`
+        : 'left:11%;top:10%;width:78%;height:80%;object-fit:contain;';
+      liveSpriteHtml = `
+        <div class="holo-live-sprite" style="left:${pct(a.x, layout.W)};top:${pct(a.y, layout.H)};width:${pct(a.w, layout.W)};height:${pct(a.h, layout.H)};">
+          <img alt="" src="${escapeHtml(live.src)}" style="${imgStyle}">
+        </div>`;
+    }
+
+    const overlay = document.createElement('div');
+    overlay.className = 'modal-overlay card-viewer-overlay';
+    overlay.innerHTML = `
+      <div class="card-viewer">
+        <div class="holo-card${tier ? ' premium ' + tier : ''}">
+          <img class="holo-card-img" alt="${escapeHtml(capitalizeName(entry.name))} shiny card" src="${displayUrl}">
+          ${liveSpriteHtml}
+          <div class="holo-layer holo-border"></div>
+          <div class="holo-layer holo-art" style="left:${pct(a.x, layout.W)};top:${pct(a.y, layout.H)};width:${pct(a.w, layout.W)};height:${pct(a.h, layout.H)};"></div>
+          ${tier ? '<div class="holo-layer holo-full"></div><div class="holo-sparkle"></div>' : ''}
+          <div class="holo-glare"></div>
+        </div>
+        <div class="card-viewer-hint">Move your mouse over the card, or drag it with your finger</div>
+        <div class="modal-actions card-viewer-actions"></div>
+      </div>
+    `;
+    const card = overlay.querySelector('.holo-card');
+    const actions = overlay.querySelector('.card-viewer-actions');
+    // If the live GIF can't load, fall back to the full card image.
+    const liveImg = overlay.querySelector('.holo-live-sprite img');
+    if(liveImg){
+      liveImg.addEventListener('error', () => {
+        overlay.querySelector('.holo-card-img').src = dataUrl;
+        liveImg.parentElement.remove();
+      });
+    }
+    const reduceMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+    function setVars(px, py, on){
+      card.style.setProperty('--mx', (px * 100).toFixed(2) + '%');
+      card.style.setProperty('--my', (py * 100).toFixed(2) + '%');
+      card.style.setProperty('--sx', ((0.5 - px) * 60).toFixed(1) + 'px');
+      card.style.setProperty('--sy', ((0.5 - py) * 60).toFixed(1) + 'px');
+      card.style.setProperty('--o', on ? '1' : '0');
+      if(!reduceMotion){
+        card.style.setProperty('--rx', on ? ((0.5 - py) * 18).toFixed(2) + 'deg' : '0deg');
+        card.style.setProperty('--ry', on ? ((px - 0.5) * 22).toFixed(2) + 'deg' : '0deg');
+      }
+    }
+    function onMove(e){
+      const r = card.getBoundingClientRect();
+      const px = Math.min(1, Math.max(0, (e.clientX - r.left) / r.width));
+      const py = Math.min(1, Math.max(0, (e.clientY - r.top) / r.height));
+      card.classList.add('active');
+      setVars(px, py, true);
+    }
+    function onLeave(){
+      card.classList.remove('active');
+      setVars(0.5, 0.5, false);
+    }
+    card.addEventListener('pointermove', onMove);
+    card.addEventListener('pointerdown', e => {
+      if(e.pointerType !== 'mouse'){ try{ card.setPointerCapture(e.pointerId); }catch(err){} }
+      onMove(e);
+    });
+    card.addEventListener('pointerleave', onLeave);
+    card.addEventListener('pointercancel', onLeave);
+    card.addEventListener('pointerup', e => { if(e.pointerType !== 'mouse') onLeave(); });
+
+    function close(){
+      document.removeEventListener('keydown', onKey, true);
+      overlay.remove();
+    }
+    function onKey(e){
+      if(e.key === 'Escape'){ e.preventDefault(); e.stopPropagation(); close(); }
+    }
+    document.addEventListener('keydown', onKey, true);
+    overlay.addEventListener('click', e => { if(e.target === overlay) close(); });
+
+    const downloadBtn = document.createElement('button');
+    downloadBtn.type = 'button';
+    downloadBtn.className = 'primary';
+    downloadBtn.textContent = 'Download PNG';
+    downloadBtn.addEventListener('click', () => downloadHuntCard(entry, dataUrl));
+    actions.appendChild(downloadBtn);
+
+    // Animated sprites can also be saved as a moving card.
+    const hint = overlay.querySelector('.card-viewer-hint');
+    if(live && live.animated && live.result && live.result.layout.sprite){
+      const gifBtn = document.createElement('button');
+      gifBtn.type = 'button';
+      gifBtn.className = 'primary';
+      gifBtn.textContent = 'Download GIF';
+      let busy = false;
+      gifBtn.addEventListener('click', async () => {
+        if(busy) return;
+        busy = true;
+        gifBtn.disabled = true;
+        const hintText = hint.textContent;
+        try{
+          gifBtn.textContent = 'Making GIF… 0%';
+          const res = await fetch(live.src);
+          if(!res.ok) throw new Error('sprite download failed');
+          const buffer = await res.arrayBuffer();
+          const blob = await buildAnimatedCardGif(
+            live.result.canvas, live.result.layout.sprite, live.result.layout.art, buffer,
+            p => { gifBtn.textContent = `Making GIF… ${Math.round(p * 100)}%`; }
+          );
+          const url = URL.createObjectURL(blob);
+          const a = document.createElement('a');
+          a.href = url;
+          a.download = huntCardFileName(entry, 'gif');
+          document.body.appendChild(a);
+          a.click();
+          a.remove();
+          setTimeout(() => URL.revokeObjectURL(url), 5000);
+          hint.textContent = hintText;
+        }catch(e){
+          hint.textContent = "Couldn't make the GIF — this sprite's image may not allow it. The PNG still works.";
+        }
+        gifBtn.textContent = 'Download GIF';
+        gifBtn.disabled = false;
+        busy = false;
+      });
+      actions.appendChild(gifBtn);
+    }
+
+    const closeBtn = document.createElement('button');
+    closeBtn.type = 'button';
+    closeBtn.className = 'ghost';
+    closeBtn.textContent = 'Close';
+    closeBtn.addEventListener('click', close);
+    actions.appendChild(closeBtn);
+
+    // On phones, offer the system share sheet when it can take image files.
+    if(navigator.canShare && navigator.share){
+      canvas.toBlob(blob => {
+        if(!blob) return;
+        const file = new File([blob], huntCardFileName(entry, 'png'), { type: 'image/png' });
+        if(!navigator.canShare({ files: [file] })) return;
+        const shareBtn = document.createElement('button');
+        shareBtn.type = 'button';
+        shareBtn.className = 'ghost';
+        shareBtn.textContent = 'Share…';
+        shareBtn.addEventListener('click', () => {
+          navigator.share({ files: [file], title: `${capitalizeName(entry.name)} shiny card` }).catch(() => {});
+        });
+        actions.insertBefore(shareBtn, closeBtn);
+      }, 'image/png');
+    }
+
+    document.body.appendChild(overlay);
+    setVars(0.5, 0.5, false);
+  }
+
+  // Adds left/right arrows beside the info popup's Pokétch that flip
+  // through every form of the species PokeAPI knows (base, regional and
+  // alternate forms, Megas, Gigantamax), with a caption naming each one.
+  // Starts on the hunt's own sprite (a custom upload included); other
+  // forms' shiny sprites are fetched the first time they're shown.
+  const formSpriteCache = new Map();
+  const spriteAvailabilityCache = new Map();
+  function setupInfoSpriteBrowser(spriteWrap, box, entry, dexNumberFallback, spriteSrc){
+    const img = spriteWrap.querySelector('.info-sprite');
+    const chevron = d => `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="${d}"></polyline></svg>`;
+    const LEFT = '15 5 8 12 15 19', RIGHT = '9 5 16 12 9 19';
+    const makeBtn = (cls, title, pts) => {
+      const b = document.createElement('button');
+      b.type = 'button'; b.className = cls; b.title = title; b.innerHTML = chevron(pts);
+      return b;
+    };
+    // Two matching switchers under the Pokétch: the form (‹ Mega Charizard X ›,
+    // only for Pokemon with more than one) and the sprite style (‹ 3D model ›).
+    const makeSwitch = (what) => {
+      const row = document.createElement('div');
+      row.className = 'info-switch';
+      const prev = makeBtn('info-switch-nav', `Previous ${what}`, LEFT);
+      const next = makeBtn('info-switch-nav', `Next ${what}`, RIGHT);
+      const label = document.createElement('span');
+      label.className = 'info-switch-label';
+      row.append(prev, label, next);
+      return { row, prev, next, label };
+    };
+    const formSw = makeSwitch('form');
+    const styleSw = makeSwitch('sprite style');
+    const switches = document.createElement('div');
+    switches.className = 'info-switches';
+    switches.append(formSw.row, styleSw.row);
+    spriteWrap.insertAdjacentElement('afterend', switches);
+
+    // The hunt's own sprite (upload / pasted GIF), offered on its own form.
+    const ownCustom = entry ? (spriteStyleOf(entry) === 'custom' ? entry.gifUrl : (entry.customSprite || null)) : null;
+    const FALLBACK = { animated: ['animated', '3d', 'pixel'], pixel: ['pixel', 'animated', '3d'], '3d': ['3d', 'animated', 'pixel'], custom: ['custom', 'animated', '3d', 'pixel'] };
+
+    let slides = [{ name: entry ? (entry.mega || entry.form || entry.name) : String(dexNumberFallback), label: '' }];
+    let idx = 0, ownFormName = slides[0].name, token = 0, ready = false;
+    let style = spriteStyleOfUrl(spriteSrc);
+    let styles = [];
+
+    img.addEventListener('load', () => { img.style.visibility = 'visible'; });
+    img.addEventListener('error', () => {
+      // Before anything loads, a broken sprite hides the Pokétch like it
+      // always has; while browsing, just blank the screen for that sprite.
+      if(!ready) spriteWrap.style.display = 'none';
+      else img.style.visibility = 'hidden';
+    });
+
+    function availabilityFor(name){
+      if(!spriteAvailabilityCache.has(name)){
+        spriteAvailabilityCache.set(name, fetchShinySpriteFromPokeAPI(name).then(r => r.available).catch(() => null));
+      }
+      return spriteAvailabilityCache.get(name);
+    }
+    function spriteFor(name, st){
+      const key = `${name}|${st}`;
+      if(!formSpriteCache.has(key)){
+        formSpriteCache.set(key, fetchShinySpriteFromPokeAPI(name, st).then(r => r.sprite || null).catch(() => null));
+      }
+      return formSpriteCache.get(key);
+    }
+
+    // Shows the current form in the current style. keepImage leaves the
+    // picture alone (used on open, when the hunt's own sprite is showing).
+    async function show(keepImage){
+      const myToken = ++token;
+      const s = slides[idx];
+      const isOwn = s.name === ownFormName;
+      const avail = await availabilityFor(s.name);
+      if(myToken !== token || !box.isConnected) return;
+      styles = ['animated', 'pixel', '3d'].filter(k => avail && avail[k]);
+      if(isOwn && ownCustom) styles.push('custom');
+      if(styles.length && !styles.includes(style)){
+        style = (FALLBACK[style] || FALLBACK.animated).find(k => styles.includes(k)) || styles[0];
+      }
+      formSw.label.textContent = `${s.label}  ·  ${idx + 1} / ${slides.length}`;
+      formSw.row.classList.toggle('show', slides.length > 1);
+      styleSw.label.textContent = SPRITE_STYLE_LABELS[style] || '';
+      styleSw.row.classList.toggle('show', styles.length > 1);
+      if(keepImage) return;
+      let url;
+      if(style === 'custom') url = ownCustom;
+      else if(isOwn && entry && spriteStyleOf(entry) === style) url = entry.gifUrl;
+      else {
+        img.style.opacity = '0.35';
+        url = await spriteFor(s.name, style);
+        if(myToken !== token) return;
+        img.style.opacity = '';
+      }
+      if(url) img.src = url;
+      else img.style.visibility = 'hidden';
+    }
+
+    // Remembers, per Pokemon, the form and style last switched to here, so
+    // the popup reopens on it (saved with the profile's settings).
+    const speciesKey = entry ? (entry.dexNumber || pokeApiSlug(entry.name)) : dexNumberFallback;
+    const memKey = String(speciesKey);
+    const remember = () => {
+      if(!settings.infoSpriteView) settings.infoSpriteView = {};
+      settings.infoSpriteView[memKey] = { form: slides[idx].name, style };
+      saveSettings();
+    };
+
+    formSw.prev.addEventListener('click', () => { idx = (idx - 1 + slides.length) % slides.length; show().then(remember); });
+    formSw.next.addEventListener('click', () => { idx = (idx + 1) % slides.length; show().then(remember); });
+    const cycleStyle = delta => {
+      if(styles.length < 2) return;
+      const i = Math.max(0, styles.indexOf(style));
+      style = styles[(i + delta + styles.length) % styles.length];
+      show().then(remember);
+    };
+    styleSw.prev.addEventListener('click', () => cycleStyle(-1));
+    styleSw.next.addEventListener('click', () => cycleStyle(1));
+
+    fetchSpeciesVarieties(speciesKey).then(vars => {
+      if(!box.isConnected) return;
+      const list = vars.filter(v => !/-totem(-|$)/.test(v.name));
+      if(list.length){
+        const speciesSlug = vars.speciesName || pokeApiSlug(entry ? entry.name : '');
+        const speciesTitle = speciesSlug.split('-').map(capitalizeName).join(' ');
+        const def = list.find(v => v.isDefault) || list[0];
+        slides = list.map(v => {
+          let label;
+          if(isMegaName(v.name)) label = megaFullLabel(v.name);
+          else if(isGmaxName(v.name)) label = gmaxFullLabel(v.name, speciesSlug);
+          else if(v === def) label = v.name !== speciesSlug ? `${speciesTitle} (${formDisplayLabel(v.name, speciesSlug)})` : speciesTitle;
+          else label = `${speciesTitle} (${formDisplayLabel(v.name, speciesSlug)})`;
+          return { name: v.name, label };
+        });
+        ownFormName = entry ? (entry.mega || entry.form || def.name) : def.name;
+        idx = Math.max(0, slides.findIndex(s => s.name === ownFormName));
+      }
+      ready = true;
+      const saved = settings.infoSpriteView && settings.infoSpriteView[memKey];
+      const savedIdx = saved ? slides.findIndex(sl => sl.name === saved.form) : -1;
+      if(saved && (savedIdx >= 0 || slides.length === 1)){
+        if(savedIdx >= 0) idx = savedIdx;
+        const changed = slides[idx].name !== ownFormName || saved.style !== style;
+        if(saved.style) style = saved.style;
+        show(!changed);
+      } else {
+        show(true);
+      }
+    });
   }
 
   function openInfoModal(entry, dexNumberFallback){
@@ -2429,7 +3755,7 @@
 
     const spriteBase = 'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon';
     const spriteSrc = entry
-      ? (entry.gifUrl || ((entry.formDexNumber || entry.dexNumber) ? `${spriteBase}/shiny/${entry.formDexNumber || entry.dexNumber}.png` : ''))
+      ? (entry.gifUrl || ((entry.megaDexNumber || entry.formDexNumber || entry.dexNumber) ? `${spriteBase}/shiny/${entry.megaDexNumber || entry.formDexNumber || entry.dexNumber}.png` : ''))
       : `${spriteBase}/shiny/${dexNumberFallback}.png`;
     if(spriteSrc){
       const spriteWrap = document.createElement('div');
@@ -2439,17 +3765,26 @@
         <div class="info-sprite-band band-bottom"></div>
         <div class="info-sprite-case">
           <div class="info-sprite-screen">
-            <img class="info-sprite" src="${spriteSrc}" alt="" onerror="this.closest('.info-sprite-wrap').style.display='none';">
+            <img class="info-sprite" src="${spriteSrc}" alt="">
           </div>
           <div class="info-sprite-btn"></div>
         </div>
       `;
       box.appendChild(spriteWrap);
+      setupInfoSpriteBrowser(spriteWrap, box, entry, dexNumberFallback, spriteSrc);
     }
 
+    // Title row: "Name — Info" on the left, with the Share card button
+    // (completed hunts only, added below) on the right.
+    const titleRow = document.createElement('div');
+    titleRow.className = 'info-title-row';
     const title = document.createElement('p');
-    title.textContent = entry ? `${capitalizeName(entry.name)} — Info` : `#${String(dexNumberFallback).padStart(3,'0')} — Info`;
-    box.appendChild(title);
+    // "#006 Charizard — Info". The number is the National Dex number; for a
+    // Living Dex tile with no hunt yet, the name fills in once it loads.
+    const infoTitle = (num, name) => `${num ? '#' + String(num).padStart(3, '0') + ' ' : ''}${name || ''}`.trim() + ' — Info';
+    title.textContent = entry ? infoTitle(entry.dexNumber, capitalizeName(entry.name)) : infoTitle(dexNumberFallback, '');
+    titleRow.appendChild(title);
+    box.appendChild(titleRow);
 
     if(entry){
       const statsSection = document.createElement('div');
@@ -2497,8 +3832,47 @@
       noteSection.innerHTML = `
         <div class="info-heading">Your hunt</div>
         <div class="info-loading">Not yet in your Pokedex — add it to start tracking encounters.</div>
+        <button type="button" class="primary info-add-hunt">+ Add to my hunts</button>
       `;
       box.appendChild(noteSection);
+      const addHuntBtn = noteSection.querySelector('.info-add-hunt');
+      addHuntBtn.addEventListener('click', async () => {
+        addHuntBtn.disabled = true;
+        addHuntBtn.textContent = 'Adding…';
+        try{
+          // Name and generation from the species; sprite as the Fetch
+          // button would pick it (animated where there is one).
+          const [species, sprite] = await Promise.all([
+            fetchJsonWithTimeout(`https://pokeapi.co/api/v2/pokemon-species/${dexNumberFallback}`, 8000),
+            fetchShinySpriteFromPokeAPI(dexNumberFallback)
+          ]);
+          const slug = (species && species.name) || tileNameFor(dexNumberFallback) || '';
+          const name = SPECIES_DISPLAY_EXCEPTIONS[slug] || (slug ? speciesDisplayName(slug) : `#${dexNumberFallback}`);
+          const generation = species && species.generation ? (GEN_NAME_TO_NUMBER[species.generation.name] || null) : null;
+          if(!sprite.sprite) throw new Error('no sprite');
+          const newEntry = createHuntEntry({ name, gifUrl: sprite.sprite, generation, dexNumber: dexNumberFallback });
+          render();
+          noteSection.innerHTML = `
+            <div class="info-heading">Your hunt</div>
+            <div class="info-loading">Added ${escapeHtml(name)} to your Active hunts.</div>
+            <button type="button" class="primary info-add-hunt">Start hunting it now</button>
+          `;
+          noteSection.querySelector('.info-add-hunt').addEventListener('click', () => {
+            settings.activeId = newEntry.id;
+            saveSettings();
+            overlay.remove();
+            const activeTabBtn = document.querySelector('.tab-btn[data-tab="active"]');
+            if(activeTabBtn) activeTabBtn.click();
+            render();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+          });
+        }catch(e){
+          addHuntBtn.disabled = false;
+          addHuntBtn.textContent = '+ Add to my hunts';
+          const msg = noteSection.querySelector('.info-loading');
+          msg.textContent = "Couldn't add it — check your connection and try again.";
+        }
+      });
     }
 
     const gameSection = document.createElement('div');
@@ -2518,14 +3892,27 @@
         const originalHtml = shareBtn.innerHTML;
         shareBtn.textContent = 'Generating…';
         try{
-          await generateHuntCardImage(entry, spriteSrc);
+          const isAnimated = /\.gif(\?|#|$)/i.test(spriteSrc || '') || /^data:image\/gif/i.test(spriteSrc || '');
+          const [result, stillless] = await Promise.all([
+            renderHuntCardCanvas(entry, spriteSrc),
+            isAnimated ? renderHuntCardCanvas(entry, spriteSrc, { drawSprite: false }) : null
+          ]);
+          // Also use the live image as a rescue when the canvas couldn't
+          // read the sprite at all (e.g. a host that blocks cross-origin use).
+          let live = null;
+          if(isAnimated) live = { result: stillless, src: spriteSrc, animated: true };
+          else if(!result.layout.sprite && spriteSrc){
+            live = { result: await renderHuntCardCanvas(entry, spriteSrc, { drawSprite: false }), src: spriteSrc };
+          }
+          openCardViewer(entry, result, live);
         }catch(e){
           openModal('Could not generate the card image — this can happen if the sprite comes from a site that blocks cross-origin image use. Try switching to a fetched or uploaded sprite for this hunt.', [{ label: 'OK', className: 'primary' }]);
         }
         shareBtn.disabled = false;
         shareBtn.innerHTML = originalHtml;
       });
-      actions.appendChild(shareBtn);
+      shareBtn.classList.add('info-share-btn');
+      titleRow.appendChild(shareBtn);
     }
     const closeBtn = document.createElement('button');
     closeBtn.textContent = 'Close';
@@ -2541,8 +3928,30 @@
     const lookupId = entry ? (entry.form || entry.name) : dexNumberFallback;
     fetchPokemonGameData(lookupId).then(gameData => {
       gameSection.innerHTML = renderGameDataHTML(gameData);
-      if(!entry && gameData.resolvedName){
-        title.textContent = `${capitalizeName(gameData.resolvedName.replace(/-/g,' '))} — Info`;
+      // Evolution names open that Pokemon's info popup in place of this one
+      // (with your hunt stats, if you're tracking it). The Pokemon already
+      // being viewed is shown bold instead of as a link.
+      gameSection.querySelectorAll('.evo-link').forEach(a => {
+        const id = Number(a.dataset.speciesId);
+        if(id && id === gameData.speciesId){
+          a.classList.add('evo-current');
+          a.removeAttribute('href');
+          a.setAttribute('aria-current', 'true');
+          return;
+        }
+        a.title = `Open ${a.textContent} info`;
+        a.addEventListener('click', e => {
+          e.preventDefault();
+          const tracked = pokedex.filter(p => p.dexNumber === id);
+          const entryFor = tracked.find(p => p.found) || tracked[0] || null;
+          overlay.remove();
+          openInfoModal(entryFor, id);
+        });
+      });
+      if(!entry){
+        title.textContent = infoTitle(dexNumberFallback, speciesDisplayName(gameData.speciesName || gameData.resolvedName));
+      } else if(!entry.dexNumber && gameData.speciesId){
+        title.textContent = infoTitle(gameData.speciesId, capitalizeName(entry.name));
       }
     }).catch(() => {
       gameSection.innerHTML = '<div class="info-heading">Game data</div><div class="info-loading">Couldn\'t load game data — check your connection.</div>';
@@ -2600,44 +4009,272 @@
     return null;
   }
 
+  // Turns a typed Pokemon name into PokeAPI's URL form:
+  // "Mr. Mime" -> "mr-mime", "Farfetch'd" -> "farfetchd",
+  // "Nidoran♀" -> "nidoran-f", "Flabébé" -> "flabebe", "Type: Null" -> "type-null".
+  function pokeApiSlug(name){
+    return String(name == null ? '' : name).toLowerCase().trim()
+      .normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+      .replace(/♀/g, '-f').replace(/♂/g, '-m')
+      .replace(/['’.:]/g, '')
+      .replace(/\s+/g, '-').replace(/-+/g, '-').replace(/^-|-$/g, '');
+  }
+
+  // Fetches a Pokemon's PokeAPI data by name or number. Some species
+  // have no entry under their plain name, only under their default form
+  // (Giratina is "giratina-altered"; Landorus, Tornadus, Thundurus and
+  // Enamorus are "-incarnate"; also Deoxys, Shaymin, Keldeo, Meloetta,
+  // Aegislash, Lycanroc, Toxtricity, Urshifu and others). When the plain
+  // name isn't found, this looks up the species and uses its default form.
+  async function fetchPokemonData(nameOrId){
+    const slug = pokeApiSlug(nameOrId);
+    if(!slug) throw new Error('no name');
+    const res = await fetch(`https://pokeapi.co/api/v2/pokemon/${slug}`);
+    if(res.ok) return res.json();
+    if(res.status !== 404 || /^\d+$/.test(slug)) throw new Error('not found');
+    const specRes = await fetch(`https://pokeapi.co/api/v2/pokemon-species/${slug}`);
+    if(!specRes.ok) throw new Error('not found');
+    const spec = await specRes.json();
+    const def = (spec.varieties || []).find(v => v.is_default) || (spec.varieties || [])[0];
+    if(!def) throw new Error('not found');
+    const defRes = await fetch(`https://pokeapi.co/api/v2/pokemon/${def.pokemon.name}`);
+    if(!defRes.ok) throw new Error('not found');
+    return defRes.json();
+  }
+
   // Resolves the best available shiny sprite (falling back to the
   // regular sprite) for a given PokeAPI pokemon name, plus its National
   // Dex number. Shared by the main "fetch shiny" button and the regional
   // form picker in the edit modal, so both stay in sync with each other.
-  async function fetchShinySpriteFromPokeAPI(apiName){
-    const res = await fetch(`https://pokeapi.co/api/v2/pokemon/${apiName}`);
-    if(!res.ok) throw new Error('not found');
-    const data = await res.json();
-    const genV = data.sprites &&
-      data.sprites.versions &&
-      data.sprites.versions['generation-v'] &&
-      data.sprites.versions['generation-v']['black-white'];
-    const animatedShiny = genV && genV.animated && genV.animated.front_shiny;
-    const staticShiny = data.sprites && data.sprites.front_shiny;
-    const animatedDefault = genV && genV.animated && genV.animated.front_default;
-    const staticDefault = data.sprites && data.sprites.front_default;
+  // Sprites fetched by the app come from PokeAPI's sprite collection; any
+  // other sprite (an upload, or a GIF pasted from e.g. Project Pokémon) is
+  // the user's own, and is never thrown away when switching styles/forms.
+  function isPokeApiSprite(url){
+    return /^https:\/\/raw\.githubusercontent\.com\/PokeAPI\/sprites\//.test(url || '');
+  }
+  // Sprite styles, shown as "Sprite style" in the edit menu:
+  //   'animated' — Animated 2D (the Gen 5 animated pixel sprites)
+  //   'pixel'    — Static 2D (the still pixel sprite)
+  //   '3d'       — 3D model (Showdown's animated 3D-model GIF, or the
+  //                Pokémon HOME render when there isn't one)
+  //   'custom'   — the user's own uploaded/pasted sprite
+  // Worked out from the sprite's address, so it always matches what's shown.
+  const SPRITE_STYLE_LABELS = { animated: 'Animated 2D', pixel: 'Static 2D', '3d': '3D model', custom: 'Your own sprite' };
+  function spriteStyleOfUrl(url){
+    if(!url) return 'animated';
+    if(!isPokeApiSprite(url)) return 'custom';
+    if(/\/other\/(showdown|home)\//.test(url)) return '3d';
+    if(/\/animated\//.test(url)) return 'animated';
+    return 'pixel';
+  }
+  function spriteStyleOf(entry){ return spriteStyleOfUrl(entry.gifUrl); }
+
+  // Picks the shiny sprite in the requested style, falling back to the
+  // closest style that exists (Animated 2D stops at Gen 5, for example).
+  // With no style given it prefers Animated 2D, then 3D model, then
+  // Static 2D. Also reports which styles this Pokemon/form has.
+  async function fetchShinySpriteFromPokeAPI(apiName, style){
+    const data = await fetchPokemonData(apiName);
+    const sp = data.sprites || {};
+    const genV = sp.versions && sp.versions['generation-v'] && sp.versions['generation-v']['black-white'];
+    const other = sp.other || {};
+    const pick3d = key => (other.showdown && other.showdown[key]) || (other.home && other.home[key]) || null;
+    const shiny = {
+      animated: (genV && genV.animated && genV.animated.front_shiny) || null,
+      pixel: sp.front_shiny || null,
+      '3d': pick3d('front_shiny')
+    };
+    const regular = {
+      animated: (genV && genV.animated && genV.animated.front_default) || null,
+      pixel: sp.front_default || null,
+      '3d': pick3d('front_default')
+    };
+    const orders = { animated: ['animated', '3d', 'pixel'], pixel: ['pixel', 'animated', '3d'], '3d': ['3d', 'animated', 'pixel'] };
+    const order = orders[style] || orders.animated;
+    let sprite = null, used = null;
+    for(const k of order){ if(shiny[k]){ sprite = shiny[k]; used = k; break; } }
+    if(!sprite){ for(const k of order){ if(regular[k]){ sprite = regular[k]; used = k; break; } } }
     return {
-      sprite: animatedShiny || staticShiny || animatedDefault || staticDefault,
-      hasShiny: !!(animatedShiny || staticShiny),
+      sprite,
+      style: used,
+      hasShiny: !!(shiny.animated || shiny.pixel || shiny['3d']),
+      available: { animated: !!shiny.animated, pixel: !!shiny.pixel, '3d': !!shiny['3d'] },
       dexNumber: data.id
     };
   }
 
-  // Looks up a species' regional-form varieties (Alolan, Galarian,
-  // Hisuian, Paldean). Returns [] on failure, same as "no regional forms".
-  async function fetchRegionalForms(name){
-    try{
-      const res = await fetch(`https://pokeapi.co/api/v2/pokemon-species/${name.toLowerCase()}`);
-      if(!res.ok) return [];
-      const data = await res.json();
-      const forms = [];
-      (data.varieties || []).forEach(v => {
-        const vname = v.pokemon.name;
-        const label = regionalFormLabel(vname);
-        if(label) forms.push({ apiName: vname, label });
-      });
-      return forms;
-    }catch(e){ return []; }
+  // A species' varieties from PokeAPI as [{ name, isDefault }] (e.g.
+  // charizard, charizard-mega-x, charizard-mega-y, charizard-gmax), cached
+  // so the form and Mega pickers share one request. [] on failure.
+  const speciesVarietiesCache = new Map();
+  function fetchSpeciesVarieties(name){
+    const key = pokeApiSlug(name);
+    if(!key) return Promise.resolve([]);
+    if(!speciesVarietiesCache.has(key)){
+      const p = fetch(`https://pokeapi.co/api/v2/pokemon-species/${key}`)
+        .then(res => res.ok ? res.json() : null)
+        .then(data => {
+          if(!data) return [];
+          const list = (data.varieties || []).map(v => ({ name: v.pokemon.name, isDefault: !!v.is_default }));
+          list.speciesName = data.name;
+          return list;
+        })
+        .catch(() => []);
+      speciesVarietiesCache.set(key, p);
+      p.then(list => { if(!list.length) speciesVarietiesCache.delete(key); });
+    }
+    return speciesVarietiesCache.get(key);
+  }
+
+  // Display name for any form variety, given the species' API name:
+  // "zoroark-hisui" -> "Hisuian", "giratina-origin" -> "Origin",
+  // "landorus-therian" -> "Therian", "darmanitan-galar-zen" -> "Galarian Zen",
+  // "pikachu-alola-cap" -> "Alola Cap", "charizard-gmax" -> "Gigantamax".
+  function formDisplayLabel(apiName, speciesSlug){
+    if(!apiName) return null;
+    if(/-gmax$/.test(apiName)) return 'Gigantamax';
+    let rest = speciesSlug && apiName.startsWith(speciesSlug + '-')
+      ? apiName.slice(speciesSlug.length + 1)
+      : (apiName.split('-').slice(1).join('-') || apiName);
+    const parts = rest.split('-');
+    if(parts[parts.length - 1] !== 'cap' && REGIONAL_SUFFIXES[parts[0]]) parts[0] = REGIONAL_SUFFIXES[parts[0]];
+    return parts.map(w => /^[A-Z]/.test(w) ? w : capitalizeName(w)).join(' ');
+  }
+
+  // Looks up a species' alternate forms: regional forms (Alolan, Galarian,
+  // Hisuian, Paldean) plus other forms like Giratina's Origin Forme,
+  // the Therian Formes, Gigantamax and so on. Megas have their own picker
+  // and Totem forms (not catchable) are left out. Also returns the label
+  // for the default form when it has its own name (Giratina's "Altered").
+  async function fetchAlternateForms(name){
+    const vars = await fetchSpeciesVarieties(name);
+    const speciesSlug = pokeApiSlug(name);
+    const def = vars.find(v => v.isDefault) || vars[0];
+    const forms = vars
+      .filter(v => v !== def && !isMegaName(v.name) && !/-totem(-|$)/.test(v.name))
+      .map(v => ({ apiName: v.name, label: formDisplayLabel(v.name, speciesSlug) }));
+    const defaultLabel = def && def.name !== speciesSlug ? formDisplayLabel(def.name, speciesSlug) : null;
+    return { forms, defaultLabel };
+  }
+
+  // ---- Gigantamax ----
+  // Gigantamax symbol shown in front of the "Gigantamax" heading in the
+  // info popup (user-supplied image, embedded so it works offline).
+  const GMAX_SYMBOL_SRC = 'data:image/png;base64,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';
+  function isGmaxName(apiName){ return /-gmax$/.test(apiName || ''); }
+  // "charizard-gmax" -> "Gigantamax Charizard";
+  // "urshifu-rapid-strike-gmax" -> "Gigantamax Urshifu (Rapid Strike)"
+  function gmaxFullLabel(apiName, speciesSlug){
+    const body = (apiName || '').replace(/-gmax$/, '');
+    const species = speciesSlug && (body === speciesSlug || body.startsWith(speciesSlug + '-')) ? speciesSlug : body.split('-')[0];
+    const extra = body.slice(species.length).replace(/^-/, '');
+    const title = t => t.split('-').map(capitalizeName).join(' ');
+    return `Gigantamax ${title(species)}${extra ? ` (${title(extra)})` : ''}`;
+  }
+  async function fetchGmaxDetails(apiName, speciesSlug){
+    const mon = await fetch(`https://pokeapi.co/api/v2/pokemon/${apiName}`).then(r => r.ok ? r.json() : null).catch(() => null);
+    const sprites = (mon && mon.sprites) || {};
+    const showdown = sprites.other && sprites.other.showdown;
+    return {
+      apiName,
+      label: gmaxFullLabel(apiName, speciesSlug),
+      types: mon ? (mon.types || []).slice().sort((a, b) => a.slot - b.slot).map(t => t.type.name) : [],
+      sprite: (showdown && showdown.front_shiny) || sprites.front_shiny || null
+    };
+  }
+
+  // ---- Mega Evolutions ----
+  // Mega symbol shown in front of the "Mega Evolution" heading in the
+  // info popup (user-supplied image, embedded so it works offline).
+  const MEGA_SYMBOL_SRC = 'data:image/png;base64,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';
+  // PokeAPI names Mega forms "<species>-mega", or "-mega-x" / "-mega-y"
+  // for Pokemon with two.
+  function isMegaName(apiName){
+    return /-mega(-[a-z]+)?$/.test(apiName || '');
+  }
+  // "charizard-mega-x" -> "Mega X"; "venusaur-mega" -> "Mega"
+  function megaShortLabel(apiName){
+    const m = (apiName || '').match(/-mega(?:-([a-z]+))?$/);
+    if(!m) return null;
+    return m[1] ? `Mega ${m[1].toUpperCase()}` : 'Mega';
+  }
+  // "charizard-mega-x" -> "Mega Charizard X"
+  function megaFullLabel(apiName){
+    const m = (apiName || '').match(/^(.*)-mega(?:-([a-z]+))?$/);
+    if(!m) return null;
+    const base = m[1].split('-').map(capitalizeName).join(' ');
+    return `Mega ${base}${m[2] ? ' ' + m[2].toUpperCase() : ''}`;
+  }
+  async function fetchMegaForms(name){
+    return (await fetchSpeciesVarieties(name))
+      .map(v => v.name)
+      .filter(isMegaName)
+      .map(apiName => ({ apiName, label: megaFullLabel(apiName) }));
+  }
+
+  // The Mega Stone that triggers a given Mega. PokeAPI has a "mega-stones"
+  // item category but doesn't link stones to Pokemon, so this narrows the
+  // list by name (charizard-mega-x -> stones starting "chari" and ending
+  // "-x"), then confirms against each candidate's own description.
+  let megaStoneListPromise = null;
+  function fetchMegaStoneNames(){
+    if(!megaStoneListPromise){
+      megaStoneListPromise = fetch('https://pokeapi.co/api/v2/item-category/mega-stones')
+        .then(r => r.ok ? r.json() : null)
+        .then(d => d ? (d.items || []).map(i => i.name) : [])
+        .catch(() => []);
+      megaStoneListPromise.then(list => { if(!list.length) megaStoneListPromise = null; });
+    }
+    return megaStoneListPromise;
+  }
+  async function findMegaStone(megaApiName, speciesName){
+    const stones = await fetchMegaStoneNames();
+    if(!stones.length) return null;
+    const suffix = (megaApiName.match(/-mega-([a-z]+)$/) || [])[1] || null;
+    const base = speciesName.toLowerCase().replace(/[^a-z]/g, '');
+    const stem = base.slice(0, Math.min(5, base.length));
+    const candidates = stones.filter(n => {
+      if(!n.replace(/[^a-z]/g, '').startsWith(stem)) return false;
+      return suffix ? n.endsWith('-' + suffix) : !/-[a-z]$/.test(n);
+    });
+    const englishName = item => {
+      const en = (item.names || []).find(x => x.language && x.language.name === 'en');
+      return en ? en.name : item.name.split('-').map(capitalizeName).join(' ');
+    };
+    const described = await Promise.all(candidates.slice(0, 4).map(async n => {
+      try{
+        const r = await fetch(`https://pokeapi.co/api/v2/item/${n}`);
+        if(!r.ok) return null;
+        const item = await r.json();
+        const text = [
+          ...(item.effect_entries || []).filter(e => e.language && e.language.name === 'en').map(e => e.effect + ' ' + e.short_effect),
+          ...(item.flavor_text_entries || []).filter(e => e.language && e.language.name === 'en').map(e => e.text)
+        ].join(' ').toLowerCase();
+        return { name: englishName(item), mentions: text.includes(speciesName.toLowerCase().replace(/-/g, ' ')) };
+      }catch(e){ return null; }
+    }));
+    const found = described.filter(Boolean);
+    const confirmed = found.find(d => d.mentions);
+    if(confirmed) return confirmed.name;
+    return found.length === 1 ? found[0].name : null;
+  }
+
+  // Everything the info popup shows about one Mega: sprite, types and
+  // how to trigger it (its Mega Stone, or Dragon Ascent for Rayquaza).
+  async function fetchMegaDetails(megaApiName, speciesName){
+    const [mon, stone] = await Promise.all([
+      fetch(`https://pokeapi.co/api/v2/pokemon/${megaApiName}`).then(r => r.ok ? r.json() : null).catch(() => null),
+      /^rayquaza/.test(megaApiName) ? Promise.resolve(null) : findMegaStone(megaApiName, speciesName)
+    ]);
+    const sprites = (mon && mon.sprites) || {};
+    const showdown = sprites.other && sprites.other.showdown;
+    return {
+      apiName: megaApiName,
+      label: megaFullLabel(megaApiName),
+      types: mon ? (mon.types || []).slice().sort((a, b) => a.slot - b.slot).map(t => t.type.name) : [],
+      sprite: (showdown && showdown.front_shiny) || sprites.front_shiny || null,
+      trigger: /^rayquaza/.test(megaApiName) ? 'Knows the move Dragon Ascent' : (stone ? `Holds ${stone}` : null)
+    };
   }
 
   // ---- Dates & hunting time ----
@@ -2653,9 +4290,11 @@
   // used for the live hunting-time readout under the active sprite.
   function formatHuntTime(totalSeconds){
     const s = Math.floor(totalSeconds || 0);
-    const h = Math.floor(s / 3600);
+    const d = Math.floor(s / 86400);
+    const h = Math.floor((s % 86400) / 3600);
     const m = Math.floor((s % 3600) / 60);
     const sec = s % 60;
+    if(d > 0) return `${d}d ${h}h ${m}m`;
     if(h > 0) return `${h}h ${m}m`;
     if(m > 0) return `${m}m ${String(sec).padStart(2,'0')}s`;
     return `${sec}s`;
@@ -2765,7 +4404,46 @@
     if(profiles.length <= 1) return;
     const current = profiles.find(p => p.id === activeProfileId);
     if(!current) return;
-    if(!confirm(`Delete the profile "${current.name}" and all of its hunt data? This can't be undone.`)) return;
+    confirmDeleteProfile(current, () => deleteProfile(current));
+  });
+
+  // Confirmation popup for deleting a profile: the Delete button stays
+  // locked until the confirmation box is ticked.
+  function confirmDeleteProfile(profile, onConfirm){
+    const overlay = document.createElement('div');
+    overlay.className = 'modal-overlay';
+    const box = document.createElement('div');
+    box.className = 'modal-box';
+    const huntCount = pokedex.length;
+    box.innerHTML = `
+      <p>Delete the profile "${escapeHtml(profile.name)}"?</p>
+      <div class="modal-field-label" style="margin-top:0;">
+        This permanently deletes its ${huntCount} hunt${huntCount === 1 ? '' : 's'}, Living Dex progress, stats and settings from this device. It can't be undone — export a backup first if you might want it back.
+      </div>
+      <label class="delete-confirm-check">
+        <input type="checkbox">
+        <span>I understand, delete "${escapeHtml(profile.name)}"</span>
+      </label>
+      <div class="modal-actions">
+        <button type="button" class="ghost" data-act="cancel">Cancel</button>
+        <button type="button" class="danger-outline" data-act="delete" disabled>Delete profile</button>
+      </div>
+    `;
+    const check = box.querySelector('input[type="checkbox"]');
+    const deleteBtn = box.querySelector('[data-act="delete"]');
+    check.addEventListener('change', () => { deleteBtn.disabled = !check.checked; });
+    box.querySelector('[data-act="cancel"]').addEventListener('click', () => overlay.remove());
+    deleteBtn.addEventListener('click', () => {
+      if(!check.checked) return;
+      overlay.remove();
+      onConfirm();
+    });
+    overlay.addEventListener('click', e => { if(e.target === overlay) overlay.remove(); });
+    overlay.appendChild(box);
+    document.body.appendChild(overlay);
+  }
+
+  function deleteProfile(current){
     try{
       localStorage.removeItem(scopedKey(POKEDEX_KEY));
       localStorage.removeItem(scopedKey(SETTINGS_KEY));
@@ -2777,7 +4455,7 @@
     // switchProfile(fallback) below sees a real change and runs normally.
     switchProfile(fallback);
     setProfileStatus(`Deleted "${current.name}".`, false);
-  });
+  }
 
   // ---- Load / save ----
   // Reads both localStorage entries, falls back to defaults if missing,
@@ -2798,6 +4476,11 @@
       if(p.huntSeconds === undefined) p.huntSeconds = 0;
       if(p.form === undefined) p.form = null;
       if(p.formDexNumber === undefined) p.formDexNumber = null;
+      if(p.mega === undefined) p.mega = null;
+      // A sprite that isn't from PokeAPI is the user's own ('custom').
+      p.spriteStyle = spriteStyleOf(p);
+      if(p.customSprite === undefined) p.customSprite = null;
+      if(p.megaDexNumber === undefined) p.megaDexNumber = null;
       if(p.square === undefined) p.square = false;
       if(p.oddsMethod === undefined) p.oddsMethod = null;
       if(p.notes === undefined) p.notes = null;
@@ -2968,7 +4651,7 @@
         </div>
         ${p.generation ? `<div class="mon-gen">Gen ${toRoman(p.generation)}</div>` : ''}
         ${p.dexNumber ? `<div class="mon-gen">#${String(p.dexNumber).padStart(3,'0')}</div>` : ''}
-        ${p.form ? `<div class="mon-gen">${regionalFormLabel(p.form)}</div>` : ''}
+        ${p.form && !p.mega ? `<div class="mon-gen">${escapeHtml(formDisplayLabel(p.form, pokeApiSlug(p.name)))}</div>` : ''}
         ${p.phaseCount ? `<div class="mon-gen phase-tag">Phase ${p.phaseCount}</div>` : ''}
       `;
       card.addEventListener('click', (e) => {
@@ -2984,12 +4667,25 @@
       btn.addEventListener('click', (e) => {
         e.stopPropagation();
         const id = btn.getAttribute('data-id');
-        if(settings.activeId === id) stopAutoIncrement();
-        pokedex = pokedex.filter(p => p.id !== id);
-        if(settings.activeId === id) settings.activeId = null;
-        savePokedex();
-        saveSettings();
-        render();
+        const target = pokedex.find(p => p.id === id);
+        if(!target) return;
+        // Ask first — deleting a hunt can't be undone.
+        const count = (target.count || 0).toLocaleString();
+        const time = target.huntSeconds ? `, ${formatHuntTime(target.huntSeconds)} of hunting` : '';
+        openModal(
+          `Delete ${capitalizeName(target.name)} from your hunts? Its ${count} encounter${target.count === 1 ? '' : 's'}${time} and notes will be removed. This can't be undone.`,
+          [
+            { label: 'Cancel', className: 'ghost' },
+            { label: 'Delete', className: 'danger-outline', onClick: () => {
+              if(settings.activeId === id) stopAutoIncrement();
+              pokedex = pokedex.filter(p => p.id !== id);
+              if(settings.activeId === id) settings.activeId = null;
+              savePokedex();
+              saveSettings();
+              render();
+            }}
+          ]
+        );
       });
     });
     rosterEl.querySelectorAll('.edit-btn').forEach(btn => {
@@ -3038,7 +4734,8 @@
       foundBtn.disabled = false;
       foundBtn.innerHTML = active.found ? 'Unmark shiny found' : `${ICONS.check} Mark shiny found!`;
       foundBanner.style.display = active.found ? 'block' : 'none';
-      huntTimeDisplay.innerHTML = `${ICONS.timer} ${formatHuntTime(active.huntSeconds)} hunting`;
+      // Past tense once the shiny's been found — the timer has stopped.
+      huntTimeDisplay.innerHTML = `${ICONS.timer} ${formatHuntTime(active.huntSeconds)} ${active.found ? 'hunted' : 'hunting'}`;
       // Restore this hunt's own remembered method, falling back to the
       // last one used for this species elsewhere in the Pokedex — see
       // getLastMethodForSpecies() — so switching hunts shows the right
@@ -3181,9 +4878,59 @@
     if(!tile) return;
     const num = Number(tile.dataset.num);
     if(!num) return;
-    const entry = pokedex.find(p => p.found && p.dexNumber === num) || null;
+    // Caught -> that hunt; otherwise any hunt in progress for it; otherwise
+    // untracked (the popup then offers to add it).
+    const entry = pokedex.find(p => p.found && p.dexNumber === num)
+      || pokedex.find(p => p.dexNumber === num)
+      || null;
     openInfoModal(entry, num);
   });
+
+  // ---- Species names for Living Dex tooltips ----
+  // Hovering a tile shows "#25 Pikachu". Names come from one PokeAPI list
+  // request, saved on this device so it's only ever downloaded once.
+  const SPECIES_NAMES_KEY = 'shinyTally.speciesNames';
+  let speciesNames = null; // index = National Dex number
+  try{
+    const raw = localStorage.getItem(SPECIES_NAMES_KEY);
+    const parsed = raw ? JSON.parse(raw) : null;
+    if(Array.isArray(parsed) && parsed.length > 1000) speciesNames = parsed;
+  }catch(e){ /* fetch it below */ }
+  let speciesNamesLoading = false;
+  function loadSpeciesNames(){
+    if(speciesNames || speciesNamesLoading) return;
+    speciesNamesLoading = true;
+    fetch('https://pokeapi.co/api/v2/pokemon-species?limit=2000')
+      .then(r => r.ok ? r.json() : null)
+      .then(data => {
+        if(!data || !Array.isArray(data.results)) return;
+        const names = [];
+        data.results.forEach(r => {
+          const m = r.url.match(/\/pokemon-species\/(\d+)\//);
+          if(m) names[Number(m[1])] = r.name;
+        });
+        speciesNames = names;
+        try{ localStorage.setItem(SPECIES_NAMES_KEY, JSON.stringify(names)); }catch(e){}
+        if(dexGridWrapEl.offsetParent !== null) renderLivingDex();
+      })
+      .catch(() => {})
+      .finally(() => { speciesNamesLoading = false; });
+  }
+  // PokeAPI species name -> how the games write it.
+  const SPECIES_DISPLAY_EXCEPTIONS = {
+    'mr-mime': 'Mr. Mime', 'mime-jr': 'Mime Jr.', 'mr-rime': 'Mr. Rime', 'type-null': 'Type: Null',
+    'nidoran-f': 'Nidoran♀', 'nidoran-m': 'Nidoran♂', 'farfetchd': "Farfetch'd", 'sirfetchd': "Sirfetch'd",
+    'flabebe': 'Flabébé', 'ho-oh': 'Ho-Oh', 'porygon-z': 'Porygon-Z', 'jangmo-o': 'Jangmo-o',
+    'hakamo-o': 'Hakamo-o', 'kommo-o': 'Kommo-o', 'wo-chien': 'Wo-Chien', 'chien-pao': 'Chien-Pao',
+    'ting-lu': 'Ting-Lu', 'chi-yu': 'Chi-Yu'
+  };
+  function speciesDisplayName(slug){
+    if(!slug) return '';
+    return SPECIES_DISPLAY_EXCEPTIONS[slug] || slug.split('-').map(capitalizeName).join(' ');
+  }
+  function tileNameFor(national){
+    return speciesNames && speciesNames[national] ? speciesDisplayName(speciesNames[national]) : '';
+  }
 
   // Builds the full 1–1025 tile grid, grouped by generation. A tile is
   // "found" only if some pokedex entry has that exact dexNumber AND is
@@ -3222,6 +4969,7 @@
   }
 
   function renderLivingDex(){
+    loadSpeciesNames();
     hideUncaughtToggle.checked = !!settings.hideUncaught;
     const hideUncaught = !!settings.hideUncaught;
     const foundByNumber = {};
@@ -3262,7 +5010,7 @@
         ? (entry.gifUrl || `${spriteBase}/shiny/${national}.png`)
         : `${spriteBase}/${national}.png`;
       const numLabel = String(entryNumber).padStart(3, '0');
-      const label = isFound ? capitalizeName(entry.name) : ('#' + numLabel);
+      const label = isFound ? capitalizeName(entry.name) : `#${numLabel} ${tileNameFor(national)}`.trim();
       tilesHtml += `
         <div class="dex-tile${isFound ? ' found' : ''}" title="${label}" data-num="${national}">
           <img src="${src}" loading="lazy" alt="${label}"
@@ -3303,7 +5051,7 @@
         const src = isFound
           ? (entry.gifUrl || `${spriteBase}/shiny/${n}.png`)
           : `${spriteBase}/${n}.png`;
-        const label = isFound ? capitalizeName(entry.name) : ('#' + n);
+        const label = isFound ? capitalizeName(entry.name) : `#${n} ${tileNameFor(n)}`.trim();
         tilesHtml += `
           <div class="dex-tile${isFound ? ' found' : ''}" title="${label}" data-num="${n}">
             <img src="${src}" loading="lazy" alt="${label}"
@@ -3379,7 +5127,7 @@
     ];
 
     const spriteBase = 'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny';
-    const spriteFor = p => p.gifUrl || (p.formDexNumber || p.dexNumber ? `${spriteBase}/${p.formDexNumber || p.dexNumber}.png` : '');
+    const spriteFor = p => p.gifUrl || (p.megaDexNumber || p.formDexNumber || p.dexNumber ? `${spriteBase}/${p.megaDexNumber || p.formDexNumber || p.dexNumber}.png` : '');
     function recordRow(label, entry, detail){
       if(!entry) return `<div class="record-row"><span class="record-label">${label}</span><span class="record-detail">—</span></div>`;
       const src = spriteFor(entry);
@@ -3938,7 +5686,7 @@
   // fixes the black box for GIFs exactly the same way it does for PNGs.
   function obsSpriteUrlFor(entry){
     if(!entry) return '';
-    const spriteId = entry.formDexNumber || entry.dexNumber;
+    const spriteId = entry.megaDexNumber || entry.formDexNumber || entry.dexNumber;
     const imgUrl = entry.gifUrl || (spriteId ? `${OBS_STATIC_SPRITE_BASE}/${spriteId}.png` : '');
     if(!imgUrl) return '';
     return obsSpriteWrapperUrl(imgUrl);
@@ -4164,11 +5912,13 @@
 
   // Formats hunt time to match the "00h 00m hunting" style baked into
   // the stream-overlay art, so the live OBS text lines up with it.
-  function formatHuntTimeForObs(totalSeconds){
+  function formatHuntTimeForObs(totalSeconds, found){
     const s = Math.floor(totalSeconds || 0);
-    const h = Math.floor(s / 3600);
+    const d = Math.floor(s / 86400);
+    const h = Math.floor((s % 86400) / 3600);
     const m = Math.floor((s % 3600) / 60);
-    return `${String(h).padStart(2,'0')}h ${String(m).padStart(2,'0')}m hunting`;
+    const dayPart = d > 0 ? `${d}d ` : '';
+    return `${dayPart}${String(h).padStart(2,'0')}h ${String(m).padStart(2,'0')}m ${found ? 'hunted' : 'hunting'}`;
   }
 
   // Pushes the active hunt's sprite, name, count and hunting time to
@@ -4181,7 +5931,7 @@
     const active = getActive();
     const name = active ? capitalizeName(active.name) : '';
     const count = active ? String(Math.min(9999, active.count || 0)).padStart(4, '0') : '0000';
-    const timer = active ? formatHuntTimeForObs(active.huntSeconds) : '00h 00m hunting';
+    const timer = active ? formatHuntTimeForObs(active.huntSeconds, active.found) : '00h 00m hunting';
     const sprite = obsSpriteUrlFor(active);
 
     if(settings.obs.spriteSourceName && sprite !== obsLastPushed.sprite){
@@ -4330,7 +6080,7 @@
 
       // Also fill in the generation, if PokeAPI has it.
       try{
-        const speciesRes = await fetch(`https://pokeapi.co/api/v2/pokemon-species/${name}`);
+        const speciesRes = await fetch(`https://pokeapi.co/api/v2/pokemon-species/${pokeApiSlug(name)}`);
         if(speciesRes.ok){
           const speciesData = await speciesRes.json();
           const genNumber = speciesData.generation && GEN_NAME_TO_NUMBER[speciesData.generation.name];
@@ -4351,18 +6101,19 @@
   // ---- Add to Pokedex ----
   // Prefers an uploaded file over a pasted URL, requires a name + sprite,
   // then appends a new entry and resets the form.
-  addBtn.addEventListener('click', () => {
-    const name = nameInput.value.trim();
-    const gifUrl = uploadedDataUrl || gifInput.value.trim();
-    const generation = genInput.value ? Number(genInput.value) : null;
-    const dexNumber = dexNumInput.value ? Number(dexNumInput.value) : null;
-    if(!name){ setStatus('Enter a pokemon name.', true); return; }
-    if(!gifUrl){ setStatus('Upload a file or paste an image URL.', true); return; }
+  // Creates a new hunt and adds it to the Pokedex. Shared by the "Add to
+  // Pokedex" form and the Living Dex info popup's "Add to my hunts" button.
+  // Becomes the active hunt only if there isn't one already.
+  function createHuntEntry({ name, gifUrl, generation, dexNumber }){
     const id = name.toLowerCase() + '-' + Date.now();
-    pokedex.push({
+    const entry = {
       id, name, gifUrl, count: 0, generation, dexNumber,
       form: null,                              // regional form (PokeAPI variety name), if any
       formDexNumber: null,                     // that form's own PokeAPI id, if any — see obsSpriteUrlFor()
+      mega: null,                              // PokeAPI Mega name, e.g. "charizard-mega-x" — set from the edit menu
+      spriteStyle: spriteStyleOfUrl(gifUrl),   // 'animated' | 'pixel' | '3d' | 'custom' — see SPRITE_STYLE_LABELS
+      customSprite: null,                      // your own sprite, kept while another style is shown
+      megaDexNumber: null,                     // that Mega's own PokeAPI id
       square: false,                           // square shiny (Gen 8+), set in the edit modal
       oddsMethod: getLastMethodForSpecies(name, null), // remembered from a past hunt of this species, if any
       notes: null,                              // free-text notes, editable in the edit modal
@@ -4371,10 +6122,22 @@
       startDate: todayISO(),                   // editable in the edit modal
       foundDate: null,                         // set automatically when marked found
       huntSeconds: 0                           // accumulated by the background session timer
-    });
+    };
+    pokedex.push(entry);
     if(!settings.activeId) settings.activeId = id;
     savePokedex();
     saveSettings();
+    return entry;
+  }
+
+  addBtn.addEventListener('click', () => {
+    const name = nameInput.value.trim();
+    const gifUrl = uploadedDataUrl || gifInput.value.trim();
+    const generation = genInput.value ? Number(genInput.value) : null;
+    const dexNumber = dexNumInput.value ? Number(dexNumInput.value) : null;
+    if(!name){ setStatus('Enter a pokemon name.', true); return; }
+    if(!gifUrl){ setStatus('Upload a file or paste an image URL.', true); return; }
+    createHuntEntry({ name, gifUrl, generation, dexNumber });
     nameInput.value = '';
     gifInput.value = '';
     fileInput.value = '';
@@ -4394,7 +6157,7 @@
   // don't round-trip through CSV — only Pokedex entries do. A phase log
   // (which can have any number of phases) is packed into one cell as
   // "name|date;name2|date2" rather than spread across extra columns.
-  const CSV_COLUMNS = ['id','name','count','generation','dexNumber','form','formDexNumber','square','oddsMethod','status','found','addedDate','startDate','foundDate','huntSeconds','phaseCount','phaseLog','gifUrl','notes'];
+  const CSV_COLUMNS = ['id','name','count','generation','dexNumber','form','formDexNumber','mega','megaDexNumber','spriteStyle','customSprite','square','oddsMethod','status','found','addedDate','startDate','foundDate','huntSeconds','phaseCount','phaseLog','gifUrl','notes'];
 
   function csvEscape(value){
     const str = value === null || value === undefined ? '' : String(value);
@@ -4415,7 +6178,7 @@
     const rows = [CSV_COLUMNS.join(',')];
     list.forEach(p => {
       const row = [
-        p.id, p.name, p.count || 0, p.generation || '', p.dexNumber || '', p.form || '', p.formDexNumber || '', p.square ? 'true' : 'false', p.oddsMethod || '',
+        p.id, p.name, p.count || 0, p.generation || '', p.dexNumber || '', p.form || '', p.formDexNumber || '', p.mega || '', p.megaDexNumber || '', spriteStyleOf(p), p.customSprite || '', p.square ? 'true' : 'false', p.oddsMethod || '',
         p.status || 'active', p.found ? 'true' : 'false', p.addedDate || '', p.startDate || '',
         p.foundDate || '', Math.round(p.huntSeconds || 0), p.phaseCount || 0,
         phaseLogToCell(p.phaseLog), p.gifUrl || '', p.notes || ''
@@ -4469,6 +6232,10 @@
         dexNumber: get('dexNumber') ? Number(get('dexNumber')) : null,
         form: get('form') || null,
         formDexNumber: get('formDexNumber') ? Number(get('formDexNumber')) : null,
+        mega: get('mega') || null,
+        spriteStyle: ['pixel', '3d', 'custom'].includes(get('spriteStyle')) ? get('spriteStyle') : 'animated',
+        customSprite: get('customSprite') || null,
+        megaDexNumber: get('megaDexNumber') ? Number(get('megaDexNumber')) : null,
         square: get('square').trim().toLowerCase() === 'true',
         oddsMethod: get('oddsMethod') || null,
         status: get('status') || 'active',
@@ -4498,7 +6265,7 @@
       const a = document.createElement('a');
       const stamp = new Date().toISOString().slice(0,19).replace(/[:T]/g,'-');
       a.href = url;
-      a.download = auto ? `shiny-tally-autobackup-${stamp}.csv` : `shiny-tally-backup-${stamp.slice(0,10)}.csv`;
+      a.download = auto ? `moons-shiny-counter-autobackup-${stamp}.csv` : `moons-shiny-counter-backup-${stamp.slice(0,10)}.csv`;
       document.body.appendChild(a);
       a.click();
       a.remove();
